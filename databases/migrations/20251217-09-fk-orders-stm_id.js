@@ -1,6 +1,6 @@
 /**
- * @file databases/migrations/20251216-12-fk-orders-hotel_id.js
- * @description Add fk on orders.hotel_id
+ * @file databases/migrations/20251217-09-fk-orders-stm_id.js
+ * @description Add fk on orders.stm_id
  * 251216 v1.0.0 jun 초기 생성
  */
 
@@ -8,15 +8,15 @@
 const tableName = 'orders';
 
 // Constraint 명
-const constraintName = 'fk_orders_hotel_id';
+const constraintName = 'fk_orders_stm_id';
 
 // Constraint 정의
 const options = {
-  fields: ['hotel_id'], // fk 부여할 컬럼
+  fields: ['stm_id'], // fk 부여할 컬럼
   type: 'foreign key', // constraint 종류
   name: constraintName, // constraint명 지정
   references: { // 참조 설정
-    table: 'hotels', // 참조할 테이블
+    table: 'settlements', // 참조할 테이블
     field: 'id', // 참조 컬럼 지정
   },
   onDelete: 'CASCADE', // 참조 레코드가 삭제 시 posts의 레코드도 같이 삭제

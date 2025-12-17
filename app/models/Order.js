@@ -143,6 +143,7 @@ const Order = {
     db.User.belongsTo(db.Order, { targetKey: 'id', foreignKey: 'userId', as: 'user_order'}),
     db.Partner.belongsTo(db.Order, { targetKey: 'id', foreignKey: 'partnerId', as: 'partner_order'}),
     db.Hotel.belongsTo(db.Order, { targetKey: 'id', foreignKey: 'hotelId', as: 'hotel_order'});
+    db.Settlement.belongsTo(db.Order, { targetKey: 'id', foreignKey: 'stmId', as: 'settlement_order'});
   },
 }
 

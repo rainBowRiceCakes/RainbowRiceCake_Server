@@ -108,6 +108,7 @@ const Settlement = {
     return define;
   },
   associate: (db) => {
+    db.Settlement.hasMany(db.Order, { targetKey: 'id', foreignKey: 'stmId', as: 'settlement_order'})
     db.Settlement.belongsTo(db.Rider, { targetKey: 'id', foreignKey: 'riderId', as: 'settlement_rider'}),
     db.Settlement.belongsTo(db.Admin, { targetKey: 'id', foreignKey: 'adminId', as: 'settlement_admin'});
   },
