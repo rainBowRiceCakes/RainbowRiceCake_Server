@@ -1,13 +1,13 @@
 /**
- * @file databases/migrations/20251216-01-create-admin.js
- * @description admin migration file
+ * @file databases/migrations/20251216-05-create-hotels.js
+ * @description hotel migration file
  * 251216 v1.0.0 jun 초기 생성
  */
 
 import { DataTypes } from 'sequelize';
 
 // 테이블명
-const tableName = 'admin';
+const tableName = 'hotels';
 
 // 컬럼 정의
 const attributes = {
@@ -17,46 +17,53 @@ const attributes = {
     primaryKey: true,
     allowNull: false,
     autoIncrement: true,
-    comment: '관리자 PK',
+    comment: '호텔 PK',
   },
-  email: {
-    field: 'email',
-    type: DataTypes.STRING(100),
+  hotelName: {
+    field: 'hotel_name',
+    type: DataTypes.STRING(50),
     allowNull: false,
-    unique: true,
-    comment: '로그인 ID(이메일)'
+    comment: '호텔 이름'
   },
-  password: {
-    field: 'password',
-    type: DataTypes.STRING(255),
+  status: {
+    field: 'status',
+    type: DataTypes.STRING(10),
     allowNull: false,
-    comment: '비밀번호',
+    comment: '상태(대기, 활동중, 반려)'
   },
-  role: {
-    field: 'role',
-    type: DataTypes.STRING(5),
+  address: {
+    field: 'address',
+    type: DataTypes.STRING(50),
     allowNull: false,
-    comment: '유저 권한',
-    defaultValue: 'ADM',
+    comment: '호텔 주소'
+  },
+  lat: {
+    field: 'lat',
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+    comment: '위도'
+  },
+  lng: {
+    field: 'lng',
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+    comment: '경도'
   },
   createdAt: {
     field: 'created_at',
     type: DataTypes.DATE,
-    allowNull: true,
-    comment: '작성일',
+    allowNull: true
   },
   updatedAt: {
     field: 'updated_at',
     type: DataTypes.DATE,
-    allowNull: true,
-    comment: '수정일',
+    allowNull: true
   },
   deletedAt: {
     field: 'deleted_at',
     type: DataTypes.DATE,
-    allowNull: true,
-    comment: '삭제일',
-  },
+    allowNull: true
+  }
 };
 
 // 옵션 설정

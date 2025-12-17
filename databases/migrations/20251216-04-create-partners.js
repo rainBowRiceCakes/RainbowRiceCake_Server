@@ -43,12 +43,6 @@ const attributes = {
     allowNull: false,
     comment: '상태(대기, 활동중, 반려)'
   },
-  type: {
-    field: 'type',
-    type: DataTypes.STRING(10),
-    allowNull: true,
-    comment: '제휴 종류(매장)'
-  },
   address: {
     field: 'address',
     type: DataTypes.STRING(50),
@@ -67,7 +61,7 @@ const attributes = {
     allowNull: false,
     comment: '경도'
   },
-    createdAt: {
+  createdAt: {
     field: 'created_at',
     type: DataTypes.DATE,
     allowNull: true,

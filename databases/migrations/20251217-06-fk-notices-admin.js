@@ -1,22 +1,22 @@
 /**
- * @file databases/migrations/20251216-12-fk-orders-hotel_id.js
- * @description Add fk on orders.partner_id
- * 251216 v1.0.0 jun 초기 생성
+ * @file databases/migrations/20251217-06-fk-notices-admin.js
+ * @description Add fk on notices.admin_id
+ * 251217 v1.0.0 wook 초기 생성
  */
 
 // 테이블명
-const tableName = 'orders';
+const tableName = 'notices';
 
 // Constraint 명
-const constraintName = 'fk_orders_hotel_id';
+const constraintName = 'fk_notices_admin_id';
 
 // Constraint 정의
 const options = {
-  fields: ['hotel_id'], // fk 부여할 컬럼
+  fields: ['admin_id'], // fk 부여할 컬럼
   type: 'foreign key', // constraint 종류
   name: constraintName, // constraint명 지정
   references: { // 참조 설정
-    table: 'hotels', // 참조할 테이블
+    table: 'admin', // 참조할 테이블
     field: 'id', // 참조 컬럼 지정
   },
   onDelete: 'CASCADE', // 참조 레코드가 삭제 시 posts의 레코드도 같이 삭제

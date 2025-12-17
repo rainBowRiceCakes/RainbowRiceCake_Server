@@ -37,8 +37,9 @@ const attributes = {
     type: DataTypes.STRING(5),
     allowNull: false,
     comment: '유저 권한',
+    defaultValue: 'COM',
   },
-    createdAt: {
+  createdAt: {
     field: 'created_at',
     type: DataTypes.DATE,
     allowNull: true,

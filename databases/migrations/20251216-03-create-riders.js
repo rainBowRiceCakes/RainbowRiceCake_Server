@@ -73,7 +73,7 @@ const attributes = {
     allowNull: true,
     comment: '픽업 시간'
   },
-    createdAt: {
+  createdAt: {
     field: 'created_at',
     type: DataTypes.DATE,
     allowNull: true,

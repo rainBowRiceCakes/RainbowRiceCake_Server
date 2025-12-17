@@ -1,13 +1,13 @@
 /**
- * @file databases/migrations/20251216-01-create-admin.js
- * @description admin migration file
- * 251216 v1.0.0 jun 초기 생성
+ * @file databases/migrations/20251217-01-create-notices.js
+ * @description notices migration file
+ * 251217 v1.0.0 wook 초기 생성
  */
 
 import { DataTypes } from 'sequelize';
 
 // 테이블명
-const tableName = 'admin';
+const tableName = 'notices';
 
 // 컬럼 정의
 const attributes = {
@@ -17,27 +17,38 @@ const attributes = {
     primaryKey: true,
     allowNull: false,
     autoIncrement: true,
-    comment: '관리자 PK',
+    comment: '공지 PK',
   },
-  email: {
-    field: 'email',
-    type: DataTypes.STRING(100),
+  adminId: {
+    field: 'admin_id',
+    type: DataTypes.BIGINT.UNSIGNED,
     allowNull: false,
-    unique: true,
-    comment: '로그인 ID(이메일)'
+    comment: '관리자 PK'
   },
-  password: {
-    field: 'password',
-    type: DataTypes.STRING(255),
+  title: {
+    field: 'title',
+    type: DataTypes.STRING(30),
     allowNull: false,
-    comment: '비밀번호',
+    comment: '제목'
   },
-  role: {
-    field: 'role',
-    type: DataTypes.STRING(5),
+  content: {
+    field: 'content',
+    type: DataTypes.STRING(250),
     allowNull: false,
-    comment: '유저 권한',
-    defaultValue: 'ADM',
+    comment: '내용'
+  },
+  target_role: {
+    field: 'target_role',
+    type: DataTypes.STRING(3),
+    allowNull: false,
+    comment: '수신 대상'
+  },
+  level: {
+    field: 'level',
+    type: DataTypes.BIGINT,
+    allowNull: false,
+    comment: '공지 레벨',
+    defaultValue: 0
   },
   createdAt: {
     field: 'created_at',

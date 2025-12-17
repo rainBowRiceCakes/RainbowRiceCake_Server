@@ -1,13 +1,13 @@
 /**
- * @file databases/migrations/20251216-01-create-admin.js
- * @description admin migration file
- * 251216 v1.0.0 jun 초기 생성
+ * @file databases/migrations/20251217-03-create-alarms.js
+ * @description alarms migration file
+ * 251217 v1.0.0 wook 초기 생성
  */
 
 import { DataTypes } from 'sequelize';
 
 // 테이블명
-const tableName = 'admin';
+const tableName = 'alarms';
 
 // 컬럼 정의
 const attributes = {
@@ -17,27 +17,33 @@ const attributes = {
     primaryKey: true,
     allowNull: false,
     autoIncrement: true,
-    comment: '관리자 PK',
+    comment: '알림 PK',
   },
-  email: {
-    field: 'email',
-    type: DataTypes.STRING(100),
+  errorCode: {
+    field: 'error_code',
+    type: DataTypes.STRING(20),
     allowNull: false,
-    unique: true,
-    comment: '로그인 ID(이메일)'
+    comment: '에러 코드'
   },
-  password: {
-    field: 'password',
-    type: DataTypes.STRING(255),
+  message: {
+    field: 'message',
+    type: DataTypes.STRING(50),
     allowNull: false,
-    comment: '비밀번호',
+    comment: '에러 메세지'
   },
-  role: {
-    field: 'role',
-    type: DataTypes.STRING(5),
+  isResolved: {
+    field: 'is_resolved',
+    type: DataTypes.BOOLEAN,
     allowNull: false,
-    comment: '유저 권한',
-    defaultValue: 'ADM',
+    comment: '해결 여부',
+    defaultValue: false
+  },
+  level: {
+    field: 'level',
+    type: DataTypes.BIGINT,
+    allowNull: false,
+    comment: '에러 레벨(심각도)',
+    defaultValue: 0
   },
   createdAt: {
     field: 'created_at',

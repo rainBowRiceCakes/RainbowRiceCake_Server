@@ -85,7 +85,7 @@ const attributes = {
     allowNull: false,
     comment: '배송상태(waiting, matched, pickup, complete)'
   },
-    createdAt: {
+  createdAt: {
     field: 'created_at',
     type: DataTypes.DATE,
     allowNull: true,

@@ -1,13 +1,13 @@
 /**
- * @file databases/migrations/20251216-05-create-hotel.js
- * @description hotel migration file
- * 251216 v1.0.0 jun 초기 생성
+ * @file databases/migrations/20251217-02-create-settlements.js
+ * @description settlements migration file
+ * 251217 v1.0.0 wook 초기 생성
  */
 
 import { DataTypes } from 'sequelize';
 
 // 테이블명
-const tableName = 'hotel';
+const tableName = 'settlements';
 
 // 컬럼 정의
 const attributes = {
@@ -17,44 +17,62 @@ const attributes = {
     primaryKey: true,
     allowNull: false,
     autoIncrement: true,
-    comment: '호텔 PK',
+    comment: '정산 PK',
   },
-  hotelName: {
-    field: 'hotel_name',
-    type: DataTypes.STRING(50),
+  adminId: {
+    field: 'admin_id',
+    type: DataTypes.BIGINT.UNSIGNED,
     allowNull: false,
-    comment: '호텔 이름'
+    comment: '관리자 PK'
+  },
+  riderId: {
+    field: 'rider_id',
+    type: DataTypes.BIGINT.UNSIGNED,
+    allowNull: false,
+    comment: '기사 PK'
+  },
+  totalAmount: {
+    field: 'total_amount',
+    type: DataTypes.BIGINT,
+    allowNull: false,
+    comment: '총 정산금'
   },
   status: {
     field: 'status',
+    type: DataTypes.STRING(3),
+    allowNull: false,
+    comment: '상태(req, com, rej)'
+  },
+  bankName: {
+    field: 'bank_name',
     type: DataTypes.STRING(10),
     allowNull: false,
-    comment: '상태(대기, 활동중, 반려)'
+    comment: '은행명'
   },
-  type: {
-    field: 'type',
-    type: DataTypes.STRING(10),
+  accountNum: {
+    field: 'account_num',
+    type: DataTypes.BIGINT,
+    allowNull: false,
+    comment: '계좌번호'
+  },
+  createdAt: {
+    field: 'created_at',
+    type: DataTypes.DATE,
     allowNull: true,
-    comment: '제휴 종류(호텔)'
+    comment: '작성일',
   },
-  address: {
-    field: 'address',
-    type: DataTypes.STRING(50),
-    allowNull: false,
-    comment: '호텔 주소'
+  updatedAt: {
+    field: 'updated_at',
+    type: DataTypes.DATE,
+    allowNull: true,
+    comment: '수정일',
   },
-  lat: {
-    field: 'lat',
-    type: DataTypes.BIGINT,
-    allowNull: false,
-    comment: '위도'
+  deletedAt: {
+    field: 'deleted_at',
+    type: DataTypes.DATE,
+    allowNull: true,
+    comment: '삭제일',
   },
-  lng: {
-    field: 'lng',
-    type: DataTypes.BIGINT,
-    allowNull: false,
-    comment: '경도'
-  }
 };
 
 // 옵션 설정

@@ -1,13 +1,13 @@
 /**
- * @file databases/migrations/20251216-01-create-admin.js
- * @description admin migration file
- * 251216 v1.0.0 jun 초기 생성
+ * @file databases/migrations/20251217-07-create-images.js
+ * @description images migration file
+ * 251217 v1.0.0 wook 초기 생성
  */
 
 import { DataTypes } from 'sequelize';
 
 // 테이블명
-const tableName = 'admin';
+const tableName = 'images';
 
 // 컬럼 정의
 const attributes = {
@@ -17,27 +17,26 @@ const attributes = {
     primaryKey: true,
     allowNull: false,
     autoIncrement: true,
-    comment: '관리자 PK',
+    comment: '이미지 PK',
   },
-  email: {
-    field: 'email',
-    type: DataTypes.STRING(100),
+  dlvId: {
+    field: 'dlv_id',
+    type: DataTypes.BIGINT.UNSIGNED,
     allowNull: false,
-    unique: true,
-    comment: '로그인 ID(이메일)'
+    comment: '배송PK'
   },
-  password: {
-    field: 'password',
-    type: DataTypes.STRING(255),
+  pickupImg: {
+    field: 'pickup_img',
+    type: DataTypes.STRING(250),
     allowNull: false,
-    comment: '비밀번호',
+    comment: '픽업 사진'
   },
-  role: {
-    field: 'role',
-    type: DataTypes.STRING(5),
-    allowNull: false,
-    comment: '유저 권한',
-    defaultValue: 'ADM',
+  completeImg: {
+    field: 'complete_img',
+    type: DataTypes.STRING(250),
+    allowNull: true,
+    comment: '배송완료 사진',
+    defaultValue: null
   },
   createdAt: {
     field: 'created_at',
