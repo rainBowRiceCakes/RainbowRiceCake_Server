@@ -5,6 +5,16 @@
  */
 
 import { Sequelize } from 'sequelize';
+import Admin from './Admin.js';
+import Alarm from './Alarm.js';
+import Hotel from './Hotel.js';
+import Image from './Image.js';
+import Notice from './Notice.js';
+import Order from './Order.js';
+import Partner from './Partner.js';
+import Rider from './Rider.js';
+import Settlement from './Settlement.js';
+import User from './User.js';
 
 const db = {}; // 생성할 db 인스턴스 저장용
 
@@ -34,19 +44,28 @@ const sequelize = new Sequelize(
 db.sequelize = sequelize; // 생성한 sequelize 인스턴스 db에 저장
 
 // 모델 초기화
-// db.User = User.init(sequelize);
-// db.Post = Post.init(sequelize);
-// db.Comment = Comment.init(sequelize);
-// db.Like = Like.init(sequelize);
-// db.Notification = Notification.init(sequelize);
-// db.PushSubscription = Push_Subscription.init(sequelize);
+db.Admin = Admin.init(sequelize);
+db.Alarm = Alarm.init(sequelize);
+db.Hotel = Hotel.init(sequelize);
+db.Image = Image.init(sequelize);
+db.Notice = Notice.init(sequelize);
+db.Order = Order.init(sequelize);
+db.Partner = Partner.init(sequelize);
+db.Rider = Rider.init(sequelize);
+db.Settlement = Settlement.init(sequelize);
+db.User = User.init(sequelize);
+
 
 // 모델 관계 설정
-// User.associate(db);
-// Post.associate(db);
-// Comment.associate(db);
-// Like.associate(db);
-// Notification.associate(db);
-// Push_Subscription.associate(db);
+Admin.associate(db);
+Hotel.associate(db);
+Image.associate(db);
+Notice.associate(db);
+Order.associate(db);
+Partner.associate(db);
+Rider.associate(db);
+Settlement.associate(db);
+User.associate(db);
+// Alarm은 관계가 없기떄문에 설정X
 
 export default db;
