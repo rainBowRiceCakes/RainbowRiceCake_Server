@@ -1,14 +1,14 @@
 /**
- * @file app/models/Notice.js
- * @description notice model
- * 251217 v1.0.0 wook 초기 생성
+ * @file app/models/question.js
+ * @description question model
+ * 251218 v1.0.0 wook 초기 생성
  */
 
 import { DataTypes } from 'sequelize';
 import  dayjs  from 'dayjs';
 
 // 테이블명
-const modelName = 'Notice';
+const modelName = 'Question';
 
 // 컬럼 정의
 const attributes = {
@@ -18,13 +18,13 @@ const attributes = {
     primaryKey: true,
     allowNull: false,
     autoIncrement: true,
-    comment: '공지 PK',
+    comment: '이미지 PK',
   },
-  adminId: {
-    field: 'admin_id',
+  userId: {
+    field: 'user_id',
     type: DataTypes.BIGINT.UNSIGNED,
     allowNull: false,
-    comment: '관리자 PK'
+    comment: '유저PK'
   },
   title: {
     field: 'title',
@@ -32,79 +32,82 @@ const attributes = {
     allowNull: false,
     comment: '제목'
   },
-  content: {
-    field: 'content',
+  comment: {
+    field: 'comment',
     type: DataTypes.STRING(250),
     allowNull: false,
     comment: '내용'
   },
-  target_role: {
-    field: 'target_role',
-    type: DataTypes.STRING(3),
+  qnaImg: {
+    field: 'qna_img',
+    type: DataTypes.STRING(250),
     allowNull: false,
-    comment: '수신 대상'
-  },
-  status: {
-    field: 'status',
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
-    comment: '해결상태',
-    defaultValue: false
+    comment: '첨부 사진'
   },
   createdAt: {
-      field: 'created_at',
-      type: DataTypes.DATE,
-      allowNull: true,
-      get() {
+    field: 'created_at',
+    type: DataTypes.DATE,
+    allowNull: true,
+    get() {
       const val = this.getDataValue('createdAt');
       if(!val) {
-          return null;
+        return null;
       }
       return dayjs(val).format('YYYY-MM-DD HH:mm:ss');
-      }
+    }
   },
   updatedAt: {
-      field: 'updated_at',
-      type: DataTypes.DATE,
-      allowNull: true,
-      get() {
+    field: 'updated_at',
+    type: DataTypes.DATE,
+    allowNull: true,
+    get() {
       const val = this.getDataValue('updatedAt');
       if(!val) {
-          return null;
+        return null;
       }
       return dayjs(val).format('YYYY-MM-DD HH:mm:ss');
-      }
+    }
   },
   deletedAt: {
-      field: 'deleted_at',
-      type: DataTypes.DATE,
-      allowNull: true,
-      get() {
+    field: 'deleted_at',
+    type: DataTypes.DATE,
+    allowNull: true,
+    get() {
       const val = this.getDataValue('deletedAt');
       if(!val) {
-          return null;
+        return null;
       }
       return dayjs(val).format('YYYY-MM-DD HH:mm:ss');
-      }
+    }
   }
+
 };
 
 
 const option = {
-  tableName: 'notices', // 실제 DB 테이블명
+  tableName: 'questions', // 실제 DB 테이블명
   timestamps: true,   // createdAt, updatedAt를 자동 관리
   paranoid: true,      // soft delete 설정 (deletedAt 자동 관리)
 };
 
-const Notice = {
+const User = {
   init: (sequelize) => {
     const define = sequelize.define(modelName, attributes, option);
+
+    // JSON으로 serialize시, 제외할 컬럼을 지정
+    define.prototype.toJSON = function() {
+      const attributes = this.get();
+      delete attributes.password;
+      delete attributes.refreshToken;
+
+      return attributes;
+    }
 
     return define;
   },
   associate: (db) => {
-    db.Notice.belongsto(db.Admin, { targetKey: 'id', foreignKey: 'adminId', as: 'notice_admin'});
+    db.Question.belongsTo(db.User, { targetKey: 'id', foreignKey: 'user_id', as: 'question_user'});
   },
 }
 
-export default Notice;
+export default User;

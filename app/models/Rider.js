@@ -126,7 +126,9 @@ const Rider = {
     return define;
   },
   associate: (db) => {
-    db.Rider.hasMany(db.Order, { targetKey: 'id', foreignKey: 'riderId', as: 'rider_order'});
+    db.Rider.hasMany(db.Order, { targetKey: 'id', foreignKey: 'riderId', as: 'rider_order'}),
+    db.Rider.hasMany(db.Settlement, { targetKey: 'id', foreignKey: 'riderId', as: 'rider_settlement'}),
+    db.Rider.belongsTo(db.User, { targetKey: 'id', foreignKey: 'userId', as: 'rider_user'});
   },
 }
 

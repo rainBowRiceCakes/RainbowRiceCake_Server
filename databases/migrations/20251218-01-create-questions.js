@@ -1,13 +1,13 @@
 /**
- * @file databases/migrations/20251217-01-create-notices.js
- * @description notices migration file
- * 251217 v1.0.0 wook 초기 생성
+ * @file databases/migrations/20251218-01-create-questions.js
+ * @description questions migration file
+ * 251218 v1.0.0 wook 초기 생성
  */
 
 import { DataTypes } from 'sequelize';
 
 // 테이블명
-const tableName = 'notices';
+const tableName = 'questions';
 
 // 컬럼 정의
 const attributes = {
@@ -17,13 +17,13 @@ const attributes = {
     primaryKey: true,
     allowNull: false,
     autoIncrement: true,
-    comment: '공지 PK',
+    comment: '이미지 PK',
   },
-  adminId: {
-    field: 'admin_id',
+  userId: {
+    field: 'user_id',
     type: DataTypes.BIGINT.UNSIGNED,
     allowNull: false,
-    comment: '관리자 PK'
+    comment: '유저PK'
   },
   title: {
     field: 'title',
@@ -31,24 +31,17 @@ const attributes = {
     allowNull: false,
     comment: '제목'
   },
-  content: {
-    field: 'content',
+  comment: {
+    field: 'comment',
     type: DataTypes.STRING(250),
     allowNull: false,
     comment: '내용'
   },
-  target_role: {
-    field: 'target_role',
-    type: DataTypes.STRING(3),
+  qnaImg: {
+    field: 'qna_img',
+    type: DataTypes.STRING(250),
     allowNull: false,
-    comment: '수신 대상'
-  },
-  status: {
-    field: 'status',
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
-    comment: '해결상태',
-    defaultValue: false
+    comment: '첨부 사진'
   },
   createdAt: {
     field: 'created_at',

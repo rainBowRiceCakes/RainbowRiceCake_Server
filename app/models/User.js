@@ -103,7 +103,8 @@ const User = {
   associate: (db) => {
     db.User.hasMany(db.Rider, { targetKey: 'id', foreignKey: 'user_id', as: 'user_rider'}),
     db.User.hasMany(db.Order, { targetKey: 'id', foreignKey: 'user_id', as: 'user_order'}),
-    db.User.hasMany(db.Partner, { targetKey: 'id', foreignKey: 'user_id', as: 'user_partner'});
+    db.User.hasMany(db.Partner, { targetKey: 'id', foreignKey: 'user_id', as: 'user_partner'}),
+    db.User.hasMany(db.Question, { targetKey: 'id', foreignKey: 'user_id', as: 'user_question'});
   },
 }
 

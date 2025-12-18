@@ -145,11 +145,11 @@ const Order = {
   },
   associate: (db) => {
     db.Order.hasMany(db.Image, { targetKey: 'id', foreignKey: 'adminId', as: 'order_image'}),
-    db.Rider.belongsTo(db.Order, { targetKey: 'id', foreignKey: 'riderId', as: 'rider_order'}),
-    db.User.belongsTo(db.Order, { targetKey: 'id', foreignKey: 'userId', as: 'user_order'}),
-    db.Partner.belongsTo(db.Order, { targetKey: 'id', foreignKey: 'partnerId', as: 'partner_order'}),
-    db.Hotel.belongsTo(db.Order, { targetKey: 'id', foreignKey: 'hotelId', as: 'hotel_order'});
-    db.Settlement.belongsTo(db.Order, { targetKey: 'id', foreignKey: 'stmId', as: 'settlement_order'});
+    db.Order.belongsTo(db.Rider, { targetKey: 'id', foreignKey: 'riderId', as: 'order_rider'}),
+    db.Order.belongsTo(db.User, { targetKey: 'id', foreignKey: 'userId', as: 'order_user'}),
+    db.Order.belongsTo(db.Partner, { targetKey: 'id', foreignKey: 'partnerId', as: 'order_partner'}),
+    db.Order.belongsTo(db.Hotel, { targetKey: 'id', foreignKey: 'hotelId', as: 'order_hotel'});
+    db.Order.belongsTo(db.Settlement, { targetKey: 'id', foreignKey: 'stmId', as: 'order_settlement'});
   },
 }
 
