@@ -47,7 +47,7 @@ const attributes = {
     field: 'status',
     type: DataTypes.STRING(10),
     allowNull: false,
-    comment: '상태(대기, 활동중, 반려)'
+    comment: '상태(가입대기, 승인, 반려)'
   },
   address: {
     field: 'address',

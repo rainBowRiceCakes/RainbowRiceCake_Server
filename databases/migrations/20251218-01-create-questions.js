@@ -17,7 +17,7 @@ const attributes = {
     primaryKey: true,
     allowNull: false,
     autoIncrement: true,
-    comment: '이미지 PK',
+    comment: '질문 PK',
   },
   userId: {
     field: 'user_id',
@@ -42,6 +42,19 @@ const attributes = {
     type: DataTypes.STRING(250),
     allowNull: false,
     comment: '첨부 사진'
+  },
+  res: {
+    field: 'res',
+    type: DataTypes.STRING(500),
+    allowNull: false,
+    comment: '답변'
+  },
+  status: {
+    field: 'status',
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    comment: '첨부 사진',
+    defaultValue: false
   },
   createdAt: {
     field: 'created_at',
