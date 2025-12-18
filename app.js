@@ -6,10 +6,36 @@
 
 import express from 'express';
 import cookieParser from 'cookie-parser';
+import errorHandler from './app/errors/errorHandler.js';
 
 const app = express();
 app.use(express.json()); // JSON 요청 파싱 처리
 app.use(cookieParser()); // 쿠키파서
+
+// ---------------------
+// 라우터 정의
+// ---------------------
+
+
+// ---------------------
+// 404 처리
+// ---------------------
+app.use(notFoundRouter);
+
+// ---------------------
+// 뷰 반환 처리
+// ---------------------
+// 퍼블릭 정적파일 제공 활성화
+app.use('/', express.static(process.env.APP_DIST_PATH));
+// React 뷰 반환
+app.get(/^(?!\/files\/.*).*/, (req, res) => {
+  return res.sendFile(pathUtil.getViewDirPath());
+})
+
+// ---------------------
+// 에러 핸들러 등록
+// ---------------------
+app.use(errorHandler);
 
 // ---------------------
 // 해당 Port로 express 실행
