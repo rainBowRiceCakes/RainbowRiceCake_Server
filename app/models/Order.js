@@ -44,6 +44,12 @@ const attributes = {
     allowNull: false,
     comment: '호텔 PK(도착지)'
   },
+  stmId: {
+    field: 'stm_id',
+    type: DataTypes.BIGINT.UNSIGNED,
+    allowNull: false,
+    comment: '정산 PK'
+  },
   price: {
     field: 'price',
     type: DataTypes.BIGINT,
