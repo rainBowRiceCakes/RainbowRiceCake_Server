@@ -1,6 +1,6 @@
 /**
- * @file app/models/Partner.js
- * @description partner model
+ * @file app/models/Term.js
+ * @description term model
  * 251217 v1.0.0 wook 초기 생성
  */
 
@@ -8,7 +8,7 @@ import { DataTypes } from 'sequelize';
 import  dayjs  from 'dayjs';
 
 // 테이블명
-const modelName = 'Partner';
+const modelName = 'Term';
 
 // 컬럼 정의
 const attributes = {
@@ -18,55 +18,13 @@ const attributes = {
     primaryKey: true,
     allowNull: false,
     autoIncrement: true,
-    comment: '업체 PK',
+    comment: '약관 PK',
   },
-  userId: {
-    field: 'user_id',
-    type: DataTypes.BIGINT.UNSIGNED,
+  terms: {
+    field: 'terms',
+    type: DataTypes.TEXT,
     allowNull: false,
-    comment: '유저 PK'
-  },
-  businessNum: {
-    field: 'business_num',
-    type: DataTypes.STRING(50),
-    allowNull: false,
-    comment: '사업자 번호'
-  },
-  storeKrName: {
-    field: 'store_kr_name',
-    type: DataTypes.STRING(50),
-    allowNull: false,
-    comment: '가계 한글이름'
-  },
-  storeEnName: {
-    field: 'store_en_name',
-    type: DataTypes.STRING(50),
-    allowNull: false,
-    comment: '가계 영어이름'
-  },
-  status: {
-    field: 'status',
-    type: DataTypes.STRING(10),
-    allowNull: false,
-    comment: '상태(가입대기, 승인, 반려)'
-  },
-  address: {
-    field: 'address',
-    type: DataTypes.STRING(50),
-    allowNull: false,
-    comment: '가계 주소'
-  },
-  lat: {
-    field: 'lat',
-    type: DataTypes.BIGINT,
-    allowNull: false,
-    comment: '위도'
-  },
-  lng: {
-    field: 'lng',
-    type: DataTypes.BIGINT,
-    allowNull: false,
-    comment: '경도'
+    comment: '이용약관',
   },
   createdAt: {
       field: 'created_at',
@@ -108,21 +66,19 @@ const attributes = {
 
 
 const option = {
-  tableName: 'partners', // 실제 DB 테이블명
+  tableName: 'terms', // 실제 DB 테이블명
   timestamps: true,   // createdAt, updatedAt를 자동 관리
   paranoid: true,      // soft delete 설정 (deletedAt 자동 관리)
 };
 
-const Partner = {
+const Term = {
   init: (sequelize) => {
     const define = sequelize.define(modelName, attributes, option);
 
     return define;
   },
   associate: (db) => {
-    db.Partner.belongsTo(db.User, { targetKey: 'id', foreignKey: 'userId', as: 'partner_user'});
-    db.Partner.hasMany(db.Order, { targetKey: 'id', foreignKey: 'partnerId', as: 'partner_order'});
   },
 }
 
-export default Partner;
+export default Term;

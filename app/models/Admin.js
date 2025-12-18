@@ -27,9 +27,9 @@ const attributes = {
     unique: true,
     comment: '로그인 ID(이메일)'
   },
-  password: {
-    field: 'password',
-    type: DataTypes.STRING(255),
+  name: {
+    field: 'name',
+    type: DataTypes.STRING(50),
     allowNull: false,
     comment: '비밀번호',
   },
@@ -38,6 +38,14 @@ const attributes = {
     type: DataTypes.STRING(5),
     allowNull: false,
     comment: '유저 권한',
+    defaultValue: 'ADM',
+  },
+  refreshToken: {
+    field: 'refresh_token',
+    type: DataTypes.STRING(250),
+    allowNull: false,
+    comment: '리프래시토큰',
+    defaultValue: null,
   },
   createdAt: {
     field: 'created_at',
