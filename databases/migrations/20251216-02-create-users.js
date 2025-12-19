@@ -42,7 +42,7 @@ const attributes = {
   refreshToken: {
     field: 'refresh_token',
     type: DataTypes.STRING(255),
-    allowNull: false,
+    allowNull: true,
     comment: '리프래시 토큰',
     defaultValue: null,
   },

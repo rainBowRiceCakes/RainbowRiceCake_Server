@@ -49,7 +49,7 @@ const attributes = {
   refreshToken: {
     field: 'refresh_token',
     type: DataTypes.STRING(250),
-    allowNull: false,
+    allowNull: true,
     comment: '리프래시토큰',
     defaultValue: null,
   },
