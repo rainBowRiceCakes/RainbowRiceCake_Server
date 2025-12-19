@@ -51,15 +51,16 @@ const attributes = {
   },
   phone: {
     field: 'phone',
-    type: DataTypes.BIGINT,
+    type: DataTypes.STRING(13),
     allowNull: true,
     comment: '휴대폰 번호'
   },
   isWorking: {
     field: 'is_working',
-    type: DataTypes.STRING(10),
+    type: DataTypes.BOOLEAN,
     allowNull: false,
-    comment: '출근 여부'
+    comment: '출근 여부',
+    defaultValue: false
   },
   status: {
     field: 'status',
@@ -76,13 +77,13 @@ const attributes = {
   lat: {
     field: 'lat',
     type: DataTypes.BIGINT,
-    allowNull: false,
+    allowNull: true,
     comment: '위도'
   },
   lng: {
     field: 'lng',
     type: DataTypes.BIGINT,
-    allowNull: false,
+    allowNull: true,
     comment: '경도'
   },
   createdAt: {

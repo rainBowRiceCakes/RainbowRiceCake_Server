@@ -20,12 +20,6 @@ const attributes = {
     autoIncrement: true,
     comment: '배송 PK',
   },
-  userId: {
-    field: 'user_id',
-    type: DataTypes.BIGINT.UNSIGNED,
-    allowNull: false,
-    comment: '유저 PK(email 받아 올 FK)'
-  },
   riderId: {
     field: 'rider_id',
     type: DataTypes.BIGINT.UNSIGNED,
@@ -43,12 +37,6 @@ const attributes = {
     type: DataTypes.BIGINT.UNSIGNED,
     allowNull: false,
     comment: '호텔 PK(도착지)'
-  },
-  stmId: {
-    field: 'stm_id',
-    type: DataTypes.BIGINT.UNSIGNED,
-    allowNull: false,
-    comment: '정산 PK'
   },
   email: {
     field: 'email',
@@ -90,7 +78,8 @@ const attributes = {
     field: 'status',
     type: DataTypes.STRING(10),
     allowNull: false,
-    comment: '배송상태(waiting, matched, pickup, complete)'
+    comment: '배송상태(waiting, matched, pickup, complete)',
+    defaultValue: 'wait',
   },
   createdAt: {
       field: 'created_at',

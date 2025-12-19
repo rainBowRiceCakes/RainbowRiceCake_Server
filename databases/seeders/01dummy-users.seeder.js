@@ -1,12 +1,13 @@
 /**
- * @file databases/seeders/dummy-users.seeder.js
+ * @file databases/seeders/01dummy-users.seeder.js
  * @description users dummy data create
  * 251217 v1.0.0 wook init
  */
-import bcrypt from 'bcrypt';
+import db from '../../app/models/index.js';
+const { User } = db;
 
 // 테이블명
-const tableName = 'users';
+// const tableName = 'users';
 
 /** @type {import('sequelize-cli').Migration} */
 export default {
@@ -17,77 +18,57 @@ export default {
       {
         email: 'admin@admin.com',
         name: '테스트',
-        created_at: new Date(),
-        updated_at: new Date(),
       },
       {
         email: 'dlv@dlv.com',
         name: '김기사',
-        created_at: new Date(),
-        updated_at: new Date(),
       },
       {
         email: 'dlv2@dlv2.com',
         name: '박기사',
-        created_at: new Date(),
-        updated_at: new Date(),
       },
       {
         email: 'ptn@ptn.com',
         name: '매니저1',
-        created_at: new Date(),
-        updated_at: new Date(),
       },
       {
         email: 'ptn2@ptn2.com',
         name: '매니저2',
-        created_at: new Date(),
-        updated_at: new Date(),
       },
       {
         email: 'common@common.com',
         name: '유저1',
-        created_at: new Date(),
-        updated_at: new Date(),
       },
       {
         email: 'common2@common.com',
         name: '유저2',
-        created_at: new Date(),
-        updated_at: new Date(),
       },
       {
         email: 'common3@common.com',
         name: '유저3',
-        created_at: new Date(),
-        updated_at: new Date(),
       },
       {
         email: 'common4@common.com',
         name: '유저4',
-        created_at: new Date(),
-        updated_at: new Date(),
       },
       {
         email: 'common5@common.com',
         name: '유저5',
-        created_at: new Date(),
-        updated_at: new Date(),
       },
       {
         email: 'common6@common.com',
         name: '유저6',
-        created_at: new Date(),
-        updated_at: new Date(),
       },
     ];
 
     // 데이터 생성 : queryInterface.bulkInsert(tableName, records, options)
-    await queryInterface.bulkInsert(tableName, records, {});
+    // await queryInterface.bulkInsert(tableName, records, {});
+    await User.bulkCreate(records);
   },
 
   async down (queryInterface, Sequelize) {
     // 데이터 삭제 : queryInterface.bulkDelete(tableName, records, options)
-    await queryInterface.bulkDelete(tableName, null, {});
+    // await queryInterface.bulkDelete(tableName, null, {});
+    await User.destroy();
   }
 };

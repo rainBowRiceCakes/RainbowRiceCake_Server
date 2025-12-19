@@ -15,6 +15,7 @@ import Partner from './Partner.js';
 import Rider from './Rider.js';
 import Settlement from './Settlement.js';
 import User from './User.js';
+import Question from './Question.js';
 
 const db = {}; // 생성할 db 인스턴스 저장용
 
@@ -54,6 +55,7 @@ db.Partner = Partner.init(sequelize);
 db.Rider = Rider.init(sequelize);
 db.Settlement = Settlement.init(sequelize);
 db.User = User.init(sequelize);
+db.Question = Question.init(sequelize)
 
 
 // 모델 관계 설정
@@ -66,6 +68,7 @@ Partner.associate(db);
 Rider.associate(db);
 Settlement.associate(db);
 User.associate(db);
+Question.associate(db);
 // Alarm은 관계가 없기떄문에 설정X
 
 export default db;
