@@ -44,11 +44,11 @@ const attributes = {
     allowNull: true,
     comment: '계좌번호'
   },
-  name: {
-    field: 'name',
+  adress: {
+    field: 'adress',
     type: DataTypes.STRING(100),
     allowNull: false,
-    comment: '기사 이름'
+    comment: '주소(보험용)'
   },
   phone: {
     field: 'phone',
@@ -73,6 +73,18 @@ const attributes = {
     type: DataTypes.DATE,
     allowNull: true,
     comment: '픽업 시간'
+  },
+  lat: {
+    field: 'lat',
+    type: DataTypes.BIGINT,
+    allowNull: false,
+    comment: '위도'
+  },
+  lng: {
+    field: 'lng',
+    type: DataTypes.BIGINT,
+    allowNull: false,
+    comment: '경도'
   },
   createdAt: {
       field: 'created_at',

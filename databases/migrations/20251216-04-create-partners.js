@@ -49,11 +49,17 @@ const attributes = {
     allowNull: false,
     comment: '상태(가입대기, 승인, 반려)'
   },
+  logoImg: {
+    field: 'logo_img',
+    type: DataTypes.STRING(250),
+    allowNull: false,
+    comment: '가게 로고'
+  },
   address: {
     field: 'address',
     type: DataTypes.STRING(50),
     allowNull: false,
-    comment: '가계 주소'
+    comment: '가게 주소'
   },
   lat: {
     field: 'lat',

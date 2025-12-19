@@ -19,8 +19,8 @@ const attributes = {
     autoIncrement: true,
     comment: '약관 PK',
   },
-  terms: {
-    field: 'terms',
+  term: {
+    field: 'term',
     type: DataTypes.TEXT,
     allowNull: false,
     comment: '이용약관',

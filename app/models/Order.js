@@ -50,23 +50,23 @@ const attributes = {
     allowNull: false,
     comment: '정산 PK'
   },
+  email: {
+    field: 'email',
+    type: DataTypes.STRING(20),
+    allowNull: false,
+    comment: '이메일'
+  },
+  name: {
+    field: 'name',
+    type: DataTypes.STRING(50),
+    allowNull: false,
+    comment: '받는사람 이름'
+  },
   price: {
     field: 'price',
     type: DataTypes.BIGINT,
     allowNull: false,
     comment: '배송 요금'
-  },
-  reqTime: {
-    field: 'req_time',
-    type: DataTypes.DATE,
-    allowNull: false,
-    comment: '원하는 시간 도착'
-  },
-  img: {
-    field: 'img',
-    type: DataTypes.STRING(250),
-    allowNull: true,
-    comment: '짐 사진'
   },
   cntS: {
     field: 'cnt_s',
@@ -146,7 +146,6 @@ const Order = {
   associate: (db) => {
     db.Order.hasMany(db.Image, { targetKey: 'id', foreignKey: 'adminId', as: 'order_image'}),
     db.Order.belongsTo(db.Rider, { targetKey: 'id', foreignKey: 'riderId', as: 'order_rider'}),
-    db.Order.belongsTo(db.User, { targetKey: 'id', foreignKey: 'userId', as: 'order_user'}),
     db.Order.belongsTo(db.Partner, { targetKey: 'id', foreignKey: 'partnerId', as: 'order_partner'}),
     db.Order.belongsTo(db.Hotel, { targetKey: 'id', foreignKey: 'hotelId', as: 'order_hotel'});
     db.Order.belongsTo(db.Settlement, { targetKey: 'id', foreignKey: 'stmId', as: 'order_settlement'});

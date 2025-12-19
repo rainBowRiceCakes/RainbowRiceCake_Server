@@ -49,23 +49,23 @@ const attributes = {
     allowNull: false,
     comment: '정산 PK'
   },
+  email: {
+    field: 'email',
+    type: DataTypes.STRING(20),
+    allowNull: false,
+    comment: '이메일'
+  },
+  name: {
+    field: 'name',
+    type: DataTypes.STRING(50),
+    allowNull: false,
+    comment: '받는사람 이름'
+  },
   price: {
     field: 'price',
     type: DataTypes.BIGINT,
     allowNull: false,
     comment: '배송 요금'
-  },
-  reqTime: {
-    field: 'req_time',
-    type: DataTypes.DATE,
-    allowNull: false,
-    comment: '원하는 시간 도착'
-  },
-  img: {
-    field: 'img',
-    type: DataTypes.STRING(250),
-    allowNull: true,
-    comment: '짐 사진'
   },
   cntS: {
     field: 'cnt_s',

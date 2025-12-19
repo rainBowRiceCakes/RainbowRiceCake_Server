@@ -31,11 +31,17 @@ const attributes = {
     field: 'name',
     type: DataTypes.STRING(50),
     allowNull: false,
+    comment: '이름',
+  },
+  password: {
+    field: 'password',
+    type: DataTypes.STRING(250),
+    allowNull: false,
     comment: '비밀번호',
   },
   role: {
     field: 'role',
-    type: DataTypes.STRING(5),
+    type: DataTypes.STRING(3),
     allowNull: false,
     comment: '유저 권한',
     defaultValue: 'ADM',

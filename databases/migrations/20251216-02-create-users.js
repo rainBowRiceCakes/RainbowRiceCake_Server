@@ -39,6 +39,13 @@ const attributes = {
     comment: '유저 권한',
     defaultValue: 'COM',
   },
+  refreshToken: {
+    field: 'refresh_token',
+    type: DataTypes.STRING(255),
+    allowNull: false,
+    comment: '리프래시 토큰',
+    defaultValue: null,
+  },
   createdAt: {
     field: 'created_at',
     type: DataTypes.DATE,

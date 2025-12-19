@@ -40,6 +40,13 @@ const attributes = {
     comment: '유저 권한',
     defaultValue: 'COM',
   },
+  refreshToken: {
+    field: 'refresh_token',
+    type: DataTypes.STRING(255),
+    allowNull: false,
+    comment: '리프래시 토큰',
+    defaultValue: null,
+  },
   createdAt: {
     field: 'created_at',
     type: DataTypes.DATE,
@@ -103,7 +110,6 @@ const User = {
   },
   associate: (db) => {
     db.User.hasMany(db.Rider, { targetKey: 'id', foreignKey: 'user_id', as: 'user_rider'}),
-    db.User.hasMany(db.Order, { targetKey: 'id', foreignKey: 'user_id', as: 'user_order'}),
     db.User.hasMany(db.Partner, { targetKey: 'id', foreignKey: 'user_id', as: 'user_partner'}),
     db.User.hasMany(db.Question, { targetKey: 'id', foreignKey: 'user_id', as: 'user_question'});
   },

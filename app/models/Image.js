@@ -26,18 +26,17 @@ const attributes = {
     allowNull: false,
     comment: '배송PK'
   },
-  pickupImg: {
-    field: 'pickup_img',
+  img: {
+    field: 'img',
     type: DataTypes.STRING(250),
     allowNull: false,
-    comment: '픽업 사진'
+    comment: '픽업/도착 사진'
   },
-  completeImg: {
-    field: 'complete_img',
-    type: DataTypes.STRING(250),
-    allowNull: true,
-    comment: '배송완료 사진',
-    defaultValue: null
+  type: {
+    field: 'type',
+    type: DataTypes.STRING(15),
+    allowNull: false,
+    comment: '사진 type',
   },
   createdAt: {
       field: 'created_at',
