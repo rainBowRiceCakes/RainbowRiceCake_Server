@@ -42,7 +42,8 @@ const attributes = {
     field: 'status',
     type: DataTypes.STRING(3),
     allowNull: false,
-    comment: '상태(req, com, rej)'
+    comment: '상태(req, com, rej)',
+    defaultValue: 'req'
   },
   bankName: {
     field: 'bank_name',

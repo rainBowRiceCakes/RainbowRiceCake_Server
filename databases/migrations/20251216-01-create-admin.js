@@ -42,7 +42,7 @@ const attributes = {
     field: 'role',
     type: DataTypes.STRING(3),
     allowNull: false,
-    comment: '유저 권한',
+    comment: '권한',
     defaultValue: 'ADM',
   },
   refreshToken: {
