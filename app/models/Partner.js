@@ -44,6 +44,18 @@ const attributes = {
     allowNull: false,
     comment: '가계 영어이름'
   },
+  manager: {
+    field: 'manager',
+    type: DataTypes.STRING(50),
+    allowNull: false,
+    comment: '담당자명'
+  },
+  phone: {
+    field: 'phone',
+    type: DataTypes.STRING(13),
+    allowNull: true,
+    comment: '휴대폰번호'
+  },
   status: {
     field: 'status',
     type: DataTypes.STRING(10),
