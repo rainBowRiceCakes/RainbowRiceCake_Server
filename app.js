@@ -5,6 +5,7 @@
  */
 
 import express from 'express';
+import './configs/env.config.js';
 import cookieParser from 'cookie-parser';
 import errorHandler from './app/errors/errorHandler.js';
 import notFoundRouter from './routes/notFound.router.js';
