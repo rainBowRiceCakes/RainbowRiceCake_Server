@@ -10,6 +10,8 @@ import cookieParser from 'cookie-parser';
 import errorHandler from './app/errors/errorHandler.js';
 import notFoundRouter from './routes/notFound.router.js';
 import pathUtil from './app/utils/path/path.util.js';
+import authRouter from './routes/auth.router.js';
+
 
 const app = express();
 app.use(express.json()); // JSON 요청 파싱 처리
@@ -18,7 +20,7 @@ app.use(cookieParser()); // 쿠키파서
 // ---------------------
 // 라우터 정의
 // ---------------------
-
+app.use('/api/auth', authRouter);
 
 // ---------------------
 // 404 처리
