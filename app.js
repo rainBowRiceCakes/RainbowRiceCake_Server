@@ -11,6 +11,7 @@ import errorHandler from './app/errors/errorHandler.js';
 import notFoundRouter from './routes/notFound.router.js';
 import pathUtil from './app/utils/path/path.util.js';
 import authRouter from './routes/auth.router.js';
+import hotelRouter from './routes/hotel.router.js';
 
 
 const app = express();
@@ -21,6 +22,7 @@ app.use(cookieParser()); // 쿠키파서
 // 라우터 정의
 // ---------------------
 app.use('/api/auth', authRouter);
+app.use('/api/hotels', hotelRouter)
 
 // ---------------------
 // 404 처리

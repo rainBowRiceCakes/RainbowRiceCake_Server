@@ -45,18 +45,6 @@ const attributes = {
     comment: '상태(req, res, rej)',
     defaultValue: 'req'
   },
-  bankName: {
-    field: 'bank_name',
-    type: DataTypes.STRING(10),
-    allowNull: false,
-    comment: '은행명'
-  },
-  accountNum: {
-    field: 'account_num',
-    type: DataTypes.BIGINT,
-    allowNull: false,
-    comment: '계좌번호'
-  },
   createdAt: {
       field: 'created_at',
       type: DataTypes.DATE,
