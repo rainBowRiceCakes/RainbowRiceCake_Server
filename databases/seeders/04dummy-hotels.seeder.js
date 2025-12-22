@@ -18,7 +18,9 @@ export default {
       {
         hotelKrName: 'OO호텔',
         hotelEnName: 'OOHotel',
-        status: 'doit',
+        manager: '김 지배인',
+        phone: '000-1111-1111',
+        status: 'res',
         address: '여긴 어딜까요',
         lat: '56.7890',
         lng: '32.1098'
@@ -26,7 +28,9 @@ export default {
       {
         hotelKrName: 'OO호텔',
         hotelEnName: 'OOHotel',
-        status: 'wait',
+        manager: '양 지배인',
+        phone: '000-3333-5555',
+        status: 'req',
         address: '여긴 어딜까요',
         lat: '78.9012',
         lng: '54.3210'

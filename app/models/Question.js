@@ -41,13 +41,13 @@ const attributes = {
   qnaImg: {
     field: 'qna_img',
     type: DataTypes.STRING(250),
-    allowNull: false,
+    allowNull: true,
     comment: '첨부 사진'
   },
   res: {
     field: 'res',
     type: DataTypes.STRING(500),
-    allowNull: false,
+    allowNull: true,
     comment: '답변'
   },
   status: {
@@ -55,6 +55,13 @@ const attributes = {
     type: DataTypes.BOOLEAN,
     allowNull: false,
     comment: '첨부 사진',
+    defaultValue: false
+  },
+  orderId: {
+    field: 'order_id',
+    type: DataTypes.BIGINT.UNSIGNED,
+    allowNull: true,
+    comment: '배송번호',
     defaultValue: false
   },
   createdAt: {

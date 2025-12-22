@@ -37,7 +37,7 @@ const attributes = {
     allowNull: false,
     comment: '내용'
   },
-  target_role: {
+  targetRole: {
     field: 'target_role',
     type: DataTypes.STRING(3),
     allowNull: false,

@@ -34,6 +34,26 @@ export default {
         price: 10000,
         cntL: 1
       },
+      {
+        riderId: 2,
+        partnerId: 2,
+        hotelId: 2,
+        email: 'email',
+        name: '정XX',
+        price: 20000,
+        cntL: 2,
+        status: 'com'
+      },
+      {
+        riderId: 2,
+        partnerId: 2,
+        hotelId: 2,
+        email: 'email',
+        name: '정XX',
+        price: 15000,
+        cntM: 2,
+        status: 'com'
+      },
     ];
 
     // 데이터 생성 : queryInterface.bulkInsert(tableName, records, options)
