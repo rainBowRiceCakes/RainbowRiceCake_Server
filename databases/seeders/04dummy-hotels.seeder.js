@@ -20,7 +20,7 @@ export default {
         hotelEnName: 'OOHotel',
         manager: '김 지배인',
         phone: '000-1111-1111',
-        status: 'res',
+        status: true,
         address: '여긴 어딜까요',
         lat: '56.7890',
         lng: '32.1098'
@@ -30,7 +30,7 @@ export default {
         hotelEnName: 'OOHotel',
         manager: '양 지배인',
         phone: '000-3333-5555',
-        status: 'req',
+        status: false,
         address: '여긴 어딜까요',
         lat: '78.9012',
         lng: '54.3210'
