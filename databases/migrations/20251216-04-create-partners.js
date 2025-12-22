@@ -45,9 +45,10 @@ const attributes = {
   },
   status: {
     field: 'status',
-    type: DataTypes.STRING(10),
+    type: DataTypes.STRING(3),
     allowNull: false,
-    comment: '상태(가입대기, 승인, 반려)'
+    comment: '상태(req, res, rej)',
+    defaultValue: 'req'
   },
   logoImg: {
     field: 'logo_img',

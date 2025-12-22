@@ -78,8 +78,8 @@ const attributes = {
     field: 'status',
     type: DataTypes.STRING(10),
     allowNull: false,
-    comment: '배송상태(waiting, matched, pickup, complete)',
-    defaultValue: 'wait',
+    comment: '배송상태(req, match, pick, com)',
+    defaultValue: 'req',
   },
   createdAt: {
       field: 'created_at',

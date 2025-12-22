@@ -64,9 +64,10 @@ const attributes = {
   },
   status: {
     field: 'status',
-    type: DataTypes.STRING(10),
+    type: DataTypes.STRING(3),
     allowNull: false,
-    comment: '상태(대기, 활동중, 반려)'
+    comment: '상태(req, res, rej)',
+    defaultValue: 'req'
   },
   pickupAt: {
     field: 'pickup_at',
