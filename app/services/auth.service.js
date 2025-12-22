@@ -97,18 +97,18 @@ async function reissue(token) {
 async function socialKakao(code) {
   // 토큰 획득 요청에 필요한 헤더와 바디 생성
   const tokenRequest = socialKakaoUtil.getTokenRequest(code);
-
+  
   // 토큰 획득 요청
   const resultToken = await axios.post(process.env.SOCIAL_KAKAO_API_URL_TOKEN, tokenRequest.searchParams, { headers: tokenRequest.headers });
   const { access_token } = resultToken.data;
-
+  
   // 사용자 정보 획득(카카오에서 주는)
   const userRequest = socialKakaoUtil.getUserRequest(access_token);
   const resultUser = await axios.post(process.env.SOCIAL_KAKAO_API_URL_USER_INFO, userRequest.searchParams, { headers: userRequest.headers });
 
   const kakaoId = resultUser.data.id;
   const email = resultUser.data.kakao_account.email;
-  const profile = resultUser.data.kakao_account.profile.thumbnail_image_url;
+  // const profile = resultUser.data.kakao_account.profile.thumbnail_image_url;
   const nick = resultUser.data.kakao_account.profile.nickname;
   
   const refreshToken = db.sequelize.transaction(async t => {
@@ -119,10 +119,8 @@ async function socialKakao(code) {
       // 미가입 회원이면 회원가입 처리
       const data = {
         email,
-        profile,
+        // profile,
         nick,
-        password: bcrypt.hashSync(crypto.randomUUID(), 10),
-        provider: 'kakao',
         role: ROLE.COM,
       };
 

@@ -103,14 +103,9 @@ async function reissue(req, res, next) {
  */
 async function social(req, res, next) {
   try {
-    const provider = req.params.provider.toUpperCase();
     let url = '';
 
-    switch(provider) {
-      case PROVIDER.KAKAO:
-        url = socialKakaoUtil.getAuthorizeURL();
-        break;
-    }
+    url = socialKakaoUtil.getAuthorizeURL();
 
     return res.redirect(url);
   }
@@ -128,16 +123,8 @@ async function social(req, res, next) {
  */
 async function socialCallback(req, res, next) {
   try {
-    const provider = req.params.provider.toUpperCase();
-    let refreshToken = null;
-    let code = null;
-
-    switch(provider) {
-      case PROVIDER.KAKAO:
-        code = req.query?.code;
-        refreshToken = await authService.socialKakao(code);
-        break;
-    }
+    const code = req.query?.code;
+    const refreshToken = await authService.socialKakao(code);
 
     // Cookie에 RefreshToken 설정
     cookieUtil.setCookieRefreshToken(res, refreshToken);

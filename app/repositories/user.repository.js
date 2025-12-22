@@ -35,7 +35,13 @@ async function save(t = null, user) {
   return await user.save({ transaction: t });
 }
 
+async function create(t = null, data) {
+  console.log(data);
+  return await User.create({ email:data.email, name:data.nick, role:data.role }, { transaction: t });
+}
+
 export default {
   findByEmail,
   save,
+  create,
 }

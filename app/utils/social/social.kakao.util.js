@@ -14,8 +14,7 @@ function getAuthorizeURL() {
     client_id: process.env.SOCIAL_KAKAO_REST_API_KEY,
     redirect_uri: `${process.env.APP_URL}${process.env.SOCIAL_KAKAO_CALLBACK_URL}`,
     response_type: 'code',
-    // prompt: 'login',
-    // TODO: 나중에 다시 살릴 것(테스트 용이성을 위해 잠시 지워둠)
+    prompt: 'login',
   };
 
   const queryParams = new URLSearchParams(params).toString();
