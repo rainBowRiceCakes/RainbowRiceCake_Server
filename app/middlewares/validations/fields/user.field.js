@@ -21,8 +21,8 @@ const password = body('password')
   .notEmpty()
   .withMessage('비밀번호는 필수 항목입니다.')
   .bail()
-  .matches(/^[a-zA-Z0-9!@#$]{8,20}$/) // 정규식 작성
-  .withMessage('영어대소문자·숫자·!·@·#·$, 8~20자 허용')
+  .matches(/^[a-zA-Z0-9!@#$]{5,20}$/) // 정규식 작성
+  .withMessage('영어대소문자·숫자·!·@·#·$, 5~20자 허용')
 ;
 
 //   const provider = param('provider')
@@ -49,7 +49,7 @@ const passwordChk = body('passwordChk')
 ;
 
 // 닉네임
-const nick = body('nick')
+const name = body('name')
   .trim()
   .notEmpty()
   .withMessage('필수 항목입니다.')
@@ -92,6 +92,6 @@ export default {
   password,
   // provider,
   passwordChk,
-  nick,
+  name,
   profile,
 };

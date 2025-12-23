@@ -3,6 +3,7 @@
  * @description admins dummy data create
  * 251217 v1.0.0 wook init
  */
+import bcrypt from 'bcrypt';
 import db from '../../app/models/index.js';
 const { Admin } = db;
 
@@ -18,22 +19,22 @@ export default {
       {
         email: 'admin@admin.com',
         name: '어드민',
-        password: 'pwa505',
+        password: bcrypt.hashSync('pwa505', 10),
       },
       {
         email: 'admin2@admin.com',
         name: '어드민2',
-        password: 'pwa505',
+        password: bcrypt.hashSync('pwa505', 10),
       },
       {
         email: 'admin3@admin.com',
         name: '어드민3',
-        password: 'pwa505',
+        password: bcrypt.hashSync('pwa505', 10),
       },
       {
         email: 'admin4@admin.com',
         name: '어드민4',
-        password: 'pwa505',
+        password: bcrypt.hashSync('pwa505', 10),
       },
     ];
 

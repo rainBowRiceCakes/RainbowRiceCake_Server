@@ -13,41 +13,42 @@ import jwtUtil from '../utils/jwt/jwt.util.js';
 import db from '../models/index.js';
 import socialKakaoUtil from '../utils/social/social.kakao.util.js';
 import ROLE from '../middlewares/auth/configs/role.enum.js';
+import adminRepository from '../repositories/admin.repository.js';
 
 // 트랜잭션 작성 방식
 // return await db.sequelize.transaction(async t => {
   // 비즈니스 로직 작성
 // )};
-async function login(body) {
+async function adminLogin(body) {
   // 트랜잭션 처리
   return await db.sequelize.transaction(async t => {
     const { email, password } = body;
   
     // email로 유저 정보 획득
-    const user = await userRepository.findByEmail(t, email);
+    const admin = await adminRepository.findByEmail(t, email);
   
     // 유저 존재 여부 체크
-    if(!user) {
-      throw myError('유저 미존재', NOT_REGISTERED_ERROR);
+    if(!admin) {
+      throw myError('어드민 미존재', NOT_REGISTERED_ERROR);
     }
   
     // 비밀번호 체크
-    if(!bcrypt.compareSync(password, user.password)) {
+    if(!bcrypt.compareSync(password, admin.password)) {
       throw myError('비밀번호 틀림', NOT_REGISTERED_ERROR);
     }
   
     // JWT 생성(accessToKen, refreshToKen)
-    const accessToken = jwtUtil.generateAccessToken(user);
-    const refreshToken = jwtUtil.generateRefreshToken(user);
+    const accessToken = jwtUtil.generateAccessToken(admin);
+    const refreshToken = jwtUtil.generateRefreshToken(admin);
   
     // refreshToKen 저장
-    user.refreshToken = refreshToken;
-    await userRepository.save(t, user);
+    admin.refreshToken = refreshToken;
+    await adminRepository.save(t, admin);
   
     return {
       accessToken,
       refreshToken,
-      user
+      admin
     }
   });
 }
@@ -145,7 +146,7 @@ async function socialKakao(code) {
 }
 
 export default {
-  login,
+  adminLogin,
   logout,
   reissue,
   socialKakao,
