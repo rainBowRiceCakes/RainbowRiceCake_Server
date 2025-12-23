@@ -46,7 +46,7 @@ const attributes = {
   },
   status: {
     field: 'status',
-    type: DataTypes.STRING(10),
+    type: DataTypes.BOOLEAN,
     allowNull: false,
     comment: '상태',
     defaultValue: true
