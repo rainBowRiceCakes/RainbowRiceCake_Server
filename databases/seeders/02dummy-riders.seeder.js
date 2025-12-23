@@ -20,7 +20,7 @@ export default {
         licenseImg: 'img_path',
         bank: 'OO은행',
         bankNum: 1234567899,
-        adress: '보험용 주소입니다',
+        address: '보험용 주소입니다',
         phone: '010-1234-5678',
         status: 'res'
       },
@@ -29,7 +29,7 @@ export default {
         licenseImg: 'img_path',
         bank: 'OO은행',
         bankNum: 3123456789,
-        adress: '보험용 주소입니다',
+        address: '보험용 주소입니다',
         phone: '010-9876-5432',
         status: 'req'
       },

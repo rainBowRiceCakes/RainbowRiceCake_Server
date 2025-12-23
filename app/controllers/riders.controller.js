@@ -21,6 +21,19 @@ async function riderShow(req, res, next) {
   }
 }
 
+async function riderCreate(req, res, next) {
+  try {
+      const data = req.body
+  
+      await ridersService.create(data);
+  
+      return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS))
+  } catch (error) {
+    return next(error)
+  }
+}
+
 export default {
   riderShow,
+  riderCreate,
 }

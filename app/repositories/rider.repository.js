@@ -32,7 +32,17 @@ async function riderShow(t = null) {
     })
 }
 
+async function create(t = null, data) {
+  return await Rider.create(
+    data,
+    {
+      transaction: t
+    }
+  )
+}
+
 export default {
   findByPk,
   riderShow,
+  create,
 };

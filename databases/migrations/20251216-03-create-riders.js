@@ -43,8 +43,8 @@ const attributes = {
     allowNull: true,
     comment: '계좌번호'
   },
-  adress: {
-    field: 'adress',
+  address: {
+    field: 'address',
     type: DataTypes.STRING(100),
     allowNull: false,
     comment: '주소(보험용)'

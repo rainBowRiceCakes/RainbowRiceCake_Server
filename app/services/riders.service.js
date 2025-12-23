@@ -10,6 +10,11 @@ async function riderShow() {
   await riderRepository.riderShow(null);
 }
 
+async function create(data) {
+  await riderRepository.create(null, data);
+}
+
 export default {
   riderShow,
+  create,
 }

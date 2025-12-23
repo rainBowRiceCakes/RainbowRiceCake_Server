@@ -21,6 +21,20 @@ async function riderUpdate(t = null, result) {
   )
 }
 
+/**
+ * Admin의 Rider정보 업데이트
+ * @param {import("sequelize").Transaction|null} t 
+ * @param {{limit: number, offset: number}} data 
+ * @returns {Promise<Array<import("../models/Rider.js").Rider>>}
+ */
+async function userRoleUpdate(t = null, user) {
+  return await user.save(
+    {
+      tarnsaction: t
+    }
+  )
+}
+
 export default {
   riderUpdate,
 }
