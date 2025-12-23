@@ -7,7 +7,7 @@
 import { DataTypes } from 'sequelize';
 
 // 테이블명
-const tableName = 'admin';
+const tableName = 'admins';
 
 // 컬럼 정의
 const attributes = {

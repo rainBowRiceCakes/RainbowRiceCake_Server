@@ -6,6 +6,17 @@
 
 import { body } from "express-validator";
 
+// 유저 PK 필드
+export const userId = body('userId')
+  .trim()
+  .notEmpty()
+  .withMessage('필수 항목입니다.')
+  .bail()
+  .isNumeric()
+  .withMessage('숫자만 허용합니다.')
+  .toInt()
+;
+
 const licenseImg = body('licenseImg')
   .trim()
   .notEmpty()

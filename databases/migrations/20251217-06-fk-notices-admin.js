@@ -16,7 +16,7 @@ const options = {
   type: 'foreign key', // constraint 종류
   name: constraintName, // constraint명 지정
   references: { // 참조 설정
-    table: 'admin', // 참조할 테이블
+    table: 'admins', // 참조할 테이블
     field: 'id', // 참조 컬럼 지정
   },
   onDelete: 'CASCADE', // 참조 레코드가 삭제 시 posts의 레코드도 같이 삭제

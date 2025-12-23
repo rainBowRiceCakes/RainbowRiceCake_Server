@@ -52,7 +52,7 @@ async function statusPagination(t = null, data) {
 }
 
 /**
- * 호텔 활동중 페이지네이션
+ * 호텔 등록
  * @param {import("sequelize").Transaction|null} t 
  * @param {{limit: number, offset: number}} data 
  * @returns {Promise<Array<import("../models/Hotel.js").Hotel>>}

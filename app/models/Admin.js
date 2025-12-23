@@ -8,7 +8,7 @@ import { DataTypes } from 'sequelize';
 import  dayjs  from 'dayjs';
 
 // 테이블명
-const modelName = 'admin';
+const modelName = 'Admin';
 
 // 컬럼 정의
 const attributes = {

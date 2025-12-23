@@ -6,7 +6,26 @@
 
 import { body } from "express-validator"
 
+// 유저 PK 필드
+export const userId = body('userId')
+  .trim()
+  .notEmpty()
+  .withMessage('필수 항목입니다.')
+  .bail()
+  .isNumeric()
+  .withMessage('숫자만 허용합니다.')
+  .toInt()
+;
+
 const businessNum = body('businessNum')
+  .trim()
+  .notEmpty()
+  .withMessage('사업자 번호는 필수 항목입니다')
+  .bail()
+  .isNumeric()
+  .withMessage('숫자만 허용')
+  .toInt()
+;
 
 const krName = body('krName')
   .trim()
