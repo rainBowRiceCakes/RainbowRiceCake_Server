@@ -13,6 +13,8 @@ import pathUtil from './app/utils/path/path.util.js';
 import authRouter from './routes/auth.router.js';
 import hotelRouter from './routes/hotel.router.js';
 import noticeRouter from './routes/notice.router.js';
+import riderRouter from './routes/rider.router.js';
+import partnerRouter from './routes/partner.router.js';
 
 
 const app = express();
@@ -25,6 +27,8 @@ app.use(cookieParser()); // 쿠키파서
 app.use('/api/auth', authRouter);
 app.use('/api/hotels', hotelRouter);
 app.use('/api/notices', noticeRouter);
+app.use('/api/riders', riderRouter);
+app.use('/api/partners', partnerRouter);
 
 // ---------------------
 // 404 처리

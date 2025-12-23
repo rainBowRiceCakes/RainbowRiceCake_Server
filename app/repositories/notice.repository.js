@@ -9,7 +9,7 @@ import db from '../models/index.js';
 const { Notice } = db;
 
 /**
- * 호텔 전체 페이지네이션
+ * 공지 전체 가져오기
  * @param {import("sequelize").Transaction|null} t 
  * @param {{limit: number, offset: number}} data 
  * @returns {Promise<Array<import("../models/Notice.js").Notice>>}

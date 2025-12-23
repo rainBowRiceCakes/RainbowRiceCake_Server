@@ -7,13 +7,13 @@
 import express from 'express';
 import authMiddleware from '../app/middlewares/auth/auth.middleware.js';
 import validationHandler from '../app/middlewares/validations/validationHandler.js';
-import sendValidation from '../app/middlewares/validations/validators/notices/send.validation.js';
+import sendValidator from '../app/middlewares/validations/validators/notices/send.validator.js';
 import noticesController from '../app/controllers/notices.controller.js';
-import showNoticeValidation from '../app/middlewares/validations/validators/notices/show.notice.validation.js';
+import showNoticeValidator from '../app/middlewares/validations/validators/notices/show.notice.validator.js';
 
 const noticeRouter = express.Router();
 
-noticeRouter.get('/', authMiddleware, showNoticeValidation, validationHandler, noticesController.noticeShow)
-noticeRouter.post('/', authMiddleware, sendValidation, validationHandler, noticesController.noticeCreate)
+noticeRouter.get('/', authMiddleware, showNoticeValidator, validationHandler, noticesController.noticeShow)
+noticeRouter.post('/', authMiddleware, sendValidator, validationHandler, noticesController.noticeCreate)
 
 export default noticeRouter;
