@@ -22,7 +22,7 @@ export default {
         bankNum: 1234567899,
         address: '보험용 주소입니다',
         phone: '010-1234-5678',
-        status: 'res'
+        status: 'RES'
       },
       {
         userId: 3,
@@ -31,7 +31,7 @@ export default {
         bankNum: 3123456789,
         address: '보험용 주소입니다',
         phone: '010-9876-5432',
-        status: 'req'
+        status: 'REQ'
       },
     ];
 

@@ -15,6 +15,7 @@ import hotelRouter from './routes/hotel.router.js';
 import noticeRouter from './routes/notice.router.js';
 import riderRouter from './routes/rider.router.js';
 import partnerRouter from './routes/partner.router.js';
+import adminRouter from './routes/admin.router.js';
 
 
 const app = express();
@@ -29,6 +30,7 @@ app.use('/api/hotels', hotelRouter);
 app.use('/api/notices', noticeRouter);
 app.use('/api/riders', riderRouter);
 app.use('/api/partners', partnerRouter);
+app.use('/api/admins', adminRouter);
 
 // ---------------------
 // 404 처리

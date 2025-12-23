@@ -5,6 +5,7 @@
  */
 
 import { SUCCESS } from "../../configs/responseCode.config.js";
+import adminsService from "../services/admins.service.js";
 import { createBaseResponse } from "../utils/createBaseResponse.util.js";
 
 async function riderUpdate(req, res, next) {

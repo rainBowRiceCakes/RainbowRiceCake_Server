@@ -12,6 +12,6 @@ import validationHandler from '../app/middlewares/validations/validationHandler.
 
 const adminRouter = express.Router();
 
-adminRouter.post('rider/update', authMiddleware, riderCreateValidator, validationHandler , adminsController.riderUpdate)
+adminRouter.post('/rider/update', authMiddleware, riderCreateValidator, validationHandler , adminsController.riderUpdate)
 
 export default adminRouter;
