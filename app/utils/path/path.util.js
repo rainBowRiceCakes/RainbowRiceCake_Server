@@ -8,12 +8,16 @@ import path from 'path';
 
 function getViewDirPath() {
   const __dirname = process.env.APP_MODE !== 'dev' ? process.env.APP_DIST_PATH : path.resolve(process.env.APP_DIST_PATH);
-  
+
   return path.join(__dirname, 'index.html');
 }
 
 function getDlvImagePath() {
   return process.env.APP_MODE !== 'dev' ? process.env.FILE_DLV_IMAGE_PATH : path.resolve(process.env.FILE_DLV_IMAGE_PATH);
+}
+
+function getQuestionsImagePath() {
+  return process.env.APP_MODE !== 'dev' ? process.env.FILE_QUESTION_IMAGE_PATH : path.resolve(process.env.FILE_QUESTION_IMAGE_PATH);
 }
 
 function getProfilesImagePath() {
@@ -22,6 +26,7 @@ function getProfilesImagePath() {
 
 export default {
   getViewDirPath,
+  getQuestionsImagePath,
   getDlvImagePath,
   getProfilesImagePath,
 }

@@ -6,7 +6,7 @@
 
 import hotel from '../../fields/hotel.field.js';
 
-export default [ 
+export default [
   hotel.address,
   hotel.hotelEnName,
   hotel.hotelKrName,

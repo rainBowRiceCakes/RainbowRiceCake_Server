@@ -32,8 +32,8 @@ const attributes = {
     allowNull: false,
     comment: '제목'
   },
-  comment: {
-    field: 'comment',
+  content: {
+    field: 'content',
     type: DataTypes.STRING(250),
     allowNull: false,
     comment: '내용'
@@ -54,7 +54,7 @@ const attributes = {
     field: 'status',
     type: DataTypes.BOOLEAN,
     allowNull: false,
-    comment: '첨부 사진',
+    comment: '답변 상태',
     defaultValue: false
   },
   createdAt: {

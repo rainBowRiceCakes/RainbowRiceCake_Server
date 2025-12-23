@@ -66,7 +66,7 @@ const profile = body('profile')
   .bail()
   .custom(val => {
     // 우리 앱의 게시글 이미지에 접근하는 `도메인 + path`가 맞는지 확인
-    if(!val.startWith(`${process.env.APP_URL}${process.env.ACCESS_FILE_USER_PROFILE_PATH}`)) {
+    if(!val.startsWith(`${process.env.APP_URL}${process.env.ACCESS_FILE_USER_PROFILE_PATH}`)) {
       return false;
     }
     return true;
