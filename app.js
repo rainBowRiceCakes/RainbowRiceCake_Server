@@ -16,6 +16,7 @@ import noticeRouter from './routes/notice.router.js';
 import riderRouter from './routes/rider.router.js';
 import partnerRouter from './routes/partner.router.js';
 import adminRouter from './routes/admin.router.js';
+import questionRouter from './routes/question.router.js';
 
 
 const app = express();
@@ -31,6 +32,7 @@ app.use('/api/notices', noticeRouter);
 app.use('/api/riders', riderRouter);
 app.use('/api/partners', partnerRouter);
 app.use('/api/admins', adminRouter);
+app.use('/api/questions', questionRouter);
 
 // ---------------------
 // 404 처리

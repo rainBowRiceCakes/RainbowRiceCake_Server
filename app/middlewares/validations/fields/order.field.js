@@ -42,9 +42,38 @@ const name = body('name')
   .withMessage('영어 대소문자, 2~50자 허용')
 ;
 
+// delivery photo
+const image = body('image')
+  .trim()
+  .notEmpty()
+  .withMessage('사진은 필수 항목입니다.')
+  .bail()
+  .custom(val => {
+    if(!val.startsWith(`${process.env.APP_URL}${process.env.ACCESS_FILE_ORDER_DLV_IMAGE_PATH}`)) {
+      return false;
+    }
+
+    return true;
+  })
+  .withMessage('허용하지 않는 이미지 경로입니다.')
+  .bail()
+  .custom(val => {
+    // 실제 이미지 파일이 있는지 검증 처리
+    const splitPath = val.split('/');
+    const fullPath = path.join(pathUtil.getPostsImagePath(), splitPath[splitPath.length - 1]);
+
+    if(!fs.existsSync(fullPath)) {
+      return false;
+    }
+
+    return true;
+  })
+  .withMessage('존재하지 않는 이미지 경로입니다.');
+
 export default {
   page,
   id,
   email,
   name,
+  image,
 }

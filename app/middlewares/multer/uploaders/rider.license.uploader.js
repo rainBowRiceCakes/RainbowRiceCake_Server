@@ -1,7 +1,7 @@
 /**
- * @file app/middlewares/multer/profile.uploader.js
- * @description 프로필 이미지 업로더
- * 251218 v1.0.0 wook init
+ * @file app/middlewares/multer/rider.license.uploader.js
+ * @description 기사님들 제휴 신청 시, 면허증 이미지 업로더
+ * 251224 v1.0.0 BSONG init
  */
 
 import multer from 'multer';
@@ -12,8 +12,8 @@ import { BAD_FILE_ERROR } from '../../../../configs/responseCode.config.js';
 import pathUtil from '../../../utils/path/path.util.js';
 
 /**
- * 프로필 이미지 업로더 처리 미들웨어
- * @param {import{"express"}.Request} req 
+ * 라이센스 이미지 업로더 처리 미들웨어
+ * @param {import{"express"}.Request} req
  * @param {import{"express"}.Response} res
  * @param {import{"express"}.NextFunction} next
  */
@@ -24,8 +24,8 @@ export default function(req, res, next) {
     storage: multer.diskStorage({
       // 파일 저장 경로 설정
       destination(req, file, callback) {
-        const fullPath = pathUtil.getDlvImagePath();
-        
+        const fullPath = pathUtil.getProfilesImagePath();
+
         // 저장 디렉토리 설정
         if(!fs.existsSync(fullPath)) {
           // 해당 디렉토리 없으면 생성 처리

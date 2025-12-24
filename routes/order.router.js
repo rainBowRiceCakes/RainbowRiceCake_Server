@@ -15,5 +15,7 @@ const orderRouter = express.Router();
 // orderRouter.post('/', authMiddleware, createValidation, validationHandler, ordersController.store);
 // orderRouter.get('/:id', authMiddleware, showValidator, validationHandler, ordersController.show);
 // orderRouter.patch('/:id/status', authMiddleware, updateValidation, validationHandler, ordersController.store);
+// orderRouter.post('/pickup/image', upload.single('image'), controller.uploadPickupImage);
+// orderRouter.post('/complete/image', upload.single('image'), controller.uploadCompleteImage);
 
 export default orderRouter;

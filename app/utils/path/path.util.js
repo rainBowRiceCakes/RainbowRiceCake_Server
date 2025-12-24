@@ -12,8 +12,8 @@ function getViewDirPath() {
   return path.join(__dirname, 'index.html');
 }
 
-function getDlvImagePath() {
-  return process.env.APP_MODE !== 'dev' ? process.env.FILE_DLV_IMAGE_PATH : path.resolve(process.env.FILE_DLV_IMAGE_PATH);
+function getOrdersImagePath() {
+  return process.env.APP_MODE !== 'dev' ? process.env.FILE_ORDER_DLV_IMAGE_PATH : path.resolve(process.env.FILE_ORDER_DLV_IMAGE_PATH);
 }
 
 function getQuestionsImagePath() {
@@ -24,9 +24,18 @@ function getProfilesImagePath() {
   return process.env.APP_MODE !== 'dev' ? process.env.FILE_USER_PROFILE_PATH : path.resolve(process.env.FILE_USER_PROFILE_PATH);
 }
 
+function getLicensesImagePath() {
+  return process.env.APP_MODE !== 'dev' ? process.env.FILE_RIDER_LICENSE_IMAGE_PATH : path.resolve(process.env.FILE_RIDER_LICENSE_IMAGE_PATH);
+}
+
+// function getLogosImagePath() {
+//   return process.env.APP_MODE !== 'dev' ? process.env.FILE_RIDER_LICENSE_IMAGE_PATH : path.resolve(process.env.FILE_RIDER_LICENSE_IMAGE_PATH);
+// }
+
 export default {
   getViewDirPath,
   getQuestionsImagePath,
-  getDlvImagePath,
+  getOrdersImagePath,
   getProfilesImagePath,
+  getLicensesImagePath
 }
