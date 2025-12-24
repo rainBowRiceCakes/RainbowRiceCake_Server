@@ -4,9 +4,9 @@
  * 251222 v1.0.0 jun 초기 생성
  */
 
-import { body, param } from "express-validator";
-// import PROVIDER from '../../auth/configs/provider.enum.js';
+import { body } from "express-validator";
 
+// 이메일
 const email = body('email')
   .trim()
   .notEmpty() // 이메일이 비어있는지 체크
@@ -16,6 +16,7 @@ const email = body('email')
   .withMessage('유효한 이메일을 입력해주세요.')
 ;
 
+// 비밀번호
 const password = body('password')
   .trim()
   .notEmpty()
@@ -24,19 +25,8 @@ const password = body('password')
   .matches(/^[a-zA-Z0-9!@#$]{5,20}$/) // 정규식 작성
   .withMessage('영어대소문자·숫자·!·@·#·$, 5~20자 허용')
 ;
-
-//   const provider = param('provider')
-//     .trim()
-//     .notEmpty()
-//     .withMessage('필수 항목입니다.')
-//     .bail()
-//     .custom(val => {
-//       return PROVIDER[val.toUpperCase()] ? true : false;
-//     })
-//     .withMessage('허용하지 않는 값입니다.')
-// ;
   
-  // 비밀번호 체크
+// 비밀번호 체크
 const passwordChk = body('passwordChk')
   .trim()
   .custom((val, {req}) => {
@@ -91,7 +81,6 @@ const profile = body('profile')
 export default {
   email,
   password,
-  // provider,
   passwordChk,
   name,
   profile,

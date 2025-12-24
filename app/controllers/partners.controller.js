@@ -32,7 +32,29 @@ async function partnerCreate(req, res, next) {
   }
 }
 
+async function partnerFormStore(req, res, next) {
+  try {
+    const data = {
+      manager: req.body.manager,
+      phone: req.body.phone,
+      krName: req.body.krName,
+      enName: req.body.enName,
+      businessNum: req.body.businessNum,
+      address: req.body.address,
+      logoImg: req.body.logoImg
+    };
+
+    const result = await partnersService.partnerStore(data);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  }
+  catch(error) {
+    return next(error);
+  }
+}
+
 export default {
   partnerShow,
   partnerCreate,
+  partnerFormStore
 }

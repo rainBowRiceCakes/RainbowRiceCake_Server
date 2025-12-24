@@ -47,8 +47,27 @@ async function create(t = null, data) {
   )
 }
 
+/**
+ * 파트너 form 정보 create 처리
+ * @param {import("sequelize").Transaction} t 
+ * @param {import("../models/index.js").Rider} rider
+ * @returns 
+ */
+async function partnerformCreate(t = null, data) {
+  return await Rider.create({ 
+      manager: data.manager,
+      phone: data.phone,
+      krName: data.krName,
+      enName: data.enName,
+      businessNum: data.businessNum,
+      address: data.address,
+      logoImg: data.logoImg
+  }, { transaction: t });
+}
+
 export default {
   findByPk,
   partnerShow,
   create,
+  partnerformCreate
 };
