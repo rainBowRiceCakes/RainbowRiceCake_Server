@@ -31,14 +31,14 @@ const attributes = {
     allowNull: false,
     comment: '사업자 번호'
   },
-  storeKrName: {
-    field: 'store_kr_name',
+  krName: {
+    field: 'kr_name',
     type: DataTypes.STRING(50),
     allowNull: false,
     comment: '가계 한글이름'
   },
-  storeEnName: {
-    field: 'store_en_name',
+  enName: {
+    field: 'en_name',
     type: DataTypes.STRING(50),
     allowNull: false,
     comment: '가계 영어이름'

@@ -32,13 +32,13 @@ const attributes = {
     allowNull: false,
     comment: '사업자 번호'
   },
-  storeKrName: {
+  krName: {
     field: 'store_kr_name',
     type: DataTypes.STRING(50),
     allowNull: false,
     comment: '가계 한글이름'
   },
-  storeEnName: {
+  enName: {
     field: 'store_en_name',
     type: DataTypes.STRING(50),
     allowNull: false,

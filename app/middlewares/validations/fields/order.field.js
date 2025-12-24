@@ -38,7 +38,7 @@ const name = body('name')
   .notEmpty()
   .withMessage('이름은 필수 항목입니다.')
   .bail()
-  .matches(/^[a-zA-Z\s]{2,50}$/)
+  .matches(/^[a-zA-Z\s ]{2,50}$/)
   .withMessage('영어 대소문자, 2~50자 허용')
 ;
 

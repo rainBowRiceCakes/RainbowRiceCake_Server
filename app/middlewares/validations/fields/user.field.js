@@ -54,7 +54,7 @@ const name = body('name')
   .notEmpty()
   .withMessage('필수 항목입니다.')
   .bail()
-  .matches(/^[a-zA-Z0-9가-힣_]{3,20}$/)
+  .matches(/^[a-zA-Z0-9가-힣 _]{3,20}$/)
   .withMessage('영어대소문자·숫자·한글·_ 3~20자 허용')
 ;
 

@@ -27,7 +27,7 @@ const title = body('title')
   .notEmpty()
   .withMessage('제목 필수 항목입니다.')
   .bail()
-  .matches(/^[가-힣0-9]{2,30}$/)
+  .matches(/^[가-힣0-9 ]{2,30}$/)
   .withMessage('한글, 숫자로 2~30자 허용')
 ;
 
@@ -36,7 +36,7 @@ const content = body('content')
   .notEmpty()
   .withMessage('내용는 필수 항목입니다.')
   .bail()
-  .matches(/^[a-zA-Z0-9가-힣-]{2,250}$/)
+  .matches(/^[a-zA-Z0-9가-힣 -]{2,250}$/)
   .withMessage('한글, 영어대소문자·숫자·- 으로 2~250자 허용')
 ;
 

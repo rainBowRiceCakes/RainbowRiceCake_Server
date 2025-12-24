@@ -18,8 +18,8 @@ export default {
       {
         userId: 4,
         businessNum: 'img_path',
-        storeKrName: 'OO은행',
-        storeEnName: 'OOBank',
+        krName: 'OO은행',
+        enName: 'OOBank',
         manager: '김XX',
         phone: '000-1111-2222',
         status: 'RES',
@@ -31,8 +31,8 @@ export default {
       {
         userId: 5,
         businessNum: 'img_path',
-        storeKrName: 'OO은행',
-        storeEnName: 'OOBank',
+        krName: 'OO은행',
+        enName: 'OOBank',
         manager: '박XX',
         phone: '000-2222-3333',
         status: 'REQ',

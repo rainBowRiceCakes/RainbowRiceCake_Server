@@ -19,14 +19,14 @@ const attributes = {
     autoIncrement: true,
     comment: '호텔 PK',
   },
-  hotelKrName: {
-    field: 'hotel_kr_name',
+  krName: {
+    field: 'kr_name',
     type: DataTypes.STRING(50),
     allowNull: false,
     comment: '호텔 한글이름'
   },
-  hotelEnName: {
-    field: 'hotel_en_name',
+  enName: {
+    field: 'en_name',
     type: DataTypes.STRING(50),
     allowNull: false,
     comment: '호텔 영어이름'

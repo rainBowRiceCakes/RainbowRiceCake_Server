@@ -32,7 +32,7 @@ const krName = body('krName')
   .notEmpty()
   .withMessage('한글 이름은 필수 항목입니다.')
   .bail()
-  .matches(/^[가-힣0-9]{2,50}$/)
+  .matches(/^[가-힣0-9 ]{2,50}$/)
   .withMessage('한글, 숫자로 2~50자 허용')
 ;
 
@@ -41,7 +41,7 @@ const enName = body('enName')
   .notEmpty()
   .withMessage('영어 이름은 필수 항목입니다.')
   .bail()
-  .matches(/^[a-zA-Z0-9]{2,50}$/)
+  .matches(/^[a-zA-Z0-9 ]{2,50}$/)
   .withMessage('영어대소문자, 숫자로 2~50자 허용')
 ;
 
@@ -50,7 +50,7 @@ const manager = body('manager')
   .notEmpty()
   .withMessage('담당자 이름은 필수 항목입니다.')
   .bail()
-  .matches(/^[a-zA-Z0-9가-힣]{2,50}$/)
+  .matches(/^[a-zA-Z0-9가-힣 ]{2,50}$/)
   .withMessage('한글, 영어대소문자, 숫자로 2~50자 허용')
 ;
 
