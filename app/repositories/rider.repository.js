@@ -8,7 +8,7 @@ import db from '../models/index.js';
 const { Rider } = db;
 
 /**
- * 유저 id로 유저정보 조회
+ * 기사 id로 기사정보 조회
  * @param {import("sequelize").Transaction} t 
  * @param {number} id 
  * @returns {Promise<MessagePort("../models/Rider.js").Rider>}
@@ -20,7 +20,7 @@ async function findByPk(t = null, id) {
 }
 
 /**
- * 호텔 전체 페이지네이션
+ * 기사 전체정보 조회
  * @param {import("sequelize").Transaction|null} t 
  * @param {{limit: number, offset: number}} data 
  * @returns {Promise<Array<import("../models/Rider.js").Rider>>}
@@ -32,6 +32,12 @@ async function riderShow(t = null) {
     })
 }
 
+/**
+ * 기사 정보 등록
+ * @param {import("sequelize").Transaction|null} t 
+ * @param {{limit: number, offset: number}} data 
+ * @returns {Promise<Array<import("../models/Rider.js").Rider>>}
+ */
 async function create(t = null, data) {
   return await Rider.create(
     data,

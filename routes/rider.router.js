@@ -12,7 +12,9 @@ import validationHandler from '../app/middlewares/validations/validationHandler.
 
 const riderRouter = express.Router();
 
+// Rider table에 있는 정보 모두 가져오기
 riderRouter.get('/', authMiddleware, ridersController.riderShow);
+// Rider table에 정보 등록하기 ※ JWT로 유저id(PK)를 받아와야 함. req.user.id
 riderRouter.post('/', authMiddleware, riderCreateValidator, validationHandler, ridersController.riderCreate)
 
 export default riderRouter;

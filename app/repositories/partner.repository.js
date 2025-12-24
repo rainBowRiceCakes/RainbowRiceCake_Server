@@ -8,7 +8,7 @@ import db from '../models/index.js';
 const { Partner } = db;
 
 /**
- * 유저 id로 유저정보 조회
+ * 파트너 id로 파트너정보 조회
  * @param {import("sequelize").Transaction} t 
  * @param {number} id 
  * @returns {Promise<MessagePort("../models/Partner.js").Partner>}
@@ -20,7 +20,7 @@ async function findByPk(t = null, id) {
 }
 
 /**
- * 호텔 전체 페이지네이션
+ * 파트너 전체정보 조회
  * @param {import("sequelize").Transaction|null} t 
  * @param {{limit: number, offset: number}} data 
  * @returns {Promise<Array<import("../models/Partner.js").Partner>>}

@@ -7,10 +7,17 @@
 import db from "../models/index.js";
 import riderRepository from "../repositories/rider.repository.js";
 
+/**
+ * Rider테이블의 정보 모두 가져오는 처리
+ */
 async function riderShow() {
   return await riderRepository.riderShow(null);
 }
 
+/**
+ * Rider테이블의 정보 등록하는 처리
+ * @param {import("./users.service.type.js").riderStoreData} data
+ */
 async function create(data) {
   return await riderRepository.create(null, data);
 }

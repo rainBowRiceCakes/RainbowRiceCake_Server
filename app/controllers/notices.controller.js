@@ -8,6 +8,13 @@ import { SUCCESS } from "../../configs/responseCode.config.js";
 import noticesService from "../services/notices.service.js";
 import { createBaseResponse } from "../utils/createBaseResponse.util.js";
 
+/**
+ * Notice테이블의 정보 모두 가져오는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
 async function noticeShow(req, res, next) {
   try {
     const data = req.body
@@ -20,6 +27,13 @@ async function noticeShow(req, res, next) {
   }
 }
 
+/**
+ * Notice테이블에 정보 등록 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
 async function noticeCreate(req, res, next) {
   try {
     const data = req.body

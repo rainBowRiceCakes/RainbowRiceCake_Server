@@ -13,7 +13,9 @@ import showNoticeValidator from '../app/middlewares/validations/validators/notic
 
 const noticeRouter = express.Router();
 
+// Notice table에 있는 정보 모두 가져오기
 noticeRouter.get('/', authMiddleware, showNoticeValidator, validationHandler, noticesController.noticeShow)
+// Notice table에 정보 등록하기 ※ JWT로 유저id(PK)를 받아와야 함. req.user.id
 noticeRouter.post('/', authMiddleware, sendValidator, validationHandler, noticesController.noticeCreate)
 
 export default noticeRouter;
