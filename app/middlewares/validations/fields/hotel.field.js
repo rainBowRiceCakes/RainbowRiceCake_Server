@@ -6,7 +6,7 @@
 
 import { body } from "express-validator";
 
-const hotelKrName = body('hotelKrName')
+const krName = body('hotelKrName')
   .trim()
   .notEmpty()
   .withMessage('한글 이름은 필수 항목입니다.')
@@ -15,7 +15,7 @@ const hotelKrName = body('hotelKrName')
   .withMessage('한글, 숫자로 2~50자 허용')
 ;
 
-const hotelEnName = body('hotelEnName')
+const enName = body('hotelEnName')
   .trim()
   .notEmpty()
   .withMessage('영어 이름은 필수 항목입니다.')
@@ -64,8 +64,8 @@ const lng = body('lng')
 ;
 
 export default {
-  hotelEnName,
-  hotelKrName,
+  enName,
+  krName,
   manager,
   phone,
   address,
