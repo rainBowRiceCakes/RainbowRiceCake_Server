@@ -7,7 +7,7 @@
 import { body } from "express-validator"
 
 // 유저 PK 필드
-export const userId = body('userId')
+const userId = body('userId')
   .trim()
   .notEmpty()
   .withMessage('필수 항목입니다.')
@@ -111,6 +111,7 @@ const lng = body('lng')
 ;
 
 export default {
+  userId,
   businessNum,
   krName,
   enName,

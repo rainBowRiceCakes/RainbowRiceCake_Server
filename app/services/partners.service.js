@@ -10,6 +10,11 @@ async function partnerShow() {
   return await partnerRepository.partnerShow(null);
 }
 
+async function create(data) {
+  return await partnerRepository.create(null, data)
+}
+
 export default {
   partnerShow,
+  create,
 }

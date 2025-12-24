@@ -20,6 +20,19 @@ async function riderUpdate(req, res, next) {
   }
 }
 
+async function partnerUpdate(req, res, next) {
+  try {
+    const data = req.body
+
+    await adminsService.partnerUpdate(data);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS))
+  } catch (error) {
+    return next(error);
+  }
+}
+
 export default {
   riderUpdate,
+  partnerUpdate,
 }

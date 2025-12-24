@@ -43,6 +43,23 @@ async function riderToUserPK(t = null, userId) {
 }
 
 /**
+ * Partner의 user_id로 유저PK 검색
+ * @param {import("sequelize").Transaction} t 
+ * @param {import("../models/index.js").User} user 
+ * @returns 
+ */
+async function partnerToUserPK(t = null, userId) {
+  return await User.findOne(
+    {
+      where: {
+        id: userId
+      },
+      transaction: t
+    }
+  );
+}
+
+/**
  * 유저 모델 인스턴스로 save 처리
  * @param {import("sequelize").Transaction} t 
  * @param {import("../models/index.js").User} user 
@@ -84,6 +101,7 @@ export default {
   findByEmail,
   save,
   riderToUserPK,
+  partnerToUserPK,
   create,
   logout,
 }

@@ -7,9 +7,12 @@
 import express from 'express';
 import authMiddleware from '../app/middlewares/auth/auth.middleware.js';
 import partnersController from '../app/controllers/partners.controller.js';
+import validationHandler from '../app/middlewares/validations/validationHandler.js';
+import partnerCreateValidator from '../app/middlewares/validations/validators/partners/partner.create.validator.js';
 
 const partnerRouter = express.Router();
 
 partnerRouter.get('/', authMiddleware, partnersController.partnerShow);
+partnerRouter.post('/', authMiddleware, partnerCreateValidator, validationHandler, partnersController.partnerCreate);
 
 export default partnerRouter;
