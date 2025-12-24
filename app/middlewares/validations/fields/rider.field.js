@@ -47,13 +47,14 @@ const bank = body('bank')
   .optional({ checkFalsy: true })
   .trim()
   .matches(/^[a-zA-Z가-힣]{2,10}$/)
-// ToDo : 혹시 왜 여기에는 세미콜론이 실종이 되어있는 건가요?, 더 추가하실 건가요? 
+;
 
 const bankNum = body('bankNum')
   .optional({ checkFalsy: true })
   .trim()
   .isNumeric()
   .withMessage('숫자만 입력해주세요')
+;
 
 const phone = body('phone')
   .optional({ checkFalsy: true })

@@ -14,6 +14,6 @@ import partnerCreateValidator from '../app/middlewares/validations/validators/pa
 const adminRouter = express.Router();
 
 adminRouter.put('/rider', authMiddleware, riderCreateValidator, validationHandler , adminsController.riderUpdate)
-adminRouter.put('/partner', authMiddleware, partnerCreateValidator, validationHandler , adminsController.partnerUpdate)
+adminRouter.post('/partner', authMiddleware, partnerCreateValidator, validationHandler , adminsController.partnerUpdate)
 
 export default adminRouter;

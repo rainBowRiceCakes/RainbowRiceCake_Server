@@ -84,7 +84,8 @@ const profile = body('profile')
 
     return true;
   })
-  .withMessage('존재하지 않는 이미지 경로입니다.');
+  .withMessage('존재하지 않는 이미지 경로입니다.')
+;
 
 
 export default {
@@ -94,4 +95,5 @@ export default {
   passwordChk,
   name,
   profile,
-};
+  }
+;

@@ -10,10 +10,7 @@ import { createBaseResponse } from "../utils/createBaseResponse.util.js";
 
 async function riderShow(req, res, next) {
   try {
-    const data = {
-      body: req.body
-    }
-    const result = await ridersService.riderShow(data);
+    const result = await ridersService.riderShow();
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
   } catch (error) {

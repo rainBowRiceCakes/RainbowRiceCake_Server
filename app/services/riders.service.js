@@ -7,11 +7,11 @@
 import riderRepository from "../repositories/rider.repository.js";
 
 async function riderShow() {
-  await riderRepository.riderShow(null);
+  return await riderRepository.riderShow(null);
 }
 
 async function create(data) {
-  await riderRepository.create(null, data);
+  return await riderRepository.create(null, data);
 }
 
 export default {

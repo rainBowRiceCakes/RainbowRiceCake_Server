@@ -43,7 +43,7 @@ async function partnerUpdate(data) {
     result.logoImg= data.logoImg
     result.lat= data.lat
     result.lng= data.lng
-    
+
     await adminRepository.partnerUpdate(t, result);
 
     // rider의 user_id로 userByPK받아오기

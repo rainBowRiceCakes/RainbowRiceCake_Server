@@ -92,7 +92,7 @@ const address = body('address')
   .notEmpty()
   .withMessage('주소는 필수 항목입니다.')
   .bail()
-  .matches(/^[a-zA-Z0-9가-힣-]{2,50}$/)
+  .matches(/^[a-zA-Z0-9가-힣 -]{2,50}$/)
   .withMessage('한글, 영어대소문자·숫자·- 으로 2~50자 허용')
 ;
 

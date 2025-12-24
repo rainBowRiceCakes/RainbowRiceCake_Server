@@ -43,4 +43,4 @@ export const status = body('status')
   .trim()
   .isBoolean()
   .withMessage('boolean값만 허용')
-
+;
