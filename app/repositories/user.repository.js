@@ -52,9 +52,32 @@ async function save(t = null, user) {
   return await user.save({ transaction: t });
 }
 
+/**
+ * 유저 정보 create 처리
+ * @param {import("sequelize").Transaction} t 
+ * @param {import("../models/index.js").User} user 
+ * @returns 
+ */
 async function create(t = null, data) {
   console.log(data);
   return await User.create({ email:data.email, name:data.nick, role:data.role }, { transaction: t });
+}
+
+async function logout(t = null, id) {
+  // 특정 유저 리프래시토큰 null로 갱신
+  // 평문 : UPDATE users SET refresh_token = null WHERE id = ?
+  return await User.update(
+    // 파라미터 2개: {바꿀값}{옵션(조건)}
+    {
+      refreshToken: null
+    },
+    {
+      where: {
+        id: id
+      },
+      transaction: t
+    }
+  );
 }
 
 export default {
@@ -62,4 +85,5 @@ export default {
   save,
   riderToUserPK,
   create,
+  logout,
 }

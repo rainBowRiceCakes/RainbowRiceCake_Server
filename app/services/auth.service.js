@@ -54,7 +54,15 @@ async function adminLogin(body) {
 }
 
 /**
- * 로그아웃 처리
+ * 어드민 로그아웃 처리
+ * @param {number} id - 어드민id
+ */
+async function adminLogout(id) {
+  return await adminRepository.logout(null, id);
+}
+
+/**
+ * 유저 로그아웃 처리
  * @param {number} id - 유저id
  */
 async function logout(id) {
@@ -62,7 +70,41 @@ async function logout(id) {
 }
 
 /**
- * 토큰 재발급 처리
+ * 어드민 토큰 재발급 처리
+ * @param {string} token 
+ */
+async function adminReissue(token) {
+  // 토큰 검증 및 어드민id 획득
+  const claims = jwtUtil.getClaimsWithVerifyToken(token);
+  const adminId = claims.sub;
+
+  return await db.sequelize.transaction(async t => {
+    // 어드민 정보 획득
+    const admin = await adminRepository.findByPk(t, adminId);
+
+    // 토큰 일치 검증
+    if(token !== admin.refreshToken) {
+      throw myError('리프래시 토큰 불일치', REISSUE_ERROR);
+    }
+
+    // JWT 생성(2개의 토큰 생성 -> 엑세스 토큰, 리프래시 토큰 생성)
+    const accessToken = jwtUtil.generateAccessToken(admin);
+    const refreshToken = jwtUtil.generateRefreshToken(admin);
+
+    // 리프래시 토큰 DB에 저장
+    admin.refreshToken = refreshToken;
+    await adminRepository.save(t, admin);
+
+    return {
+      accessToken,
+      refreshToken,
+      admin
+    }
+  });
+}
+
+/**
+ * 유저 토큰 재발급 처리
  * @param {string} token 
  */
 async function reissue(token) {
@@ -147,7 +189,9 @@ async function socialKakao(code) {
 
 export default {
   adminLogin,
+  adminLogout,
   logout,
+  adminReissue,
   reissue,
   socialKakao,
 }

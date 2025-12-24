@@ -18,8 +18,18 @@ const ROLE_PERMISSIONS = {
   ],
   POST: [
     // ex) { path: /^\/api\/auth\/logout$/, roles: [NORMAL, SUPER] },
+    { path: /^\/api\/auth\/logout$/, roles: [COM, DLV, PTN, ADM] },
+    { path: /^\/api\/auth\/reissue$/, roles: [COM, DLV, PTN, ADM] },
+    { path: /^\/api\/hotels$/, roles: [ADM] },
+    { path: /^\/api\/notices$/, roles: [ADM] },
+    { path: /^\/api\/orders$/, roles: [PTN, ADM] },
+    { path: /^\/api\/riders$/, roles: [COM, ADM] },
+    { path: /^\/api\/partners$/, roles: [COM, ADM] },
   ],
   PUT: [
+    { path: /^\/api\/orders$/, roles: [DLV, ADM] },
+    { path: /^\/api\/riders$/, roles: [COM, DLV, ADM] },
+    { path: /^\/api\/partners$/, roles: [COM, PTN, ADM] },
 
   ],
   DELETE: [
