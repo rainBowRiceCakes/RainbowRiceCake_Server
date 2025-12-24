@@ -21,13 +21,13 @@ const attributes = {
     comment: '호텔 PK',
   },
   krName: {
-    field: 'hotel_kr_name',
+    field: 'kr_name',
     type: DataTypes.STRING(50),
     allowNull: false,
     comment: '호텔 한글이름'
   },
   enName: {
-    field: 'hotel_en_name',
+    field: 'en_name',
     type: DataTypes.STRING(50),
     allowNull: false,
     comment: '호텔 영어이름'

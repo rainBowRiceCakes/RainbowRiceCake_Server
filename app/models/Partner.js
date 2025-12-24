@@ -33,13 +33,13 @@ const attributes = {
     comment: '사업자 번호'
   },
   krName: {
-    field: 'store_kr_name',
+    field: 'kr_name',
     type: DataTypes.STRING(50),
     allowNull: false,
     comment: '가계 한글이름'
   },
   enName: {
-    field: 'store_en_name',
+    field: 'en_name',
     type: DataTypes.STRING(50),
     allowNull: false,
     comment: '가계 영어이름'
