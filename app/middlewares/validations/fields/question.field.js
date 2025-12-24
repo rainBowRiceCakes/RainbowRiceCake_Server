@@ -4,16 +4,16 @@
  * 251223 v1.0.0 BSONG init
  */
 
-import { body } from "express-validator";
+import { body, param, query } from "express-validator";
 
-const page = query('page')
+export const page = query('page')
   .trim()
   .optional()
   .isNumeric()
   .withMessage('숫자만 허용합니다.')
   .toInt();
 
-const id = param('id')
+export const id = param('id')
   .trim()
   .notEmpty()
   .withMessage('필수 항목입니다.')
@@ -22,7 +22,7 @@ const id = param('id')
   .withMessage('숫자만 허용합니다.')
   .toInt();
 
-const title = body('title')
+export const title = body('title')
   .trim()
   .notEmpty()
   .withMessage('제목 필수 항목입니다.')
@@ -31,7 +31,7 @@ const title = body('title')
   .withMessage('한글, 숫자로 2~30자 허용')
 ;
 
-const content = body('content')
+export const content = body('content')
   .trim()
   .notEmpty()
   .withMessage('내용는 필수 항목입니다.')
@@ -40,7 +40,7 @@ const content = body('content')
   .withMessage('한글, 영어대소문자·숫자·- 으로 2~250자 허용')
 ;
 
-const qna_img = body('qna_img')
+export const qna_img = body('qna_img')
   .trim()
   .bail()
   .custom(val => {
@@ -66,20 +66,9 @@ const qna_img = body('qna_img')
   .withMessage('존재하지 않는 이미지 경로입니다.');
 ;
 
-const res = body('res')
+export const res = body('res')
+  .optional({ checkFalsy: true })
   .trim()
-  .notEmpty()
-  .withMessage('답변 내용은 필수 항목입니다.')
-  .bail()
-  .matches(/^[a-zA-Z0-9가-힣-]{2,500}$/)
-  .withMessage('한글, 영어대소문자·숫자·- 으로 2~500자 허용')
+  .matches(/^[a-zA-Z0-9가-힣 !@#$-]{2,500}$/)
+  .withMessage('한글, 영어대소문자·숫자·!·@·#·$·- 으로 2~500자 허용')
 ;
-
-export default {
-  page,
-  id,
-  title,
-  content,
-  qna_img,
-  res
-}

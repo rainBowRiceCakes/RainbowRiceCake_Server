@@ -4,11 +4,11 @@
  * 251223 v1.0.0 BSONG init
  */
 
-import question from '../../fields/question.field.js';
+import { title, content, qna_img, res } from '../../fields/question.field.js';
 
 export default [
-  question.title,
-  question.content,
-  question.qna_img,
-  question.res,
+  title,
+  content,
+  qna_img,
+  res,
 ]
