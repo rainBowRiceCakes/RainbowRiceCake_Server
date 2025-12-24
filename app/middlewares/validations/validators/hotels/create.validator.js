@@ -8,8 +8,8 @@ import hotel from '../../fields/hotel.field.js';
 
 export default [
   hotel.address,
-  hotel.hotelEnName,
-  hotel.hotelKrName,
+  hotel.enName,
+  hotel.krName,
   hotel.lat,
   hotel.lng,
   hotel.manager,
