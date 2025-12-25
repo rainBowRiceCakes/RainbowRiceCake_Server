@@ -90,7 +90,7 @@ const Image = {
     return define;
   },
   associate: (db) => {
-    db.Image.belongsTo(db.Order, { targetKey: 'id', foreignKey: 'adminId', as: 'image_order'});
+    db.Image.belongsTo(db.Order, { targetKey: 'id', foreignKey: 'dlvId', as: 'image_order'});
   },
 }
 

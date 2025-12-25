@@ -1,11 +1,15 @@
 /**
  * @file app/middlewares/validations/fields/order.field.js
  * @description orders 정보 유효성 검사 필드
+ * 이 파일은 주문(Order) 관련 API 요청의 유효성 검사를 위한 필드 정의를 포함합니다.
+ * Express Validator를 사용하여 쿼리 파라미터, URL 파라미터, 바디 파라미터의 검증 규칙을 설정합니다.
  * 251223 v1.0.0 BSONG init
+ * 251225 v1.1.0 BSONG update 빠진 부분 검사 필드들 추가함. 
  */
 
-import { body } from "express-validator";
+import { body, param, query } from "express-validator";
 
+// === Query Parameters ===
 const page = query('page')
   .trim()
   .optional()
@@ -14,66 +18,121 @@ const page = query('page')
   .toInt()
 ;
 
-const id = param('id')
+const scope = query('scope')
+  .optional()
+  .trim()
+  .isIn(['history', 'today'])
+  .withMessage('scope는 history 또는 today만 허용됩니다.')
+;
+
+const statusQuery = query('status')
+  .optional()
+  .trim()
+  .isIn(['req', 'match', 'pick', 'com'])
+  .withMessage('유효하지 않은 status 값입니다.')
+;
+
+const orderId = param('orderId')
   .trim()
   .notEmpty()
-  .withMessage('필수 항목입니다.')
+  .withMessage('주문 ID는 필수입니다.')
   .bail()
-  .isNumeric()
-  .withMessage('숫자만 허용합니다.')
+  .isInt({ min: 1 })
+  .withMessage('유효한 주문 ID가 아닙니다.')
   .toInt()
 ;
 
+// === Body Parameters ===
 const email = body('email')
   .trim()
-  .notEmpty() // 이메일이 비어있는지 체크
-  .withMessage('이메일은 필수 항목입니다.')
+  .notEmpty() 
+  .withMessage('Email is required.')
   .bail()
-  .isEmail() // 이메일 양식대로 작성했는지 체크
-  .withMessage('유효한 이메일을 입력해주세요.')
+  .isEmail() 
+  .withMessage('Please enter a valid email address.')
+  .normalizeEmail() // 이메일 정규화
 ;
 
 const name = body('name')
   .trim()
   .notEmpty()
-  .withMessage('이름은 필수 항목입니다.')
+  .withMessage('Name is required.')
   .bail()
-  .matches(/^[a-zA-Z\s ]{2,50}$/)
-  .withMessage('영어 대소문자, 2~50자 허용')
+  .matches(/^[A-Za-z]+(?:\s[A-Za-z]+)*$/)
+  .withMessage('Name must be between 2 and 50 characters, using English letters (uppercase and lowercase)')
 ;
 
-// delivery photo
-const image = body('image')
+const hotelId = body('hotelId')
   .trim()
   .notEmpty()
-  .withMessage('사진은 필수 항목입니다.')
+  .withMessage('호텔 ID는 필수입니다.')
   .bail()
-  .custom(val => {
-    if(!val.startsWith(`${process.env.APP_URL}${process.env.ACCESS_FILE_ORDER_DLV_IMAGE_PATH}`)) {
-      return false;
-    }
+  .isInt({ min: 1 })
+  .withMessage('유효한 호텔 ID가 아닙니다.')
+  .toInt()
+;
 
-    return true;
-  })
-  .withMessage('허용하지 않는 이미지 경로입니다.')
+const price = body('price')
+  .trim()
+  .notEmpty()
+  .withMessage('배송 요금은 필수입니다.')
   .bail()
-  .custom(val => {
-    // 실제 이미지 파일이 있는지 검증 처리
-    const splitPath = val.split('/');
-    const fullPath = path.join(pathUtil.getPostsImagePath(), splitPath[splitPath.length - 1]);
+  .isInt({ min: 0 })
+  .withMessage('배송 요금은 0 이상의 숫자여야 합니다.')
+  .toInt()
+;
 
-    if(!fs.existsSync(fullPath)) {
-      return false;
-    }
+// 짐 개수 (optional이지만 있으면 검증)
+const cntS = body('cnt_s')
+  .optional()
+  .trim()
+  .isInt({ min: 0, max: 999 })
+  .withMessage('소형 짐 개수는 0~999 사이여야 합니다.')
+  .toInt()
+;
 
-    return true;
-  })
-  .withMessage('존재하지 않는 이미지 경로입니다.');
+const cntM = body('cnt_m')
+  .optional()
+  .trim()
+  .isInt({ min: 0, max: 999 })
+  .withMessage('중형 짐 개수는 0~999 사이여야 합니다.')
+  .toInt()
+;
+
+const cntL = body('cnt_l')
+  .optional()
+  .trim()
+  .isInt({ min: 0, max: 999 })
+  .withMessage('대형 짐 개수는 0~999 사이여야 합니다.')
+  .toInt()
+;
+
+const status = body('status')
+  .optional()
+  .trim()
+  .isIn(['req', 'match', 'pick', 'com'])
+  .withMessage('유효하지 않은 status 값입니다. (req, match, pick, com만 허용)')
+;
+
 
 export default {
+  // Query 파라미터 검증 필드들
   page,
-  id,
+  scope,
+  statusQuery,
+  
+  // URL 파라미터 검증 필드들
+  orderId,
+  
+  // Body 파라미터 - 주문 생성 시 필요한 필드들
   email,
   name,
-  image,
+  hotelId,
+  price,
+  cntS,
+  cntM,
+  cntL,
+  
+  // Body 파라미터 - 상태 관리 필드들
+  status,
 }

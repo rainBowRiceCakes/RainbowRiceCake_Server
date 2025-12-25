@@ -1,62 +1,17 @@
 /**
  * @file app/controllers/orders.controller.js
- * @description question 관련 컨트롤러
+ * @description order 관련 컨트롤러 (주문 등록, 오늘 자 탭별 주문 리스트 조회, 주문 히스토리 리스트 및 상세 조회)
  * 251223 v1.0.0 BSONG init
- */
+ * 251225 v1.1.0 BSONG update - 상태별 주문 목록 및 카운트 조회 기능 추가, 그리고 주문 히스토리 상세 조회 기능 추가
+*/
 
 import { SUCCESS } from '../../configs/responseCode.config.js';
 import OrdersService from '../services/orders.service.js';
 import { createBaseResponse } from '../utils/createBaseResponse.util.js';
 
-// --------------------------------------------------------------------------------------
-// public--------------------------------------------------------------------------------
-// --------------------------------------------------------------------------------------
-
+// --- 1. ORDER WORKFLOW FOR PARNERS (파트너와 관련된 당일 내 이뤄지는 주문) ---
 /**
- * Orders 리스트 조회 컨트롤러 처리
- * @param {import("express").Request} req - Request 객체
- * @param {import("express").Response} res - Response 객체
- * @param {import("express").NextFunction} next - NextFuction 객체
- * @returns
- */
-async function index(req, res, next) {
-  try {
-    const page = req.query?.page ? parseInt(req.query.page) : 1; //toInt가 쿼리쪽에서 작동X
-
-    const { count, rows } = await OrdersService.pagination(page);
-
-    const responseData = {
-      page: page,
-      limit: 6,
-      count: count,
-      Orders: rows,
-    };
-
-    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, responseData));
-  } catch (error) {
-    return next(error);
-  }
-}
-
-/**
- * Orders 상세 조회 컨트롤러
- * @param {import("express").Request} req - Request 객체
- * @param {import("express").Response} res - Response 객체
- * @param {import("express").NextFunction} next - NextFuction 객체
- * @returns
- */
-async function show(req, res, next) {
-  try {
-    const result = await OrdersService.show(req.params.id);
-
-    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
-  } catch (error) {
-    return next(error);
-  }
-}
-
-/**
- * Orders 작성 컨트롤러
+ * Save a new order for riders to accept (주문 등록)
  * @param {import("express").Request} req - Request 객체
  * @param {import("express").Response} res - Response 객체
  * @param {import("express").NextFunction} next - NextFuction 객체
@@ -64,13 +19,70 @@ async function show(req, res, next) {
  */
 async function store(req, res, next) {
   try {
+    // 파트너가 입력한 폼 데이터 가져오기
     const data = {
-      userId: req.user.id, // auth middleware에서 set up한 값
+      partner_id: req.user.id,
       email: req.body.email,
       name: req.body.name,
+      hotel_id: req.body.hotelId,
+      price: req.body.price,
+      cnt_s: req.body.cnt_s,
+      cnt_m: req.body.cnt_m,
+      cnt_l: req.body.cnt_l,
     };
+    
+    // 서비스 호출 (Service -> Repository -> Order.create)
+    const result = await OrdersService.createNewOrder(data);
+    
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  } catch(error) {
+    return next(error);
+  }
+}
 
-    const result = await OrdersService.create(data);
+// --- 2. ORDER WORKFLOW FOR RIDERS (라이더와 관련된 당일 내 이뤄지는 주문) ---
+/**
+ * Match an order (라이더 - 주문 매칭)
+ * @param {import("express").Request} req - Request 객체
+ * @param {import("express").Response} res - Response 객체
+ * @param {import("express").NextFunction} next - NextFuction 객체
+ * @returns
+*/
+async function matchOrder(req, res, next) {
+  try {
+    const orderId = req.params.orderId;
+    const riderId = req.user.id;
+    
+    const result = await OrdersService.matchOrder({ orderId, riderId });
+    
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  } catch(error) {
+    return next(error);
+  }
+}
+
+/**
+ * Upload a pickup photo (라이더 - 픽업 사진 업로드)
+ * 미들웨어에서 주문 존재, 권한 체크, 파일 업로드 완료
+ * @param {import("express").Request} req - Request 객체
+ * @param {import("express").Response} res - Response 객체
+ * @param {import("express").NextFunction} next - NextFuction 객체
+ * @returns
+ */
+async function uploadPickupPhoto(req, res, next) {
+  try {
+    // 미들웨어에서 파일 체크
+    if (!req.file) {
+      throw myError('사진 파일이 필요합니다.', BAD_REQUEST_ERROR);
+    }
+
+    const orderId = req.order.id;  // 미들웨어에서 설정
+    const photoPath = req.file.filename;  // multer가 저장한 파일명
+
+    const result = await OrdersService.uploadPickupPhoto({ 
+      orderId, 
+      photoPath 
+    });
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch(error) {
@@ -79,21 +91,25 @@ async function store(req, res, next) {
 }
 
 /**
- * Orders update status 컨트롤러
+ * Upload a complete photo (라이더 - 완료 사진 업로드)
  * @param {import("express").Request} req - Request 객체
  * @param {import("express").Response} res - Response 객체
  * @param {import("express").NextFunction} next - NextFuction 객체
  * @returns
  */
-async function update(req, res, next) {
+async function uploadCompletePhoto(req, res, next) {
   try {
-    const data = {
-      userId: req.user.id, // auth middleware에서 set up한 값
-      riderId: req.body.riderId,
-      status: req.body.status,
-    };
+    if (!req.file) {
+      throw myError('사진 파일이 필요합니다.', BAD_REQUEST_ERROR);
+    }
 
-    const result = await OrdersService.update(data);
+    const orderId = req.order.id;  // 미들웨어에서 설정
+    const photoPath = req.file.filename;
+
+    const result = await OrdersService.uploadCompletePhoto({ 
+      orderId, 
+      photoPath 
+    });
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch(error) {
@@ -101,9 +117,98 @@ async function update(req, res, next) {
   }
 }
 
+// --- 3. ORDER WORKFLOW FOR RIDERS & PARTNERS & ADMIN (기사/점주/어드민) ---
+/**
+ * Get orders for the day by Tab (오늘 자 탭별 주문 리스트 조회 - 대기중/진행중/완료)
+ * @param {import("express").Request} req - Request 객체
+ * @param {import("express").Response} res - Response 객체
+ * @param {import("express").NextFunction} next - NextFuction 객체
+ * @returns
+ */
+async function todayIndex(req, res, next) {
+  try {
+    const filter = req.orderFilter;  // setOrderAccessFilter 미들웨어에서 설정
+    const tab = req.query.tab || 'waiting';
+    const page = parseInt(req.query.page) || 1;
+
+    const result = await OrdersService.getTodayOrders({
+      filter,
+      tab,
+      page
+    });
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+/**
+ * Get list of order history (주문 히스토리 LIST 조회)
+ * @param {import("express").Request} req - Request 객체
+ * @param {import("express").Response} res - Response 객체
+ * @param {import("express").NextFunction} next - NextFuction 객체
+ * @returns
+*/
+async function index(req, res, next) {
+  try {
+    const filter = req.orderFilter;  // setOrderAccessFilter 미들웨어에서 설정
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 9;
+    const status = req.query.status;
+    const from = req.query.from;
+    const to = req.query.to;
+
+    const result = await OrdersService.getOrdersList({
+      filter,
+      status,
+      from,
+      to,
+      page,
+      limit,
+    });
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
+/**
+ * Get details of order history (주문 히스토리 DETAIL 조회)
+ * @param {import("express").Request} req - Request 객체
+ * @param {import("express").Response} res - Response 객체
+ * @param {import("express").NextFunction} next - NextFuction 객체
+ * @returns
+ */
+async function show(req, res, next) {
+  try {
+    const order = req.order;  // checkOrderExists + authorizeUserForOrder에서 설정
+
+    const result = await OrdersService.getOrderDetail(orderId);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  } catch (error) {
+    return next(error);
+  }
+}
+
 export default {
+  store,
+  matchOrder,
+  uploadPickupPhoto,
+  uploadCompletePhoto,
+  todayIndex,
   index,
   show,
-  store,
-  update
 };
+
+// RESTful API Controller Method Naming Conventions
+// index : 데이터 조회 처리 (리스트 페이지 or 리스트 데이터 획득)
+// show : 상세 데이터 조회 (상세 페이지 or 상세 데이터 획득)
+// create : 새로운 데이터 작성하고 저장하기 위한 페이지 출력
+// store : 새로운 데이터 작성 처리
+// edit : 수정 페이지 출력
+// update : 데이터 수정 처리
+// destroy : 데이터 삭제
