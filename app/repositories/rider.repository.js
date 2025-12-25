@@ -5,7 +5,7 @@
  */
 
 import db from '../models/index.js';
-const { Rider } = db;
+const { Rider, User } = db;
 
 /**
  * 기사 id로 기사정보 조회
@@ -16,7 +16,17 @@ const { Rider } = db;
 async function findByPk(t = null, id) {
   // PK를 이용하여 유저 찾기
   // SELECT * FROM User WHERE id = ?
-  return await Rider.findByPk(id, { transaction: t });
+  return await Rider.findByPk(id,
+    {
+      include: [
+        {
+          attributes: ['name'],
+          model: User,
+          as: 'rider_user',
+        }
+      ],
+      transaction: t
+    });
 }
 
 /**
@@ -27,8 +37,16 @@ async function findByPk(t = null, id) {
  */
 async function riderShow(t = null) {
   return await Rider.findAll(
+    
     {
-      transaction: t,
+      include: [
+        {
+          attributes: ['name'],
+          model: User,
+          as: 'rider_user',
+        }
+      ],
+    transaction: t,
     })
 }
 

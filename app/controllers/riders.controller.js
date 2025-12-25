@@ -9,7 +9,26 @@ import ridersService from "../services/riders.service.js";
 import { createBaseResponse } from "../utils/createBaseResponse.util.js";
 
 /**
- * Rider테이블의 정보 모두 가져오는 처리
+ * Rider테이블의 정보 + 유저이름 모두 가져오는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function riderFindByPk(req, res, next) {
+  try {
+    const id = req.params.id
+
+    const result = await ridersService.riderFindByPk(id);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
+  } catch (error) {
+    return next(error)
+  }
+}
+
+/**
+ * Rider테이블의 정보 + 유저데이터 모두 가져오는 처리
  * @param {import("express").Request} req - 리퀘스트 객체
  * @param {import("express").Response} res - 레스폰스 객체
  * @param {import("express").NextFunction} next - next 객체
@@ -65,6 +84,7 @@ async function riderFormStore(req, res, next) {
 }
 
 export default {
+  riderFindByPk,
   riderShow,
   riderCreate,
   riderFormStore,
