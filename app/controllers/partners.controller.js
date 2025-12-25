@@ -17,9 +17,7 @@ import { createBaseResponse } from "../utils/createBaseResponse.util.js";
  */
 async function partnerShow(req, res, next) {
   try {
-    const data = req.body;
-
-    const result = await partnersService.partnerShow(data);
+    const result = await partnersService.partnerShow();
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
   } catch (error) {
@@ -67,8 +65,28 @@ async function partnerFormStore(req, res, next) {
   }
 }
 
+/**
+ * partner테이블의 정보 모두 가져오는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function partnerFindByPk(req, res, next) {
+  try {
+    const id = req.params.id
+
+    const result = await partnersService.findByPk(id);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
+  } catch (error) {
+    return next(error)
+  }
+}
+
 export default {
   partnerShow,
   partnerCreate,
-  partnerFormStore
+  partnerFormStore,
+  partnerFindByPk,
 }

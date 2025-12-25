@@ -10,12 +10,8 @@ async function findByPk(id) {
   return await hotelRepository.findByPk(null, id)
 }
 
-async function show(page) {
-  const limit = 9;
-  const offset = limit * (page - 1);
-  
-  return await hotelRepository.latestPagination(null, { limit, offset })
-  // return await hotelRepository.statusPagination(null, { limit, offset })
+async function show() {
+  return await hotelRepository.findAll(null)
 }
 
 async function create(data) {

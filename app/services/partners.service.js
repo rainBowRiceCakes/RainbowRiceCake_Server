@@ -31,8 +31,13 @@ async function partnerStore(data) {
   })
 }
 
+async function findByPk(id) {
+  return await partnerRepository.findByPk(null, id)
+}
+
 export default {
   partnerShow,
   create,
-  partnerStore
+  partnerStore,
+  findByPk,
 }

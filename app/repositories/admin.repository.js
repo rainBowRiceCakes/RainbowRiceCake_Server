@@ -36,6 +36,20 @@ async function partnerUpdate(t = null, result) {
 }
 
 /**
+ * Admin의 Hotel정보 업데이트
+ * @param {import("sequelize").Transaction|null} t 
+ * @param {{limit: number, offset: number}} data 
+ * @returns {Promise<Array<import("../models/Hotel.js").Hotel>>}
+ */
+async function hotelUpdate(t = null, result) {
+  return await result.save(
+    {
+      transaction: t
+    }
+  )
+}
+
+/**
  * 이메일로 어드민 검색
  * @param {import("sequelize").Transaction} t 
  * @param {string} email 
@@ -83,6 +97,7 @@ export default {
   findByEmail,
   riderUpdate,
   partnerUpdate,
+  hotelUpdate,
   save,
   logout,
 }

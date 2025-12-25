@@ -46,7 +46,27 @@ async function partnerUpdate(req, res, next) {
   }
 }
 
+/**
+ * admin이 hotel테이블에 강제로 정보 등록하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function hotelUpdate(req, res, next) {
+  try {
+    const data = req.body
+
+    await adminsService.hotelUpdate(data);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS))
+  } catch (error) {
+    return next(error);
+  }
+}
+
 export default {
   riderUpdate,
   partnerUpdate,
+  hotelUpdate,
 }

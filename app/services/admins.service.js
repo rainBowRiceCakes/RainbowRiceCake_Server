@@ -6,6 +6,7 @@
 
 import db from "../models/index.js";
 import adminRepository from "../repositories/admin.repository.js";
+import hotelRepository from "../repositories/hotel.repository.js";
 import partnerRepository from "../repositories/partner.repository.js";
 import riderRepository from "../repositories/rider.repository.js";
 import userRepository from "../repositories/user.repository.js";
@@ -79,7 +80,34 @@ async function partnerUpdate(data) {
   })
 }
 
+/**
+ * admin이 hotel테이블에 강제로 정보 등록하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function hotelUpdate(data) {
+  await db.sequelize.transaction(async t => {
+    // partnerPK로 레코드 하나 가져오기
+    const result = await hotelRepository.findByPk(t, data.id);
+    // 가져온 레코드에 수정값(data)집어넣기
+    result.krName = data.krName
+    result.enName = data.enName
+    result.manager = data.manager
+    result.address= data.address
+    result.phone= data.phone
+    result.lat= data.lat
+    result.lng= data.lng
+    // 레코드 하나만 save처리
+    await adminRepository.hotelUpdate(t, result);
+    
+    return
+  })
+}
+
 export default {
   riderUpdate,
   partnerUpdate,
+  hotelUpdate,
 }

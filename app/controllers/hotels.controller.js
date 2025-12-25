@@ -36,9 +36,7 @@ async function hotelFindByPK(req, res, next) {
  */
 async function hotelShow(req, res, next) {
   try {
-    const page = req.query?.page ? parseInt(req.query?.page) : 1;
-
-    const result = await hotelsService.show(page);
+    const result = await hotelsService.show();
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
   } catch (error) {

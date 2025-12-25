@@ -22,45 +22,14 @@ async function findByPk(t = null, id) {
 }
 
 /**
- * 호텔 전체 페이지네이션
+ * 호텔 전체정보 조회
  * @param {import("sequelize").Transaction|null} t 
  * @param {{limit: number, offset: number}} data 
  * @returns {Promise<Array<import("../models/Hotel.js").Hotel>>}
  */
-async function latestPagination(t = null, data) {
+async function findAll(t = null) {
   return await Hotel.findAll(
     {
-      order: [
-        ['createdAt', 'DESC'],
-        ['id', 'ASC']
-      ],
-      limit: data.limit,
-      offset: data.offset,
-      transaction: t,
-    })
-}
-
-/**
- * 호텔 활동중 페이지네이션
- * @param {import("sequelize").Transaction|null} t 
- * @param {{limit: number, offset: number}} data 
- * @returns {Promise<Array<import("../models/Hotel.js").Hotel>>}
- */
-async function statusPagination(t = null, data) {
-  // SELECT * FROM Hotel
-  return await Hotel.findAll(
-    {
-      where: {
-        status: true
-      }
-    },
-    {
-      order: [
-        ['createdAt', 'DESC'],
-        ['id', 'ASC']
-      ],
-      limit: data.limit,
-      offset: data.offset,
       transaction: t,
     })
 }
@@ -82,7 +51,6 @@ async function create(t = null, data) {
 
 export default {
   findByPk,
-  latestPagination,
-  statusPagination,
+  findAll,
   create,
 }

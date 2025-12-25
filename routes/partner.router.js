@@ -14,6 +14,8 @@ const partnerRouter = express.Router();
 
 // Partner table에 있는 정보 모두 가져오기
 partnerRouter.get('/', authMiddleware, partnersController.partnerShow);
+// Partner PK로 단일정보 가져오기
+partnerRouter.get('/:id', authMiddleware, partnersController.partnerFindByPk);
 // Partner table에 정보 등록하기 ※ JWT로 유저id(PK)를 받아와야 함. req.user.id
 partnerRouter.post('/', authMiddleware, partnerCreateValidator, validationHandler, partnersController.partnerCreate);
 
