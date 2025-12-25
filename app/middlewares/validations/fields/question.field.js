@@ -45,7 +45,7 @@ export const qna_img = body('qna_img')
   .bail()
   .custom(val => {
     // 우리 앱의 게시글 이미지에 접근하는 `도메인 + path`가 맞는지 확인
-    if(!val.startsWith(`${process.env.APP_URL}${process.env.ACCESS_FILE_USER_PROFILE_PATH}`)) {
+    if(!val.startsWith(`${process.env.APP_URL}${process.env.ACCESS_QUESTION_IMAGE_PATH}`)) {
       return false;
     }
     return true;
@@ -55,7 +55,7 @@ export const qna_img = body('qna_img')
   .custom(val => {
     // 실제 이미지 파일이 있는지 검증 처리
     const splitPath = val.split('/');
-    const fullPath = path.join(pathUtil.getProfilesImagePath(), splitPath[splitPath.length - 1]);
+    const fullPath = path.join(pathUtil.getQuestionsImagePath(), splitPath[splitPath.length - 1]);
 
     if(!fs.existsSync(fullPath)) {
       return false;

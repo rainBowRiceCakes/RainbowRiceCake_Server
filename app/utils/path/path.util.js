@@ -28,14 +28,15 @@ function getLicensesImagePath() {
   return process.env.APP_MODE !== 'dev' ? process.env.FILE_RIDER_LICENSE_IMAGE_PATH : path.resolve(process.env.FILE_RIDER_LICENSE_IMAGE_PATH);
 }
 
-// function getLogosImagePath() {
-//   return process.env.APP_MODE !== 'dev' ? process.env.FILE_RIDER_LICENSE_IMAGE_PATH : path.resolve(process.env.FILE_RIDER_LICENSE_IMAGE_PATH);
-// }
+function getLogosImagePath() {
+  return process.env.APP_MODE !== 'dev' ? process.env.FILE_RIDER_LICENSE_IMAGE_PATH : path.resolve(process.env.FILE_RIDER_LICENSE_IMAGE_PATH);
+}
 
 export default {
   getViewDirPath,
   getQuestionsImagePath,
   getOrdersImagePath,
   getProfilesImagePath,
-  getLicensesImagePath
+  getLicensesImagePath,
+  getLogosImagePath,
 }
