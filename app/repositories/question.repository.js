@@ -8,40 +8,6 @@ import db from '../models/index.js';
 const { Question } = db;
 
 /**
- * Question 페이지네이션
- * @param {import("sequelize").Transaction|null} t
- * @param {{limit: number, offset: number}} data
- * @returns {Promise<Array<import("../models/Question.js").Question>>}
- */
-async function pagination(t = null, data) {
-  return await Question.findAndCountAll({
-    order: [
-      ['createdAt', 'DESC'],
-      ['updatedAt', 'DESC'],
-      ['id', 'ASC']
-    ],
-    limit: data.limit,
-    offset: data.offset,
-    transaction: t,
-  });
-}
-
-/**
- * Question ID로 조회
- * @param {import("sequelize").Transaction|null} t
- * @param {import("../services/Questions.service.type.js").Id} id
- * @returns {Promise<import("../models/Question.js").Question>}
- */
-async function findByPk(t = null, id) {
-  return await Question.findByPk(
-    id,
-    {
-      transaction: t
-    }
-  );
-}
-
-/**
  * Question 작성
  * @param {import("sequelize").Transaction|null} t
  * @param {import("../services/Questions.service.type.js").QuestionStoreData} data
@@ -51,26 +17,14 @@ async function create(t = null, data) {
   return await Question.create(data);
 }
 
-/**
- * Question 수정
- * @param {import("sequelize").Transaction|null} t
- * @param {number} id
- * @param {import("../services/Questions.service.type.js").QuestionUpdateData} data
- * @returns {Promise<[number]>}
- */
-async function update(t = null, id, data) {
-  return await Question.update(
-    data,
-    {
-      where: { id },
-      transaction: t,
-    }
-  );
-}
-
 export default {
-  pagination,
-  findByPk,
   create,
-  update,
 };
+
+// Repository (DB 중심)	HTTP Method
+// 전체 목록 조회	findAll / pagination	GET
+// 특정 조건 조회	findDailyOrders	GET (custom)
+// 상세 데이터 조회	findByPk	GET
+// 새 데이터 생성-저장	create POST
+// 데이터 수정	update	PUT
+// 데이터 삭제	destroy	DELETE
