@@ -4,10 +4,10 @@
  * 251218 v1.0.0 wook init
  */
 
-import dlvUploader from "./uploaders/dlvfile.uploader.js";
+import orderDlvUploader from "./uploaders/order.dlv.uploader.js";
 import profileUploader from "./uploaders/profile.uploader.js";
 
 export default {
-  dlvUploader,
-  profileUploader
+  orderDlvUploader,
+  profileUploader,
 }

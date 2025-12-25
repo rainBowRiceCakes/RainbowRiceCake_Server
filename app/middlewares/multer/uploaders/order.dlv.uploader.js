@@ -14,68 +14,97 @@ import pathUtil from '../../../utils/path/path.util.js';
 
 /**
  * when riders pick up the order and completed the order, 이미지 업로더 처리 미들웨어
- * @param {import{"express"}.Request} req
- * @param {import{"express"}.Response} res
- * @param {import{"express"}.NextFunction} next
+ * @param {string} photoType - 'pick' 또는 'com'
  */
-export default function(req, res, next) {
-  const upload = multer({
-    storage: multer.diskStorage({
-      destination(req, file, callback) {
-        const { orderId, status } = req.body;
+export default function(photoType) {
+  // photoType 검증
+  if (!['pick', 'com'].includes(photoType)) {
+    throw new Error('Invalid photoType. Must be "pick" or "com"');
+  }
 
-        // 1️⃣ 필수 값 체크
-        if (!orderId || !status) {
-          return callback(new Error("orderId 또는 status 누락"));
+  return function(req, res, next) {
+    const upload = multer({
+      storage: multer.diskStorage({
+        destination(req, file, callback) {
+          const fullPath = pathUtil.getDeliveryPhotoPath();
+
+          if (!fs.existsSync(fullPath)) {
+            fs.mkdirSync(fullPath, {
+              recursive: true,
+              mode: 0o755,
+            });
+          }
+
+          callback(null, fullPath);
+        },
+
+        filename(req, file, callback) {
+          // URL 파라미터에서 orderId 가져오기
+          const orderId = req.params.orderId;
+          
+          if (!orderId) {
+            return callback(new Error("orderId 누락"));
+          }
+
+          const ext = file.originalname.split(".").pop().toLowerCase();
+          
+          // 화이트리스트 확장자 체크
+          const allowedExts = ['jpg', 'jpeg', 'png', 'gif'];
+          if (!allowedExts.includes(ext)) {
+            return callback(new Error("허용되지 않은 파일 확장자"));
+          }
+
+          const timestamp = dayjs().format("YYYYMMDD_HHmmss");
+          const uuid = crypto.randomUUID();
+
+          // photoType은 미들웨어 생성 시 고정된 값 사용
+          // 사진파일 이름끝에 status + orderId 를 모두 등록해야 후처리가 용이할거같아요!
+          const filename = `order_${orderId}_${photoType}_${timestamp}_${uuid}.${ext}`;
+
+          callback(null, filename);
+        },
+      }),
+
+      fileFilter(req, file, callback) {
+        // MIME 타입 체크
+        const allowedMimes = ['image/jpeg', 'image/png', 'image/gif'];
+        
+        if (!allowedMimes.includes(file.mimetype)) {
+          return callback(myError("이미지 파일만 업로드 가능합니다 (jpg, png, gif)", BAD_FILE_ERROR));
         }
-
-        // 2️⃣ status 화이트리스트
-        if (!["pick", "com"].includes(status)) {
-          return callback(new Error("유효하지 않은 status 값"));
-        }
-
-        const fullPath = pathUtil.getDeliveryPhotoPath();
-
-        if (!fs.existsSync(fullPath)) {
-          fs.mkdirSync(fullPath, {
-            recursive: true,
-            mode: 0o755,
-          });
-        }
-
-        callback(null, fullPath);
+        
+        callback(null, true);
       },
 
-      filename(req, file, callback) {
-        const { orderId, status } = req.body;
-
-        const ext = file.originalname.split(".").pop().toLowerCase();
-        const timestamp = dayjs().format("YYYYMMDD_HHmmss");
-        const uuid = crypto.randomUUID();
-
-        // 3️⃣ 핵심: orderId + status 포함
-        const filename = `order_${orderId}_${status}_${timestamp}_${uuid}.${ext}`;
-
-        callback(null, filename);
+      limits: {
+        fileSize: Number(process.env.FILE_ORDER_DLV_IMAGE_SIZE) || 5 * 1024 * 1024, // 기본 5MB
+        files: 1, // 파일 1개만
       },
-    }),
+    }).single("orderDlvImage");
 
-    fileFilter(req, file, callback) {
-      if (!file.mimetype.startsWith("image/")) {
-        return callback(myError("이미지 파일 아님", BAD_FILE_ERROR));
+    upload(req, res, err => {
+      if (err instanceof multer.MulterError) {
+        // Multer 특정 에러 처리
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return next(myError('파일 크기가 너무 큽니다', BAD_FILE_ERROR));
+        }
+        if (err.code === 'LIMIT_UNEXPECTED_FILE') {
+          return next(myError('예상치 못한 파일 필드입니다', BAD_FILE_ERROR));
+        }
+        return next(myError(err.message, BAD_FILE_ERROR));
       }
-      callback(null, true);
-    },
+      
+      if (err) {
+        return next(myError(err.message, BAD_FILE_ERROR));
+      }
 
-    limits: {
-      fileSize: Number(process.env.FILE_ORDER_DLV_IMAGE_SIZE),
-    },
-  }).single("orderDlvImage");
+      // 파일이 업로드되지 않은 경우 체크
+      if (!req.file) {
+        return next(myError('사진 파일이 필요합니다', BAD_FILE_ERROR));
+      }
 
-  upload(req, res, err => {
-    if (err) {
-      return next(myError(err.message, BAD_FILE_ERROR));
-    }
-    next();
-  });
+      next();
+    });
+  };
 }
+
