@@ -8,6 +8,20 @@ import db from '../models/index.js';
 const { Hotel } = db;
 
 /**
+ * 호텔 ID로 상세정보 조회
+ * @param {import("sequelize").Transaction|null} t 
+ * @param {{limit: number, offset: number}} id
+ * @returns {Promise<Array<import("../models/Hotel.js").Hotel>>}
+ */
+async function findByPk(t = null, id) {
+  return await Hotel.findByPk(
+    id,
+    {
+      transaction: t,
+    });
+}
+
+/**
  * 호텔 전체 페이지네이션
  * @param {import("sequelize").Transaction|null} t 
  * @param {{limit: number, offset: number}} data 
@@ -37,7 +51,7 @@ async function statusPagination(t = null, data) {
   return await Hotel.findAll(
     {
       where: {
-        status: 'res'
+        status: true
       }
     },
     {
@@ -67,6 +81,7 @@ async function create(t = null, data) {
 }
 
 export default {
+  findByPk,
   latestPagination,
   statusPagination,
   create,

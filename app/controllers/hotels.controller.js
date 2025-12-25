@@ -15,6 +15,25 @@ import { createBaseResponse } from "../utils/createBaseResponse.util.js";
  * @param {import("express").NextFunction} next - next 객체
  * @return {import("express").Response}
  */
+async function hotelFindByPK(req, res, next) {
+  try {
+    const id = req.params.id
+
+    const result = await hotelsService.findByPk(id);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
+  } catch (error) {
+    return next(error)
+  }
+}
+
+/**
+ * Hotel테이블의 정보 모두 가져오는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
 async function hotelShow(req, res, next) {
   try {
     const page = req.query?.page ? parseInt(req.query?.page) : 1;
@@ -47,6 +66,7 @@ async function hotelCreate(req, res, next) {
 }
 
 export default {
+  hotelFindByPK,
   hotelShow,
   hotelCreate,
 }

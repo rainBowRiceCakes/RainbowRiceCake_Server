@@ -4,7 +4,7 @@
  * 251222 v1.0.0 wook init
  */
 
-import { body } from "express-validator";
+import { body, param } from "express-validator";
 
 const krName = body('krName')
   .trim()
@@ -63,6 +63,16 @@ const lng = body('lng')
   .withMessage('경도(lng)는 124~132 사이의 소수값이어야 합니다.')
 ;
 
+const id = param('id')
+  .trim()
+  .notEmpty()
+  .withMessage('필수 항목입니다.')
+  .bail()
+  .isNumeric()
+  .withMessage('숫자만 허용합니다.')
+  .toInt()
+;
+
 export default {
   enName,
   krName,
@@ -71,4 +81,5 @@ export default {
   address,
   lat,
   lng,
+  id,
 }

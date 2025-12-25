@@ -6,6 +6,10 @@
 
 import hotelRepository from "../repositories/hotel.repository.js"
 
+async function findByPk(id) {
+  return await hotelRepository.findByPk(null, id)
+}
+
 async function show(page) {
   const limit = 9;
   const offset = limit * (page - 1);
@@ -19,6 +23,7 @@ async function create(data) {
 }
 
 export default {
+  findByPk,
   show,
   create,
 }
