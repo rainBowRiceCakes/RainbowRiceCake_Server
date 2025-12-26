@@ -187,6 +187,36 @@ async function socialKakao(code) {
   return refreshToken;
 }
 
+// 유저 로그인
+async function login(body) {
+  // 트랜잭션 처리
+  return await db.sequelize.transaction(async t => {
+    const { email } = body;
+  
+    // email로 유저 정보 획득
+    const user = await userRepository.findByEmail(t, email);
+  
+    // 유저 존재 여부 체크
+    if(!user) {
+      throw myError('유저 미존재', NOT_REGISTERED_ERROR);
+    }
+  
+    // JWT 생성(accessToKen, refreshToKen)
+    const accessToken = jwtUtil.generateAccessToken(user);
+    const refreshToken = jwtUtil.generateRefreshToken(user);
+  
+    // refreshToKen 저장
+    user.refreshToken = refreshToken;
+    await userRepository.save(t, user);
+  
+    return {
+      accessToken,
+      refreshToken,
+      user
+    }
+  });
+}
+
 export default {
   adminLogin,
   adminLogout,
@@ -194,4 +224,5 @@ export default {
   adminReissue,
   reissue,
   socialKakao,
+  login,
 }

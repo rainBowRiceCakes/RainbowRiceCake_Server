@@ -65,19 +65,19 @@ async function create(t = null, data) {
   )
 }
 
-/**
- * 라이더 form 정보 create 처리
- * @param {import("sequelize").Transaction} t 
- * @param {import("../models/index.js").Rider} rider
- * @returns 
- */
-async function riderFormCreate(t = null, data) {
-  return await Rider.create(data, { transaction: t });
-}
+// /**
+//  * 라이더 form 정보 create 처리
+//  * @param {import("sequelize").Transaction} t 
+//  * @param {import("../models/index.js").Rider} rider
+//  * @returns 
+//  */
+// async function riderFormCreate(t = null, data) {
+//   return await Rider.create(data, { transaction: t });
+// }
 
 export default {
   findByPk,
   riderShow,
   create,
-  riderFormCreate
+  // riderFormCreate
 };

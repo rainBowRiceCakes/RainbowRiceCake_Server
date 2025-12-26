@@ -80,6 +80,17 @@ async function create(t = null, data) {
   return await User.create({ email:data.email, name:data.nick, role:data.role }, { transaction: t });
 }
 
+/**
+ * 유저 id로 유저 정보 조회
+ * @param {import("sequelize").Transaction} t 
+ * @param {number} id
+ * @returns {promise<import("../models/User.js").User>}
+ */
+async function findByPk(t = null, id) {
+  return await User.findByPk(id, { transaction: t });
+}
+
+
 async function logout(t = null, id) {
   // 특정 유저 리프래시토큰 null로 갱신
   // 평문 : UPDATE users SET refresh_token = null WHERE id = ?
@@ -102,6 +113,7 @@ export default {
   save,
   riderToUserPK,
   partnerToUserPK,
+  findByPk,
   create,
   logout,
 }

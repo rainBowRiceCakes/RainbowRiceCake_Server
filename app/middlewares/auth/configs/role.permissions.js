@@ -27,6 +27,7 @@ const ROLE_PERMISSIONS = {
     { path: /^\/api\/orders$/, roles: [PTN, ADM] },
     { path: /^\/api\/riders$/, roles: [COM, ADM] },
     { path: /^\/api\/partners$/, roles: [COM, ADM] },
+    { path: /^\/api\/users$/, roles: [COM, ADM] },
   ],
   PUT: [
     { path: /^\/api\/orders$/, roles: [DLV, ADM] },

@@ -49,11 +49,11 @@ app.use(notFoundRouter);
 // 뷰 반환 처리
 // ---------------------
 // 퍼블릭 정적파일 제공 활성화
-app.use('/', express.static(process.env.APP_DIST_PATH));
-// React 뷰 반환
-app.get(/^(?!\/files\/.*).*/, (req, res) => {
-  return res.sendFile(pathUtil.getViewDirPath());
-})
+// app.use('/', express.static(process.env.APP_DIST_PATH));
+// // React 뷰 반환
+// app.get(/^(?!\/files\/.*).*/, (req, res) => {
+//   return res.sendFile(pathUtil.getViewDirPath());
+// })
 
 // ---------------------
 // 에러 핸들러 등록

@@ -16,6 +16,8 @@ const authRouter = express.Router();
 
 authRouter.post('/login', loginValidator, validationHandler, authController.adminLogin);
 authRouter.post('/logout', authMiddleware, authController.adminLogout);
+authRouter.post('/social/login', loginValidator, validationHandler, authController.login);
+authRouter.post('/reissue', authController.reissue);
 authRouter.get('/social/kakao', validationHandler, authController.social);
 authRouter.get('/callback/kakao', authController.socialCallback);
 

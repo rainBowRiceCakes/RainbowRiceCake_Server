@@ -63,22 +63,37 @@ async function riderCreate(req, res, next) {
   }
 }
 
-async function riderFormStore(req, res, next) {
+// async function riderFormStore(req, res, next) {
+//   try {
+//     // const data = {
+//     //   phone: req.body.phone,
+//     //   address: req.body.address,
+//     //   bank: req.body.bank,
+//     //   bankNum: req.body.bankNum,
+//     //   licenseImg: req.body.licenseImg
+//     // };
+//     const data = req.body;
+
+//     const result = await ridersService.riderStore(data);
+
+//     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+//   }
+//   catch(error) {
+//     return next(error);
+//   }
+// }
+
+async function riderStore(req, res, next) {
   try {
-    // const data = {
-    //   phone: req.body.phone,
-    //   address: req.body.address,
-    //   bank: req.body.bank,
-    //   bankNum: req.body.bankNum,
-    //   licenseImg: req.body.licenseImg
-    // };
     const data = req.body;
+    // data.userId = req.user.id; // TODO: 로그인기능 완성되면 추가할것
+    data.userId = 12; // TODO: 로그인기능 완성되면 제거할것
 
-    const result = await ridersService.riderStore(data);
+    await ridersService.create(data);
 
-    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS));
   }
-  catch(error) {
+  catch (error) {
     return next(error);
   }
 }
@@ -87,5 +102,6 @@ export default {
   riderFindByPk,
   riderShow,
   riderCreate,
-  riderFormStore,
+  // riderFormStore,
+  riderStore
 }
