@@ -2,72 +2,82 @@
  * @file app/repositories/partner.repository.js
  * @description partner Repository
  * 251223 v1.0.0 wook init
+ * 251226 v1.1.0 BSONG update 유저-정보 등록 / 파트너-myinfo 가져오고 수정하기 / 어드민-개개인의 파트너들의 리스트와 정보를 가져오기 기능 추가.
  */
 
 import db from '../models/index.js';
 const { Partner } = db;
 
+// --- 1. ADD PARTNER's INFO WORKFLOW FOR USERS ---
 /**
- * 파트너 id로 파트너정보 조회
- * @param {import("sequelize").Transaction} t 
- * @param {number} id 
- * @returns {Promise<MessagePort("../models/Partner.js").Partner>}
- */
-async function findByPk(t = null, id) {
-  // PK를 이용하여 유저 찾기
-  // SELECT * FROM User WHERE id = ?
-  return await Partner.findByPk(id, { transaction: t });
-}
-
-/**
- * 파트너 전체정보 조회
- * @param {import("sequelize").Transaction|null} t 
- * @param {{limit: number, offset: number}} data 
- * @returns {Promise<Array<import("../models/Partner.js").Partner>>}
- */
-async function partnerShow(t = null) {
-  return await Partner.findAll(
-    {
-      transaction: t,
-    })
-}
-
-/**
- * 매장 등록
- * @param {import("sequelize").Transaction|null} t 
- * @param {{limit: number, offset: number}} data 
- * @returns {Promise<Array<import("../models/Partner.js").Partner>>}
+ * 파트너 정보 등록
+ * @param {import("sequelize").Transaction|null} t
+ * @param {object} data - 파트너 등록 데이터
+ * @returns {Promise<import("../models/Partner.js").Partner>}
  */
 async function create(t = null, data) {
-  return await Partner.create(
-    data,
-    {
-      transaction: t
-    }
-  )
+  return await Partner.create(data, { transaction: t });
+}
+
+// --- 2. LOOK UP and UPDATE PARTNER's INFO WORKFLOW FOR PARTNERS ---
+/**
+ * userId로 파트너 정보 조회 (파트너 본인 정보 조회용)
+ * @param {import("sequelize").Transaction|null} t
+ * @param {number} userId - 유저 ID
+ * @returns {Promise<import("../models/Partner.js").Partner|null>}
+ */
+async function findByUserId(t = null, userId) {
+  return await Partner.findOne({
+    where: { userId },
+    transaction: t
+  });
 }
 
 /**
- * 파트너 form 정보 create 처리
- * @param {import("sequelize").Transaction} t 
- * @param {import("../models/index.js").Rider} rider
- * @returns 
+ * 파트너 정보 수정
+ * @param {import("sequelize").Transaction|null} t
+ * @param {number} partnerId - 파트너 ID
+ * @param {object} updateData - 수정할 데이터
+ * @returns {Promise<[number]>} - 수정된 행의 개수
  */
-async function partnerformCreate(t = null, data) {
-  return await Rider.create({ 
-      manager: data.manager,
-      phone: data.phone,
-      krName: data.krName,
-      enName: data.enName,
-      businessNum: data.businessNum,
-      address: data.address,
-      logoImg: data.logoImg
-  }, { transaction: t });
+async function update(t = null, partnerId, updateData) {
+  return await Partner.update(
+    updateData,
+    {
+      where: { id: partnerId },
+      transaction: t
+    }
+  );
+}
+
+// --- 3. ADMIN LOOKS UP PARTNER's INFO WORKFLOW FOR ADMIN ---
+/**
+ * 파트너 전체 리스트 조회 (페이징, 필터 지원)
+ * @param {import("sequelize").Transaction|null} t
+ * @param {object} options - 조회 옵션 (limit, offset, where 등)
+ * @returns {Promise<{rows: Array<import("../models/Partner.js").Partner>, count: number}>}
+ */
+async function findAll(t = null, options = {}) {
+  return await Partner.findAndCountAll({
+    ...options,
+    transaction: t
+  });
+}
+
+/**
+ * 파트너 ID로 단일 파트너 정보 조회
+ * @param {import("sequelize").Transaction|null} t
+ * @param {number} partnerId - 파트너 ID
+ * @returns {Promise<import("../models/Partner.js").Partner|null>}
+ */
+async function findByPk(t = null, partnerId) {
+  return await Partner.findByPk(partnerId, { transaction: t });
 }
 
 export default {
-  findByPk,
-  partnerShow,
   create,
-  partnerformCreate
+  findByUserId,
+  update,
+  findAll,
+  findByPk
 };

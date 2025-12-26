@@ -2,91 +2,139 @@
  * @file app/controllers/partners.controller.js
  * @description 기사 관련 컨트롤러
  * 251223 v1.0.0 wook init
+ * 251226 v1.1.0 BSONG update 유저-정보 등록 / 파트너-myinfo 가져오고 수정하기 / 어드민-개개인의 파트너들의 리스트와 정보를 가져오기 기능 추가.
  */
 
 import { SUCCESS } from "../../configs/responseCode.config.js";
 import partnersService from "../services/partners.service.js";
 import { createBaseResponse } from "../utils/createBaseResponse.util.js";
 
+// --- 1. ADD PARTNER's INFO WORKFLOW FOR USERS (유저와 관련됨) ---
 /**
- * Partner테이블의 정보 모두 가져오는 처리
- * @param {import("express").Request} req - 리퀘스트 객체
- * @param {import("express").Response} res - 레스폰스 객체
- * @param {import("express").NextFunction} next - next 객체
- * @return {import("express").Response}
- */
-async function partnerShow(req, res, next) {
-  try {
-    const result = await partnersService.partnerShow();
-
-    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
-  } catch (error) {
-    return next(error)
-  }
-}
-
-/**
- * Partner테이블에 정보 등록 처리
- * @param {import("express").Request} req - 리퀘스트 객체
- * @param {import("express").Response} res - 레스폰스 객체
- * @param {import("express").NextFunction} next - next 객체
+ * Partner테이블에 정보 등록 처리 (유저가 파트너 신청)
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ * @param {import("express").NextFunction} next
  * @return {import("express").Response}
  */
 async function partnerCreate(req, res, next) {
   try {
-    const data = req.body
+    const userId = req.user.id; // 인증된 유저 ID
+    const data = req.body;
 
-    await partnersService.create(data);
+    const result = await partnersService.partnerCreate(userId, data);
 
-    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS))
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {
-    return next(error)
+    return next(error);
   }
 }
 
-async function partnerFormStore(req, res, next) {
+// --- 2. LOOK UP and UPDAETE PARTNER's INFO WORKFLOW FOR PARTNERS (파트너 페이지와 관련됨) ---
+/**
+ * 파트너 본인의 정보 조회 (자기 자신만)
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ * @param {import("express").NextFunction} next
+ * @return {import("express").Response}
+ */
+async function partnerShow(req, res, next) {
   try {
-    const data = {
-      manager: req.body.manager,
-      phone: req.body.phone,
-      krName: req.body.krName,
-      enName: req.body.enName,
-      businessNum: req.body.businessNum,
-      address: req.body.address,
-      logoImg: req.body.logoImg
-    };
+    const userId = req.user.id; // 현재 로그인한 유저 ID
 
-    const result = await partnersService.partnerStore(data);
+    const result = await partnersService.partnerShow(userId);
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
-  }
-  catch(error) {
+  } catch (error) {
     return next(error);
   }
 }
 
 /**
- * partner테이블의 정보 모두 가져오는 처리
- * @param {import("express").Request} req - 리퀘스트 객체
- * @param {import("express").Response} res - 레스폰스 객체
- * @param {import("express").NextFunction} next - next 객체
+ * 파트너 본인의 정보 수정
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ * @param {import("express").NextFunction} next
+ * @return {import("express").Response}
+ */
+async function partnerUpdate(req, res, next) {
+  try {
+    const userId = req.user.id; // 현재 로그인한 유저 ID
+    const updateData = req.body;
+
+    const result = await partnersService.partnerUpdate(userId, updateData);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+// --- 3. ADMIN LOOKS UP PARTNER's INFO WORKFLOW FOR ADMIN (어드민 페이지와 관련됨) ---
+/**
+ * 어드민이 모든 파트너 리스트 조회
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ * @param {import("express").NextFunction} next
+ * @return {import("express").Response}
+ */
+async function partnersList(req, res, next) {
+  try {
+    const queryParams = req.query; // 필터, 페이징 등
+
+    const result = await partnersService.partnersList(queryParams);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+/**
+ * 어드민이 특정 파트너 단일 정보 조회
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ * @param {import("express").NextFunction} next
  * @return {import("express").Response}
  */
 async function partnerFindByPk(req, res, next) {
   try {
-    const id = req.params.id
+    const partnerId = req.params.id;
 
-    const result = await partnersService.findByPk(id);
+    const result = await partnersService.partnerFindByPk(partnerId);
 
-    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {
-    return next(error)
+    return next(error);
   }
 }
 
 export default {
-  partnerShow,
   partnerCreate,
-  partnerFormStore,
+  partnerShow,
+  partnerUpdate,
+  partnersList,
   partnerFindByPk,
 }
+
+
+// async function partnerFormStore(req, res, next) {
+//   try {
+//     const data = {
+//       manager: req.body.manager,
+//       phone: req.body.phone,
+//       krName: req.body.krName,
+//       enName: req.body.enName,
+//       businessNum: req.body.businessNum,
+//       address: req.body.address,
+//       logoImg: req.body.logoImg
+//     };
+
+//     const result = await partnersService.partnerStore(data);
+
+//     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+//   }
+//   catch(error) {
+//     return next(error);
+//   }
+// }
