@@ -1,6 +1,6 @@
 /**
  * @file routes/rider.router.js
- * @description 어드민 관련 라우터
+ * @description 기사 관련 라우터
  * 251223 v1.0.0 wook init
  */
 

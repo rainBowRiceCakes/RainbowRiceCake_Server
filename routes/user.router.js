@@ -5,18 +5,19 @@
  */
 
 import express from 'express';
-import authMiddleware from '../app/middlewares/auth/auth.middleware.js';
-import riderFormValidator from '../app/middlewares/validations/validators/riders/rider.form.validator.js';
-import partnerFormValidator from '../app/middlewares/validations/validators/partners/partner.form.validator.js';
-import validationHandler from '../app/middlewares/validations/validationHandler.js';
-import ridersController from '../app/controllers/riders.controller.js';
-import partnersController from '../app/controllers/partners.controller.js';
+// import authMiddleware from '../app/middlewares/auth/auth.middleware.js';
+// import riderFormValidator from '../app/middlewares/validations/validators/riders/rider.form.validator.js';
+// import partnerFormValidator from '../app/middlewares/validations/validators/partners/partner.form.validator.js';
+// import validationHandler from '../app/middlewares/validations/validationHandler.js';
+// import ridersController from '../app/controllers/riders.controller.js';
+// import partnersController from '../app/controllers/partners.controller.js';
 
 
 const userRouter = express.Router();
 
-userRouter.post('/rider', authMiddleware, riderFormValidator, validationHandler, ridersController.riderFormStore);
-userRouter.post('/partner', authMiddleware, partnerFormValidator, validationHandler, partnersController.partnerFormStore);
+// userRouter.post('/rider', authMiddleware, riderFormValidator, validationHandler, ridersController.riderFormStore);
 
+// user가 form 작성해서 partner가 되는 건 partner router에서 관리하고 있습니다.
+// userRouter.post('/partner', authMiddleware, partnerFormValidator, validationHandler, partnersController.partnerFormStore);
 
 export default userRouter;

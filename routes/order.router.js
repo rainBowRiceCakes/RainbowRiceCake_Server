@@ -39,7 +39,7 @@ orderRouter.post('/', authMiddleware, orderValidator.store, validationHandler, o
 // --- 2. ORDER WORKFLOW FOR RIDERS (기사와 관련된 당일 내 이뤄지는 주문) ---
 // 이 섹션은 라이더가 주문을 매칭하고, 픽업/완료 사진을 업로드하는 워크플로우를 처리합니다.
 /**
- * Accept the order 
+ * Accept the order
  * POST /orders/:orderId/match
  * 라이더가 특정 주문을 매칭하여 수락합니다.
  */
@@ -94,27 +94,27 @@ orderRouter.post(
  * 라이더가 오늘의 주문을 상태별(대기중, 진행중, 완료)로 조회합니다.
  */
 orderRouter.get(
-  '/today', 
-  authMiddleware, 
-  setOrderAccessFilter, 
-  orderValidator.todayIndex, 
-  validationHandler, 
+  '/today',
+  authMiddleware,
+  setOrderAccessFilter,
+  orderValidator.todayIndex,
+  validationHandler,
   ordersController.todayIndex
 );
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// --- 4. ORDERS HISTORY ---
+// --- 4. ORDERS HISTORY FOR PARTNERS and RIDERS and ADMIN ---
 // 이 섹션은 주문들의 히스토리를 조회하는 기능을 처리합니다.
 /**
  * Get list of order history (주문들 LIST 보기)
  * GET /orders
  * 주문들의 목록을 조회합니다.
  */
-orderRouter.get('/', 
-  authMiddleware, 
+orderRouter.get('/',
+  authMiddleware,
   setOrderAccessFilter,
-  orderValidator.index, 
-  validationHandler, 
+  orderValidator.index,
+  validationHandler,
   ordersController.index
 );
 
@@ -123,12 +123,12 @@ orderRouter.get('/',
 //  * GET /orders/:orderId
 //  * 주문의 상세 정보를 조회합니다.
 //  */
-orderRouter.get('/:orderId', 
-  authMiddleware, 
-  checkOrderExists, 
-  authorizeUserForOrder, 
-  orderValidator.show, 
-  validationHandler, 
+orderRouter.get('/:orderId',
+  authMiddleware,
+  checkOrderExists,
+  authorizeUserForOrder,
+  orderValidator.show,
+  validationHandler,
   ordersController.show);
 
 export default orderRouter;
