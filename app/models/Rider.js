@@ -67,8 +67,8 @@ const attributes = {
     field: 'status',
     type: DataTypes.STRING(3),
     allowNull: false,
-    comment: '상태(req, res, rej)',
-    defaultValue: 'req'
+    comment: '상태(REQ, RES, REJ)',
+    defaultValue: 'REQ'
   },
   pickupAt: {
     field: 'pickup_at',
