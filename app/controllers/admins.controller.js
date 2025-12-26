@@ -55,6 +55,7 @@ async function partnerUpdate(req, res, next) {
  */
 async function hotelUpdate(req, res, next) {
   try {
+    console.log(req.user)
     const data = req.body
 
     await adminsService.hotelUpdate(data);

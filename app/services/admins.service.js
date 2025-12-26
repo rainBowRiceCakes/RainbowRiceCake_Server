@@ -60,6 +60,7 @@ async function partnerUpdate(data) {
     result.enName = data.enName
     result.manager = data.manager
     result.address= data.address
+    result.status= data.status
     result.phone= data.phone
     result.logoImg= data.logoImg
     result.lat= data.lat
@@ -96,6 +97,7 @@ async function hotelUpdate(data) {
     result.enName = data.enName
     result.manager = data.manager
     result.address= data.address
+    result.status= data.status
     result.phone= data.phone
     result.lat= data.lat
     result.lng= data.lng

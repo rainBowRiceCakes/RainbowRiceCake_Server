@@ -24,7 +24,7 @@ export default function(req, res, next) {
     storage: multer.diskStorage({
       // 파일 저장 경로 설정
       destination(req, file, callback) {
-        const fullPath = pathUtil.getProfilesImagePath();
+        const fullPath = pathUtil.getLicensesImagePath();
 
         // 저장 디렉토리 설정
         if(!fs.existsSync(fullPath)) {
@@ -61,7 +61,7 @@ export default function(req, res, next) {
     limits: {
       fileSize: parseInt(process.env.FILE_USER_PROFILE_SIZE),
     }
-  }).single('profile');
+  }).single('licenseImage');
 
   // 예외 처리
   upload(req, res, err => {
