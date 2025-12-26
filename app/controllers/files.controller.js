@@ -45,7 +45,7 @@ async function storeLogo(req, res, next) {
     }
 
     const result = {
-      path: `${process.env.APP_URL}${process.env.ACCESS_FILE_LOGO_IMAGE_PATH}/${req.file.filename}`
+      path: `${process.env.APP_URL}${process.env.ACCESS_FILE_PARTNER_LOGO_IMAGE_PATH}/${req.file.filename}`
     };
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch(error) {

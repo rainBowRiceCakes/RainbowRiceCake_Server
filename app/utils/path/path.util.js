@@ -29,7 +29,7 @@ function getLicensesImagePath() {
 }
 
 function getLogosImagePath() {
-  return process.env.APP_MODE !== 'dev' ? process.env.FILE_LOGO_IMAGE_PATH : path.resolve(process.env.FILE_LOGO_IMAGE_PATH);
+  return process.env.APP_MODE !== 'dev' ? process.env.FILE_PARTNER_LOGO_IMAGE_PATH : path.resolve(process.env.FILE_PARTNER_LOGO_IMAGE_PATH);
 }
 
 export default {
