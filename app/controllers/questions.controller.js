@@ -20,15 +20,10 @@ import { createBaseResponse } from '../utils/createBaseResponse.util.js';
  */
 async function store(req, res, next) {
   try {
-    const data = {
-      authorId: req.user.id, // 인증된 사용자의 ID
-      position: req.user.role, // 사용자의 역할 (rider, partner, user 등)
-      title: req.body.title, // 질문 제목
-      content: req.body.content, // 질문 내용
-      imageUrl: req.body.image, // 첨부 이미지 URL (선택적)
-    };
 
-    const result = await questionsService.create(data);
+    const data = req.body;
+    const user = req.user;
+    const result = await questionsService.create(data, user);
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch(error) {

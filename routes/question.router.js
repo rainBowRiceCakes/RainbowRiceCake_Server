@@ -43,6 +43,3 @@ export default questionRouter;
 // store    // 생성
 // update   // 수정
 // destroy  // 삭제
-
-// create   // 작성 페이지
-// edit     // 수정 페이지

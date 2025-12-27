@@ -4,64 +4,86 @@
  * 251223 v1.0.0 BSONG init
  */
 
-import { body, query } from "express-validator";
+import path from 'path';
+import fs from 'fs';
+import * as pathUtil from '../../../utils/path/path.util.js';
+import { body, param, query } from "express-validator";
 
 export const page = query('page')
-  .trim()
   .optional()
-  .isNumeric()
+  .trim()
+  .isInt({ min: 1 }) // isNumeric보다 명확
+  .withMessage('1 이상의 정수만 허용합니다.')
+  .toInt()
+;
+
+export const id = param('id')
+  .trim()
+  .notEmpty()
+  .withMessage('필수 항목입니다.')
+  .bail()
+  .isInt({ min: 1 })
   .withMessage('숫자만 허용합니다.')
-  .toInt();
+  .toInt()
+;
 
 export const title = body('title')
   .trim()
   .notEmpty()
-  .withMessage('제목 필수 항목입니다.')
+  .withMessage('제목은 필수 항목입니다.')
   .bail()
-  .isLength({ min: 2, max: 30 })
-  .withMessage('제목은 2~30자여야 합니다')
+  .matches(/^[가-힣0-9\s]{2,30}$/) // \s 사용 권장
+  .withMessage('한글, 숫자로 2~30자 허용')
   .bail()
-  .matches(/^[가-힣0-9\s]+$/)
-  .withMessage('제목은 한글과 숫자만 허용합니다');
+  .custom(val => !/\s{2,}/.test(val)) // 연속 공백 방지
+  .withMessage('연속된 공백은 허용되지 않습니다.')
 ;
 
 export const content = body('content')
   .trim()
   .notEmpty()
-  .withMessage('내용는 필수 항목입니다.')
+  .withMessage('내용은 필수 항목입니다.')
   .bail()
-  .isLength({ min: 2, max: 250 })
-  .withMessage('내용은 2~250자여야 합니다')
-  .bail()
-  .matches(/^[a-zA-Z0-9가-힣\s\.\,\!\?\-\(\)]+$/)  // 자주 쓰는 특수문자 추가
-  .withMessage('허용되지 않는 특수문자가 포함되어 있습니다');
+  .matches(/^[a-zA-Z0-9가-힣\s-]{2,250}$/)
+  .withMessage('한글, 영어, 숫자, 하이픈으로 2~250자 허용')
 ;
 
-export const qnaImg = body('qnaImg')
-  .optional({ nullable: true, checkFalsy: true })  // NULL 허용
+export const qnaImg = body('qna_img')
+  .optional({ checkFalsy: true }) // 빈 문자열도 허용
   .trim()
   .bail()
   .custom(val => {
-    // 우리 앱의 게시글 이미지에 접근하는 `도메인 + path`가 맞는지 확인
-    if(!val.startsWith(`${process.env.APP_URL}${process.env.ACCESS_QUESTION_IMAGE_PATH}`)) {
-      return false;
-    }
-    return true;
+    if (!val) return true; // optional이므로
+
+    const allowedPrefix = `${process.env.APP_URL}${process.env.ACCESS_QUESTION_IMAGE_PATH}`;
+    return val.startsWith(allowedPrefix);
   })
   .withMessage('허용하지 않는 이미지 경로입니다.')
   .bail()
   .custom(val => {
-    // 실제 이미지 파일이 있는지 검증 처리
-    const splitPath = val.split('/');
-    const fullPath = path.join(pathUtil.getQuestionsImagePath(), splitPath[splitPath.length - 1]);
-
-    if(!fs.existsSync(fullPath)) {
+    if (!val) return true;
+    
+    const filename = val.split('/').pop();
+    
+    // 파일명에 위험한 문자 차단
+    if (/[<>:"|?*]/.test(filename)) {
       return false;
     }
-
-    return true;
+    
+    // 확장자 검증
+    const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    const hasValidExt = validExtensions.some(ext => 
+      filename.toLowerCase().endsWith(ext)
+    );
+    
+    if (!hasValidExt) {
+      return false;
+    }
+    
+    const fullPath = path.join(pathUtil.getQuestionsImagePath(), filename);
+    return fs.existsSync(fullPath);
   })
-  .withMessage('존재하지 않는 이미지 경로입니다.');
+  .withMessage('유효하지 않은 이미지 파일입니다.')
 ;
 
 export const status = body('status')
