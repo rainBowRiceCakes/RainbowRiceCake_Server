@@ -5,7 +5,7 @@
  */
 
 import express from 'express';
-import authMiddleware from '../app/middlewares/auth/auth.middleware.js';
+// import authMiddleware from '../app/middlewares/auth/auth.middleware.js';
 import validationHandler from '../app/middlewares/validations/validationHandler.js';
 import riderCreateValidator from '../app/middlewares/validations/validators/riders/rider.create.validator.js';
 import ridersController from '../app/controllers/riders.controller.js';

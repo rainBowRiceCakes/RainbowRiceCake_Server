@@ -17,12 +17,12 @@ import { createBaseResponse } from "../utils/createBaseResponse.util.js";
  * @param {import("express").NextFunction} next
  * @return {import("express").Response}
  */
-async function partnerCreate(req, res, next) {
+async function store(req, res, next) {
   try {
     const userId = req.user.id; // 인증된 유저 ID
     const data = req.body;
 
-    const result = await partnersService.partnerCreate(userId, data);
+    const result = await partnersService.createPartner(userId, data);
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {
@@ -38,11 +38,10 @@ async function partnerCreate(req, res, next) {
  * @param {import("express").NextFunction} next
  * @return {import("express").Response}
  */
-async function partnerShow(req, res, next) {
+async function showProfile(req, res, next) {
   try {
     const userId = req.user.id; // 현재 로그인한 유저 ID
-
-    const result = await partnersService.partnerShow(userId);
+    const result = await partnersService.showPartnerProfile(userId);
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {
@@ -57,12 +56,12 @@ async function partnerShow(req, res, next) {
  * @param {import("express").NextFunction} next
  * @return {import("express").Response}
  */
-async function partnerUpdate(req, res, next) {
+async function updateProfile(req, res, next) {
   try {
     const userId = req.user.id; // 현재 로그인한 유저 ID
     const updateData = req.body;
 
-    const result = await partnersService.partnerUpdate(userId, updateData);
+    const result = await partnersService.updatePartnerProfile(userId, updateData);
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {
@@ -78,11 +77,10 @@ async function partnerUpdate(req, res, next) {
  * @param {import("express").NextFunction} next
  * @return {import("express").Response}
  */
-async function partnersList(req, res, next) {
+async function index(req, res, next) {
   try {
-    const queryParams = req.query; // 필터, 페이징 등
-
-    const result = await partnersService.partnersList(queryParams);
+    const queryParams = req.query; // 페이징 관련
+    const result = await partnersService.listPartners(queryParams);
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {
@@ -97,11 +95,10 @@ async function partnersList(req, res, next) {
  * @param {import("express").NextFunction} next
  * @return {import("express").Response}
  */
-async function partnerFindByPk(req, res, next) {
+async function show(req, res, next) {
   try {
     const partnerId = req.params.id;
-
-    const result = await partnersService.partnerFindByPk(partnerId);
+    const result = await partnersService.getPartnerById(partnerId);
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {
@@ -110,31 +107,10 @@ async function partnerFindByPk(req, res, next) {
 }
 
 export default {
-  partnerCreate,
-  partnerShow,
-  partnerUpdate,
-  partnersList,
-  partnerFindByPk,
+  store,
+  showProfile,
+  updateProfile,
+  index,
+  show,
 }
 
-
-// async function partnerFormStore(req, res, next) {
-//   try {
-//     const data = {
-//       manager: req.body.manager,
-//       phone: req.body.phone,
-//       krName: req.body.krName,
-//       enName: req.body.enName,
-//       businessNum: req.body.businessNum,
-//       address: req.body.address,
-//       logoImg: req.body.logoImg
-//     };
-
-//     const result = await partnersService.partnerStore(data);
-
-//     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
-//   }
-//   catch(error) {
-//     return next(error);
-//   }
-// }

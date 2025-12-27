@@ -184,7 +184,7 @@ async function index(req, res, next) {
  */
 async function show(req, res, next) {
   try {
-    const order = req.order;  // checkOrderExists + authorizeUserForOrder에서 설정
+    const orderId = req.order.id;  // checkOrderExists + authorizeUserForOrder에서 설정
 
     const result = await OrdersService.getOrderDetail(orderId);
 

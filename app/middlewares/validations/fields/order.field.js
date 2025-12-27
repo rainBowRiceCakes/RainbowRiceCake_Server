@@ -18,21 +18,7 @@ const page = query('page')
   .toInt()
 ;
 
-const scope = query('scope')
-  .optional()
-  .trim()
-  .isIn(['history', 'today'])
-  .withMessage('scope는 history 또는 today만 허용됩니다.')
-;
-
-const statusQuery = query('status')
-  .optional()
-  .trim()
-  .isIn(['req', 'match', 'pick', 'com'])
-  .withMessage('유효하지 않은 status 값입니다.')
-;
-
-const orderId = param('orderId')
+const orderId = param('id')
   .trim()
   .notEmpty()
   .withMessage('주문 ID는 필수입니다.')
@@ -114,11 +100,16 @@ const status = body('status')
   .withMessage('유효하지 않은 status 값입니다. (req, match, pick, com만 허용)')
 ;
 
+const statusQuery = query('status')
+  .optional()
+  .trim()
+  .isIn(['req', 'match', 'pick', 'com'])
+  .withMessage('유효하지 않은 status 값입니다.')
+;
 
 export default {
   // Query 파라미터 검증 필드들
   page,
-  scope,
   statusQuery,
   
   // URL 파라미터 검증 필드들
@@ -136,3 +127,10 @@ export default {
   // Body 파라미터 - 상태 관리 필드들
   status,
 }
+
+// const scope = query('scope')
+//   .optional()
+//   .trim()
+//   .isIn(['history', 'today'])
+//   .withMessage('scope는 history 또는 today만 허용됩니다.')
+// ;

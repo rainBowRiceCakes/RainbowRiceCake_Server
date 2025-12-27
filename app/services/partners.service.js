@@ -16,7 +16,7 @@ import { CONFLICT_ERROR, NOT_FOUND_ERROR, BAD_REQUEST_ERROR } from "../../config
  * @param {number} userId - 파트너 등록을 요청한 유저 ID
  * @param {import("./users.service.type.js").partnerStoreData} data - 파트너 등록 데이터
  */
-async function partnerCreate(userId, data) {
+async function createPartner(userId, data) {
   return await db.sequelize.transaction(async t => {
     const existingPartner = await partnerRepository.findByUserId(t, userId);
     if (existingPartner) {
@@ -24,7 +24,7 @@ async function partnerCreate(userId, data) {
     }
 
     const partnerData = {
-      ...data,
+      data,
       userId,
       status: 'pending' // 초기 상태
     };
@@ -38,7 +38,7 @@ async function partnerCreate(userId, data) {
  * 파트너 본인의 정보 조회
  * @param {number} userId - 현재 로그인한 유저 ID
  */
-async function partnerShow(userId) {
+async function showPartnerProfile(userId) {
   const partner = await partnerRepository.findByUserId(null, userId);
 
   if (!partner) {
@@ -53,7 +53,7 @@ async function partnerShow(userId) {
  * @param {number} userId - 현재 로그인한 유저 ID
  * @param {object} updateData - 수정할 데이터
  */
-async function partnerUpdate(userId, updateData) {
+async function updatePartnerProfile(userId, updateData) {
   return await db.sequelize.transaction(async t => {
     const partner = await partnerRepository.findByUserId(t, userId);
 
@@ -68,7 +68,9 @@ async function partnerUpdate(userId, updateData) {
       'manger',
       'phone',
       'logo_img',
-      'address'
+      'address',
+      'lat',
+      'lag'
     ];
 
     // 허용된 필드만 추출
@@ -95,15 +97,13 @@ async function partnerUpdate(userId, updateData) {
 // --- 3. ADMIN LOOKS UP PARTNER's INFO WORKFLOW FOR ADMIN (어드민 페이지와 관련됨) ---
 /**
  * 어드민이 모든 파트너 리스트 조회
- * @param {object} queryParams - 필터, 페이징 등의 쿼리 파라미터
+ * @param {object} queryParams - 필터 등의 쿼리 파라미터
  */
-async function partnersList(queryParams) {
+async function listPartners(queryParams) {
   // 비즈니스 로직: 쿼리 파라미터 처리
-  const { page = 1, limit = 10, status, search } = queryParams;
-
+  const { status, search } = queryParams;
+  
   const options = {
-    offset: (page - 1) * limit,
-    limit: parseInt(limit),
     where: {}
   };
 
@@ -111,21 +111,18 @@ async function partnersList(queryParams) {
   if (status) {
     options.where.status = status;
   }
-
+  
   if (search) {
-    options.where.name = { [db.Sequelize.Op.like]: `%${search}%` };
+    options.where.name = {
+      [db.sequelize.Op.like]: `%${search}%`
+    };
   }
 
   const { rows, count } = await partnerRepository.findAll(null, options);
-
+  
   return {
     partners: rows,
-    pagination: {
-      total: count,
-      page: parseInt(page),
-      limit: parseInt(limit),
-      totalPages: Math.ceil(count / limit)
-    }
+    total: count
   };
 }
 
@@ -133,7 +130,7 @@ async function partnersList(queryParams) {
  * 어드민이 특정 파트너 단일 정보 조회
  * @param {number} partnerId - 조회할 파트너 ID
  */
-async function partnerFindByPk(partnerId) {
+async function getPartnerById(partnerId) {
   const partner = await partnerRepository.findByPk(null, partnerId);
 
   if (!partner) {
@@ -144,9 +141,9 @@ async function partnerFindByPk(partnerId) {
 }
 
 export default {
-  partnerCreate,
-  partnerShow,
-  partnerUpdate,
-  partnersList,
-  partnerFindByPk,
+  createPartner,
+  showPartnerProfile,
+  updatePartnerProfile,
+  listPartners,
+  getPartnerById,
 };

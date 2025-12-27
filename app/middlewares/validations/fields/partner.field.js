@@ -4,10 +4,17 @@
  * 251222 v1.0.0 wook init
  */
 
-import { body } from "express-validator"
+import { body, param, query } from "express-validator"
 
 // 유저 PK 필드
-const userId = body('userId')
+const page = query('page')
+  .trim()
+  .optional()
+  .isNumeric()
+  .withMessage('숫자만 허용합니다.')
+  .toInt();
+
+const partnerId = param('id')
   .trim()
   .notEmpty()
   .withMessage('필수 항목입니다.')
@@ -22,9 +29,8 @@ const businessNum = body('businessNum')
   .notEmpty()
   .withMessage('사업자 번호는 필수 항목입니다')
   .bail()
-  .isNumeric()
-  .withMessage('숫자만 허용')
-  .toInt()
+  .matches(/^\d{10}$/)  // 10자리 숫자만
+  .withMessage('사업자번호는 10자리 숫자여야 합니다')
 ;
 
 const krName = body('krName')
@@ -55,10 +61,19 @@ const manager = body('manager')
 ;
 
 const phone = body('phone')
-  .optional({ checkFalsy: true })
+  .optional({ nullable: true, checkFalsy: true })
   .trim()
   .matches(/^(01[016789]-\d{3,4}-\d{4}|0\d{1,2}-\d{3,4}-\d{4})$/)
   .withMessage('전화번호 형식이 올바르지 않습니다. (예: 010-1234-5678, 02-123-4567)')
+;
+
+const status = body('status')
+  .trim()
+  .notEmpty()
+  .withMessage('상태는 필수 항목입니다')
+  .bail()
+  .isIn(['req', 'res', 'rej'])
+  .withMessage('상태는 req, res, rej 중 하나여야 합니다')
 ;
 
 const logoImg = body('logoImg')
@@ -111,12 +126,14 @@ const lng = body('lng')
 ;
 
 export default {
-  userId,
+  page,
+  partnerId,
   businessNum,
   krName,
   enName,
   manager,
   phone,
+  status,
   logoImg,
   address,
   lat,
