@@ -37,7 +37,6 @@ const todayIndex = [
 // 6. 주문 히스토리 조회
 const index = [
   order.page,
-  order.scope, // ?scope=history
 ];
 
 // 7. 주문 상세 조회

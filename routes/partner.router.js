@@ -7,12 +7,12 @@
 
 import express from 'express';
 import authMiddleware from '../app/middlewares/auth/auth.middleware.js';
-import partnersController from '../app/controllers/partners.controller.js';
 import validationHandler from '../app/middlewares/validations/validationHandler.js';
 import partnerStoreValidator from '../app/middlewares/validations/validators/partners/partner.store.validator.js';
 import partnerShowValidator from '../app/middlewares/validations/validators/partners/partner.show.validator.js';
 import partnerUpdateValidator from '../app/middlewares/validations/validators/partners/partner.update.validator.js';
 import partnerIndexValidator from '../app/middlewares/validations/validators/partners/partner.index.validator.js';
+import partnersController from '../app/controllers/partners.controller.js';
 
 const partnerRouter = express.Router();
 

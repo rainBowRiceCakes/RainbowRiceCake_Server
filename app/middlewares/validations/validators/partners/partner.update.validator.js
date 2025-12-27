@@ -15,5 +15,5 @@ export default [
     partner.logoImg,
     partner.address,
     partner.lat,
-    partner.lag
+    partner.lng
 ];
