@@ -12,21 +12,30 @@ import { CONFLICT_ERROR, NOT_FOUND_ERROR, BAD_REQUEST_ERROR } from "../../config
 
 // --- 1. ADD PARTNER's INFO WORKFLOW FOR USERS (유저와 관련됨) ---
 /**
- * 유저가 파트너 정보를 등록하는 처리
- * @param {number} userId - 파트너 등록을 요청한 유저 ID
+ * 유저가 파트너 등록을 요청한다. 
+ * @param {Object} createData - 파트너 등록 데이터
  * @param {import("./users.service.type.js").partnerStoreData} data - 파트너 등록 데이터
  */
-async function createPartner(userId, data) {
+async function createPartner(createData) {
   return await db.sequelize.transaction(async t => {
     const existingPartner = await partnerRepository.findByUserId(t, userId);
     if (existingPartner) {
       throw myError("이미 파트너로 등록되어 있습니다.", CONFLICT_ERROR);
     }
 
+    // 2. DB 저장용 데이터 구성 (비즈니스 로직)
     const partnerData = {
-      data,
-      userId,
-      status: 'pending' // 초기 상태
+      userId: createData.userId,
+      businessNum: createData.businessNum,
+      storeKrName: createData.storeKrName,
+      storeEnName: createData.storeEnName,
+      manager: createData.manager,
+      phone: createData.phone,
+      status: 'req',  // 👈 초기 상태 설정 (비즈니스 규칙) 혹은 pending
+      logoImg: createData.logoImg || null,
+      address: createData.address,
+      lat: createData.lat,
+      lng: createData.lng,
     };
 
     return await partnerRepository.create(t, partnerData);
@@ -70,7 +79,7 @@ async function updatePartnerProfile(userId, updateData) {
       'logo_img',
       'address',
       'lat',
-      'lag'
+      'lng'
     ];
 
     // 허용된 필드만 추출

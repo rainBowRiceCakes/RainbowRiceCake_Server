@@ -67,7 +67,7 @@ export default function(photoType) {
 
       fileFilter(req, file, callback) {
         // MIME 타입 체크
-        const allowedMimes = ['image/jpeg', 'image/png', 'image/gif'];
+        const allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
         
         if (!allowedMimes.includes(file.mimetype)) {
           return callback(myError("이미지 파일만 업로드 가능합니다 (jpg, png, gif)", BAD_FILE_ERROR));
@@ -80,7 +80,7 @@ export default function(photoType) {
         fileSize: Number(process.env.FILE_ORDER_DLV_IMAGE_SIZE) || 5 * 1024 * 1024, // 기본 5MB
         files: 1, // 파일 1개만
       },
-    }).single("orderDlvImage");
+    }).single("image");
 
     upload(req, res, err => {
       if (err instanceof multer.MulterError) {
@@ -95,7 +95,7 @@ export default function(photoType) {
       }
       
       if (err) {
-        return next(myError(err.message, BAD_FILE_ERROR));
+        return next(err);
       }
 
       // 파일이 업로드되지 않은 경우 체크

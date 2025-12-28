@@ -4,7 +4,7 @@
  * 251222 v1.0.0 wook init
  */
 
-const ROLE = {
+export const ROLE = {
   ADM: 'ADM',
   PTN: 'PTN',
   DLV: 'DLV',
@@ -12,4 +12,4 @@ const ROLE = {
 }
 Object.freeze(ROLE);
 
-export default ROLE;
+export default [ROLE];

@@ -10,112 +10,125 @@
 import { body, param, query } from "express-validator";
 
 // === Query Parameters ===
-const page = query('page')
+export const page = query('page')
   .trim()
   .optional()
-  .isNumeric()
-  .withMessage('숫자만 허용합니다.')
-  .toInt()
+  .isInt({ min: 1 })
+  .withMessage('페이지는 1 이상의 숫자여야 합니다.')
+  .toInt();
 ;
 
-const orderId = param('id')
+export const statusQuery = query('status')
+  .optional()
+  .trim()
+  .isIn(['req', 'match', 'pick', 'com'])
+  .withMessage('유효하지 않은 status 값입니다.');
+
+export const tab = query('tab')
+  .optional()
+  .trim()
+  .isIn(['waiting', 'inprogress', 'completed'])
+  .withMessage('유효하지 않은 tab 값입니다. (waiting, inprogress, completed)');
+
+export const limit = query('limit')
+  .optional()
+  .trim()
+  .isInt({ min: 1, max: 100 })
+  .withMessage('limit는 1~100 사이의 숫자여야 합니다.')
+  .toInt();
+
+export const from = query('from')
+  .optional()
+  .trim()
+  .isISO8601()
+  .withMessage('유효한 날짜 형식이 아닙니다. (YYYY-MM-DD)');
+
+export const to = query('to')
+  .optional()
+  .trim()
+  .isISO8601()
+  .withMessage('유효한 날짜 형식이 아닙니다. (YYYY-MM-DD)');
+
+// === Param Parameters ===
+export const orderId = param('orderId')  // 👈 'id' → 'orderId'로 변경 (라우터와 일치)
   .trim()
   .notEmpty()
   .withMessage('주문 ID는 필수입니다.')
   .bail()
   .isInt({ min: 1 })
   .withMessage('유효한 주문 ID가 아닙니다.')
-  .toInt()
-;
+  .toInt();
 
 // === Body Parameters ===
-const email = body('email')
-  .trim()
-  .notEmpty() 
-  .withMessage('Email is required.')
-  .bail()
-  .isEmail() 
-  .withMessage('Please enter a valid email address.')
-  .normalizeEmail() // 이메일 정규화
-;
-
-const name = body('name')
+export const email = body('email')
   .trim()
   .notEmpty()
-  .withMessage('Name is required.')
+  .withMessage('이메일은 필수입니다.')
   .bail()
-  .matches(/^[A-Za-z]+(?:\s[A-Za-z]+)*$/)
-  .withMessage('Name must be between 2 and 50 characters, using English letters (uppercase and lowercase)')
-;
+  .isEmail()
+  .withMessage('올바른 이메일 형식이 아닙니다.')
+  .normalizeEmail();
 
-const hotelId = body('hotelId')
+export const name = body('name')
+  .trim()
+  .notEmpty()
+  .withMessage('이름은 필수입니다.')
+  .bail()
+  .matches(/^[A-Za-z\s]{2,50}$/)
+  .withMessage('이름은 2~50자의 영문자만 허용됩니다.');
+
+export const hotelId = body('hotelId')
   .trim()
   .notEmpty()
   .withMessage('호텔 ID는 필수입니다.')
   .bail()
   .isInt({ min: 1 })
   .withMessage('유효한 호텔 ID가 아닙니다.')
-  .toInt()
-;
+  .toInt();
 
-const price = body('price')
+export const price = body('price')
   .trim()
   .notEmpty()
   .withMessage('배송 요금은 필수입니다.')
   .bail()
   .isInt({ min: 0 })
   .withMessage('배송 요금은 0 이상의 숫자여야 합니다.')
-  .toInt()
-;
+  .toInt();
 
-// 짐 개수 (optional이지만 있으면 검증)
-const cntS = body('cnt_s')
+export const cntS = body('cntS')  // 👈 camelCase로 통일
   .optional()
   .trim()
   .isInt({ min: 0, max: 999 })
   .withMessage('소형 짐 개수는 0~999 사이여야 합니다.')
-  .toInt()
-;
+  .toInt();
 
-const cntM = body('cnt_m')
+export const cntM = body('cntM')
   .optional()
   .trim()
   .isInt({ min: 0, max: 999 })
   .withMessage('중형 짐 개수는 0~999 사이여야 합니다.')
-  .toInt()
-;
+  .toInt();
 
-const cntL = body('cnt_l')
+export const cntL = body('cntL')
   .optional()
   .trim()
   .isInt({ min: 0, max: 999 })
   .withMessage('대형 짐 개수는 0~999 사이여야 합니다.')
-  .toInt()
-;
-
-const status = body('status')
-  .optional()
-  .trim()
-  .isIn(['req', 'match', 'pick', 'com'])
-  .withMessage('유효하지 않은 status 값입니다. (req, match, pick, com만 허용)')
-;
-
-const statusQuery = query('status')
-  .optional()
-  .trim()
-  .isIn(['req', 'match', 'pick', 'com'])
-  .withMessage('유효하지 않은 status 값입니다.')
-;
+  .toInt();
 
 export default {
-  // Query 파라미터 검증 필드들
+  // Query
   page,
   statusQuery,
+  tab,
+  limit,
+  from,
+  to,
   
-  // URL 파라미터 검증 필드들
+  // Param
   orderId,
   
-  // Body 파라미터 - 주문 생성 시 필요한 필드들
+  // Body
   email,
   name,
   hotelId,
@@ -123,14 +136,4 @@ export default {
   cntS,
   cntM,
   cntL,
-  
-  // Body 파라미터 - 상태 관리 필드들
-  status,
-}
-
-// const scope = query('scope')
-//   .optional()
-//   .trim()
-//   .isIn(['history', 'today'])
-//   .withMessage('scope는 history 또는 today만 허용됩니다.')
-// ;
+};

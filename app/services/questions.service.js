@@ -13,14 +13,14 @@ import db from '../models/index.js';
  * @param {import("./posts.service.type.js").PostStoreData} data
  * @returns {Promise<import("../models/Post.js").Post>}
  */
-async function create(data, user) {
+async function create(createData) {
   
   const questionsData = {
-    authorId: user.id, // 인증된 사용자의 ID
-    position: user.role, // 사용자의 역할 (rider, partner, user 등)
-    title: data.title, // 질문 제목
-    content: data.content, // 질문 내용
-    imageUrl: data.image, // 첨부 이미지 URL (선택적)
+    authorId: createData.userid, // 인증된 사용자의 ID
+    position: createData.userRole, // 사용자의 역할 (rider, partner, user 등)
+    title: createData.title, // 질문 제목
+    content: createData.content, // 질문 내용
+    imageUrl: createData.qnaImg, // 첨부 이미지 URL (선택적)
   }
 
   return await db.sequelize.transaction(async t => {

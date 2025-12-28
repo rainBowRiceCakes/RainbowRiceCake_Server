@@ -29,6 +29,13 @@ async function create(t = null, data) {
 async function findByUserId(t = null, userId) {
   return await Partner.findOne({
     where: { userId },
+    include: [
+      {
+        model: User,
+        as: 'partner_user',
+        attributes: ['id', 'name', 'email']
+      }
+    ],
     transaction: t
   });
 }
@@ -65,13 +72,22 @@ async function findAll(t = null, options = {}) {
 }
 
 /**
- * 파트너 ID로 단일 파트너 정보 조회
+ * 파트너 ID로 단일 파트너 정보 조회 (관리자용)
  * @param {import("sequelize").Transaction|null} t
  * @param {number} partnerId - 파트너 ID
  * @returns {Promise<import("../models/Partner.js").Partner|null>}
  */
 async function findByPk(t = null, partnerId) {
-  return await Partner.findByPk(partnerId, { transaction: t });
+  return await Partner.findByPk(partnerId, {
+    include: [
+      {
+        model: User,
+        as: 'partner_user',
+        attributes: ['id', 'name', 'email', 'role', 'createdAt']
+      }
+    ],
+    transaction: t
+  });
 }
 
 export default {

@@ -19,10 +19,14 @@ import { createBaseResponse } from "../utils/createBaseResponse.util.js";
  */
 async function store(req, res, next) {
   try {
-    const userId = req.user.id; // 인증된 유저 ID
     const data = req.body;
 
-    const result = await partnersService.createPartner(userId, data);
+    const createData = { 
+      ...data, 
+      userId: req.user.id,
+    };
+
+    const result = await partnersService.createPartner(createData);
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {

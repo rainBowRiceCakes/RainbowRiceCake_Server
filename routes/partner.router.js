@@ -21,17 +21,17 @@ const partnerRouter = express.Router();
 partnerRouter.post('/', authMiddleware, partnerStoreValidator, validationHandler, partnersController.store);
 
 // --- 2. LOOK UP and UPDAETE PARTNER's INFO WORKFLOW FOR PARTNERS (파트너 페이지와 관련됨) ---
-// 파트너가 Partner table에 있는 정보(profile) 가져오기 (서비스 단에서 role 체크하기)
+// 파트너가 Partner table에 있는 정보(profile) 가져오기
 partnerRouter.get('/profile', authMiddleware, validationHandler, partnersController.showProfile); // validator 없어도 실무적으로 OK (단건 조회)
 
-// 파트너가 Partner table에 있는 정보(profile) 수정하기 (서비스 단에서 role 체크하기)
+// 파트너가 Partner table에 있는 정보(profile) 수정하기
 partnerRouter.put('/profile', authMiddleware, partnerUpdateValidator, validationHandler, partnersController.updateProfile);
 
 // --- 3. ADMIN LOOKS UP PARTNER's INFO WORKFLOW FOR ADMIN (어드민 페이지와 관련됨) ---
-// 어드민이 partner들의 모든 정보를 list up 하기. (서비스 단에서 role 체크하기)
+// 어드민이 partner들의 모든 정보를 list up 하기. 
 partnerRouter.get('/', authMiddleware, partnerIndexValidator, partnersController.index);
 
-// 어드민이 Partner PK로 단일정보 가져오기 (어드민에서 사용할 예정 & 서비스 단에서 role 체크하기)
+// 어드민이 Partner PK로 단일정보 가져오기
 partnerRouter.get('/:id', authMiddleware, partnerShowValidator, partnersController.show);
 
 export default partnerRouter;

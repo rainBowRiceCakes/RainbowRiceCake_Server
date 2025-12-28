@@ -8,6 +8,8 @@
 import { SUCCESS } from '../../configs/responseCode.config.js';
 import OrdersService from '../services/orders.service.js';
 import { createBaseResponse } from '../utils/createBaseResponse.util.js';
+import myError from '../errors/customs/my.error.js';
+import { BAD_REQUEST_ERROR } from '../../configs/responseCode.config.js';
 
 // --- 1. ORDER WORKFLOW FOR PARNERS (파트너와 관련된 당일 내 이뤄지는 주문) ---
 /**
@@ -19,20 +21,12 @@ import { createBaseResponse } from '../utils/createBaseResponse.util.js';
  */
 async function store(req, res, next) {
   try {
-    // 파트너가 입력한 폼 데이터 가져오기
-    const data = {
-      partner_id: req.user.id,
-      email: req.body.email,
-      name: req.body.name,
-      hotel_id: req.body.hotelId,
-      price: req.body.price,
-      cnt_s: req.body.cnt_s,
-      cnt_m: req.body.cnt_m,
-      cnt_l: req.body.cnt_l,
-    };
+    const createData = {
+      ...req.body,
+      partnerId: req.user.id
+    }
     
-    // 서비스 호출 (Service -> Repository -> Order.create)
-    const result = await OrdersService.createNewOrder(data);
+    const result = await OrdersService.createNewOrder(createData);
     
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch(error) {
@@ -71,16 +65,17 @@ async function matchOrder(req, res, next) {
  */
 async function uploadPickupPhoto(req, res, next) {
   try {
-    // 미들웨어에서 파일 체크
     if (!req.file) {
       throw myError('사진 파일이 필요합니다.', BAD_REQUEST_ERROR);
     }
 
-    const orderId = req.order.id;  // 미들웨어에서 설정
-    const photoPath = req.file.filename;  // multer가 저장한 파일명
+    const orderId = req.params.orderId;
+    const riderId = req.user.id;
+    const photoPath = req.file.filename;
 
     const result = await OrdersService.uploadPickupPhoto({ 
-      orderId, 
+      orderId,
+      riderId,
       photoPath 
     });
 
@@ -103,11 +98,13 @@ async function uploadCompletePhoto(req, res, next) {
       throw myError('사진 파일이 필요합니다.', BAD_REQUEST_ERROR);
     }
 
-    const orderId = req.order.id;  // 미들웨어에서 설정
+    const orderId = req.params.orderId;
+    const riderId = req.user.id;
     const photoPath = req.file.filename;
 
     const result = await OrdersService.uploadCompletePhoto({ 
-      orderId, 
+      orderId,
+      riderId,
       photoPath 
     });
 
@@ -127,7 +124,7 @@ async function uploadCompletePhoto(req, res, next) {
  */
 async function todayIndex(req, res, next) {
   try {
-    const filter = req.orderFilter;  // setOrderAccessFilter 미들웨어에서 설정
+    const filter = req.orderFilter;
     const tab = req.query.tab || 'waiting';
     const page = parseInt(req.query.page) || 1;
 
@@ -152,7 +149,7 @@ async function todayIndex(req, res, next) {
 */
 async function index(req, res, next) {
   try {
-    const filter = req.orderFilter;  // setOrderAccessFilter 미들웨어에서 설정
+    const filter = req.orderFilter;
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 9;
     const status = req.query.status;
@@ -184,9 +181,15 @@ async function index(req, res, next) {
  */
 async function show(req, res, next) {
   try {
-    const orderId = req.order.id;  // checkOrderExists + authorizeUserForOrder에서 설정
+    const orderId = req.params.orderId;
+    const userId = req.user.id;
+    const userRole = req.user.role;
 
-    const result = await OrdersService.getOrderDetail(orderId);
+    const result = await OrdersService.getOrderDetail({ 
+      orderId, 
+      userId, 
+      userRole 
+    });
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {

@@ -5,95 +5,249 @@
  * 251225 v1.1.0 BSONG update - 상태별 주문 목록 및 카운트 조회 기능 추가, 그리고 주문 히스토리 상세 조회 기능 추가
 */
 
+import { Op } from 'sequelize';
 import db from '../models/index.js';
-const { Order, Partner, Hotel, Sequelize } = db;
+const { Order, Partner, Hotel, Rider, Sequelize } = db;
 
 /**
- * Create a new order (주문 등록 - partner 가 생성)
- * @param {import("sequelize").Transaction|null} t
- * @param {import("../services/Orders.service.type.js").OrderStoreData} data
- * @returns {Promise<import("../models/Order.js").Order>}
+ * 주문 생성
  */
 async function create(t = null, data) {
-  return await Order.create(data);
+  return await Order.create(data, { transaction: t });
 }
 
 /**
- * 이 query가 사용 되는 곳
- * 1. List of order history 를 ALL 조회 (페이지네이션)
- * 2. Get List of Orders for the day by Tab (상태별 주문 목록 조회)
- * 비즈니스 로직은 서비스 레이어에서 처리!
- * @param {import("sequelize").Transaction|null} t
- * @param {object} data
- * @param {object} data.where - 필터 조건 객체
- * @param {number} data.limit
- * @param {number} data.offset
- * @returns {Promise<Array<import("../models/Order.js").Order>>}
+ * 주문 존재 여부 확인
  */
-async function findAll(t = null, { where, limit, offset }) {
-  return await Order.findAndCountAll({
-    where, // 서비스에서 조립된 필터
-    order: [
-      ['createdAt', 'DESC'],
-      ['updatedAt', 'DESC'],
-      ['id', 'ASC']
-    ],
-    limit,
-    offset,
-    transaction: t,
-        include: [
-      {
-        attributes: ['id', 'user_id', 'store_kr_name', 'store_en_name', 'manager', 'phone', 'status', 'address', 'latitude', 'longitude'], 
-        model: Partner, // Pickup Point
-        as: 'order_partner',
-        required: true // INNER JOIN (Order must have a partner)
-      },
-      {
-        attributes: ['id', 'hotel_kr_name', 'hotel_en_name', 'manager', 'phone', 'status', 'address', 'latitude', 'longitude'],
-        model: Hotel, // Delivery Destination
-        as: 'order_hotel',
-        required: true 
-      }
-    ],
-    attributes: ['id', 'status', 'price', 'cnt_s', 'cnt_m', 'cnt_l', 'createdAt']
+async function existsByPk(t = null, orderId) {
+  const count = await Order.count({
+    where: { id: orderId },
+    transaction: t
+  });
+  return count > 0;
+}
+
+/**
+ * 기본 조회 (조인 없음)
+ */
+async function findByPk(t = null, id) {
+  return await Order.findByPk(id, {
+    transaction: t
   });
 }
 
 /**
- * Details of order history를 ID로 조회
- * @param {import("sequelize").Transaction|null} t
- * @param {import("../services/Orders.service.type.js").Id} id
- * @returns {Promise<import("../models/Order.js").Order>}
+ * 상세 조회 (조인 포함)
  */
-async function findByPk(t = null, id) {
-  return await Order.findByPk(
-    id,
+async function findByPkWithDetails(t = null, id) {
+  return await Order.findByPk(id, {
+    transaction: t,
+    include: [
+      {
+        model: Partner,
+        as: 'order_partner',
+        attributes: [
+          'id', 'userId', 'storeKrName', 'storeEnName',
+          'manager', 'phone', 'address'
+        ]
+      },
+      {
+        model: Hotel,
+        as: 'order_hotel',
+        attributes: [
+          'id', 'hotelKrName', 'hotelEnName',
+          'manager', 'phone', 'address'
+        ]
+      },
+      {
+        model: Rider,
+        as: 'order_rider',
+        attributes: ['id', 'name', 'phone'],
+        required: false
+      }
+    ]
+  });
+}
+
+/**
+ * 라이더의 진행중인 주문 개수 조회
+ */
+async function countInProgressByRider(t = null, riderId) {
+  return await Order.count({
+    where: {
+      riderId,
+      status: { [Op.in]: ['match', 'pick'] }
+    },
+    transaction: t
+  });
+}
+
+/**
+ * 주문을 매칭 상태로 업데이트
+ */
+async function updateToMatched(t = null, orderId, riderId) {
+  return await Order.update(
     {
-      transaction: t,
-      include: [
-        { model: Partner, as: 'order_partner' },
-        { model: Hotel, as: 'order_hotel' }
-      ]
+      riderId,
+      status: 'match',
+      matchedAt: new Date()
+    },
+    {
+      where: { id: orderId },
+      transaction: t
     }
   );
 }
 
 /**
- * 주문 정보를 ID로 업데이트
- * @param {import("sequelize").Transaction|null} t
- * @param {number} id
- * @param {Object} data
- * @returns {Promise<[number, import("../models/Order.js").Order[]]>}
+ * 주문을 픽업 상태로 업데이트
  */
-async function update(t = null, id, data) {
-  return await Order.update(data, { where: { id }, transaction: t });
+async function updateToPicked(t = null, orderId) {
+  return await Order.update(
+    {
+      status: 'pick',
+      pickedAt: new Date()
+    },
+    {
+      where: { id: orderId },
+      transaction: t
+    }
+  );
+}
+
+/**
+ * 주문을 완료 상태로 업데이트
+ */
+async function updateToCompleted(t = null, orderId) {
+  return await Order.update(
+    {
+      status: 'com',
+      completedAt: new Date()
+    },
+    {
+      where: { id: orderId },
+      transaction: t
+    }
+  );
+}
+
+/**
+ * 오늘 주문을 탭별로 조회
+ */
+async function findTodayOrdersByTab(t = null, { filter, statuses, today, limit, offset }) {
+  return await Order.findAndCountAll({
+    where: {
+      ...filter,
+      createdAt: { [Op.between]: [today.start, today.end] },
+      status: { [Op.in]: statuses }
+    },
+    limit,
+    offset,
+    order: [['createdAt', 'DESC']],
+    transaction: t,
+    include: [
+      {
+        model: Partner,
+        as: 'order_partner',
+        attributes: ['id', 'storeKrName', 'address'],
+        required: true
+      },
+      {
+        model: Hotel,
+        as: 'order_hotel',
+        attributes: ['id', 'hotelKrName', 'address'],
+        required: true
+      },
+      {
+        model: Rider,
+        as: 'order_rider',
+        attributes: ['id', 'name', 'phone'],
+        required: false
+      }
+    ],
+    attributes: [
+      'id', 'status', 'price', 'cntS', 'cntM', 'cntL',
+      'createdAt', 'matchedAt', 'pickedAt', 'completedAt'
+    ]
+  });
+}
+
+/**
+ * 주문 히스토리 조회
+ */
+async function findOrderHistory(t = null, { filter, status, dateRange, limit, offset }) {
+  const where = { ...filter };
+
+  if (status) {
+    where.status = status;
+  }
+
+  if (dateRange) {
+    where.createdAt = {
+      [Op.between]: [dateRange.start, dateRange.end]
+    };
+  }
+
+  return await Order.findAndCountAll({
+    where,
+    limit,
+    offset,
+    order: [['createdAt', 'DESC']],
+    transaction: t,
+    include: [
+      {
+        model: Partner,
+        as: 'order_partner',
+        attributes: ['id', 'storeKrName', 'address'],
+        required: true
+      },
+      {
+        model: Hotel,
+        as: 'order_hotel',
+        attributes: ['id', 'hotelKrName', 'address'],
+        required: true
+      },
+      {
+        model: Rider,
+        as: 'order_rider',
+        attributes: ['id', 'name'],
+        required: false
+      }
+    ],
+    attributes: [
+      'id', 'status', 'price', 'cntS', 'cntM', 'cntL', 'createdAt'
+    ]
+  });
+}
+
+/**
+ * 상태별 통계 조회
+ */
+async function getStatusStats(t = null, filter = {}) {
+  return await Order.findAll({
+    where: filter,
+    attributes: [
+      'status',
+      [Sequelize.fn('COUNT', Sequelize.col('id')), 'count']
+    ],
+    group: ['status'],
+    transaction: t,
+    raw: true
+  });
 }
 
 export default {
   create,
-  findAll,
+  existsByPk,
   findByPk,
-  update,
+  findByPkWithDetails,
+  countInProgressByRider,
+  updateToMatched,
+  updateToPicked,
+  updateToCompleted,
+  findTodayOrdersByTab,
+  findOrderHistory,
+  getStatusStats,
 };
 
 // Repository (DB 중심)	HTTP Method
