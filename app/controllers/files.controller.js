@@ -4,7 +4,8 @@
  * 251226 v1.0.0 wook init
  */
 
-import { SUCCESS } from "../../configs/responseCode.config.js";
+import { BAD_FILE_ERROR, SUCCESS } from "../../configs/responseCode.config.js";
+import myError from "../errors/customs/my.error.js";
 import { createBaseResponse } from "../utils/createBaseResponse.util.js";
 
 /**

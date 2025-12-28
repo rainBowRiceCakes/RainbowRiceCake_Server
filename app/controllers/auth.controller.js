@@ -29,10 +29,11 @@ async function adminLogin(req, res, next) {
 
     // 로그인 서비스 호출
     const { accessToken, refreshToken, admin } = await authService.adminLogin(body);
+    const name = admin.name;
 
     // Cookie에 RefreshToken 설정
     cookieUtil.setCookieRefreshToken(res, refreshToken);
-    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, {accessToken, admin}));
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, {accessToken, name}));
   }
   catch (error) {
     next(error);

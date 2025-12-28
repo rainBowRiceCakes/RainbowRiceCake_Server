@@ -27,6 +27,8 @@ async function riderUpdate(data) {
     result.bank = data.bank
     result.bankNum = data.bankNum
     result.address= data.address
+    result.phone= data.phone
+    result.isWorking= data.isWorking
     // 레코드 하나만 save처리
     await adminRepository.riderUpdate(t, result);
 
@@ -36,6 +38,7 @@ async function riderUpdate(data) {
     if(data.status === "RES") {
       // 상태가 RES(승인)로 바뀌면 user권한 DLV로 변경
       userData.role = "DLV"
+      userData.name = data.name
       // 상태가 REQ(대기), REJ(반려)로 바뀌면 user권한 COM으로 변경
     } else userData.role = "COM"
     await userRepository.save(t, userData)

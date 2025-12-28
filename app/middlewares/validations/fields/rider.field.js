@@ -86,6 +86,12 @@ const lng = body('lng')
   .withMessage('경도(lng)는 124~132 사이의 소수값이어야 합니다.')
 ;
 
+const isWorking = body('isWorking')
+  .trim()
+  .isBoolean()
+  .withMessage('상태는 true 또는 false만 허용합니다')
+  .toBoolean();
+
 export default {
   userId,
   licenseImg,
@@ -95,4 +101,5 @@ export default {
   address,
   lat,
   lng,
+  isWorking,
 }
