@@ -9,7 +9,6 @@ import './configs/env.config.js';
 import cookieParser from 'cookie-parser';
 import errorHandler from './app/errors/errorHandler.js';
 import notFoundRouter from './routes/notFound.router.js';
-import pathUtil from './app/utils/path/path.util.js';
 import authRouter from './routes/auth.router.js';
 import hotelRouter from './routes/hotel.router.js';
 import noticeRouter from './routes/notice.router.js';

@@ -12,20 +12,19 @@ import partnerRepository from "../repositories/partner.repository.js";
 import hotelRepository from "../repositories/hotel.repository.js";
 import imageRepository from "../repositories/image.repository.js";
 import myError from "../errors/customs/my.error.js";
-import ROLE from '../middlewares/auth/configs/role.enum.js';
-import { 
-  NOT_FOUND_ERROR, 
+import {
+  NOT_FOUND_ERROR,
   BAD_REQUEST_ERROR,
   FORBIDDEN_ERROR,
   CONFLICT_ERROR
 } from "../../configs/responseCode.config.js";
-import dayjs from 'dayjs'; 
+import dayjs from 'dayjs';
 
 // --- 1. ORDER WORKFLOW FOR PARNERS (파트너와 관련된 당일 내 이뤄지는 주문) ---
 /**
  * Create a new order (주문 등록 - partner 가 생성)
- * @param {*} data 
- * @returns 
+ * @param {*} data
+ * @returns
 */
 async function createNewOrder(createData) {
   return await db.sequelize.transaction(async t => {
@@ -34,7 +33,7 @@ async function createNewOrder(createData) {
     if (!partner) {
       throw myError('파트너 정보를 찾을 수 없습니다.', NOT_FOUND_ERROR);
     }
-    
+
     if (partner.status !== 'res') {
       throw myError('승인된 파트너만 주문을 등록할 수 있습니다.', FORBIDDEN_ERROR);
     }
@@ -67,7 +66,7 @@ async function createNewOrder(createData) {
       cntL: createData.cntL || 0,
       status: 'req',
     };
-    
+
     const order = await orderRepository.create(t, newOrder);
 
     // 5. 조인된 데이터와 함께 반환
@@ -203,7 +202,7 @@ async function uploadCompletePhoto({ orderId, riderId, photoPath }) {
     const hasCompleteImage = await imageRepository.existsByOrderAndType(t, orderId, 'COM');
     if (hasCompleteImage) {
       throw myError('이미 완료 사진이 등록되었습니다.', CONFLICT_ERROR);
-    } 
+    }
 
     // 5. 이미지 저장
     const image = await imageRepository.create(t, {
@@ -326,18 +325,9 @@ async function getOrderDetail({ orderId, userId, userRole }) {
   return await db.sequelize.transaction(async t => {
     // 1. 주문 조회
     const order = await orderRepository.findByPkWithDetails(t, orderId);
-    
+
     if (!order) {
       throw myError('주문을 찾을 수 없습니다.', NOT_FOUND_ERROR);
-    }
-
-    // 2. 권한 확인 (비즈니스 로직)
-    const isAdmin = userRole === ROLE.ADM;
-    const isRider = userRole === ROLE.DLV && order.riderId === userId;
-    const isPartner = userRole === ROLE.PTN && order.partnerId === userId;
-
-    if (!isAdmin && !isRider && !isPartner) {
-      throw myError('이 주문을 조회할 권한이 없습니다.', FORBIDDEN_ERROR);
     }
 
     // 3. 이미지 조회

@@ -6,14 +6,14 @@
 
 import partner from '../../fields/partner.field.js';
 
-export default [ 
-    partner.businessNum,
-    partner.krName,
-    partner.enName,
-    partner.manager,
-    partner.phone,
-    partner.logoImg,
-    partner.address,
-    partner.lat,
-    partner.lng
+export default [
+  partner.businessNum,
+  partner.krName,
+  partner.enName,
+  partner.manager,
+  partner.phone,
+  partner.logoImg,
+  partner.address,
+  partner.lat,
+  partner.lng
 ];
