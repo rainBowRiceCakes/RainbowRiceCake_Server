@@ -14,10 +14,10 @@ import db from '../models/index.js';
  * @returns {Promise<import("../models/Post.js").Post>}
  */
 async function create(createData) {
-  
+
   const questionsData = {
-    authorId: createData.userid, // 인증된 사용자의 ID
-    position: createData.userRole, // 사용자의 역할 (rider, partner, user 등)
+    // authorId: createData.userid, // 인증된 사용자의 ID
+    // position: createData.userRole, // 사용자의 역할 (rider, partner, user 등)
     title: createData.title, // 질문 제목
     content: createData.content, // 질문 내용
     imageUrl: createData.qnaImg, // 첨부 이미지 URL (선택적)

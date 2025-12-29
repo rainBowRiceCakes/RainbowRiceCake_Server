@@ -61,7 +61,7 @@ export default function(req, res, next) {
     limits: {
       fileSize: parseInt(process.env.FILE_QUESTION_IMAGE_SIZE)
     }
-  }).single('questionImage');
+  }).single('qnaImg'); // 컬럼 이름이랑 동일해야해!!!!!!!
 
   // 예외 처리
   upload(req, res, err => {

@@ -22,12 +22,12 @@ async function store(req, res, next) {
   try {
 
     const data = req.body;
-    const { id, role } = req.user;
+    // const { id, role } = req.user;
 
-    const createData = { 
-      ...data, 
-      userId: id,
-      userRole: role 
+    const createData = {
+      ...data,
+      // userId: id,
+      // userRole: role
 };
     console.log('✅ createData:', createData);
     const result = await questionsService.create(createData);

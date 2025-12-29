@@ -8,7 +8,7 @@
  */
 
 import express from 'express';
-import authMiddleware from '../app/middlewares/auth/auth.middleware.js';
+// import authMiddleware from '../app/middlewares/auth/auth.middleware.js';
 import storeValidator from '../app/middlewares/validations/validators/questions/store.validator.js';
 import validationHandler from '../app/middlewares/validations/validationHandler.js';
 import questionsController from '../app/controllers/questions.controller.js';
@@ -22,7 +22,11 @@ const questionRouter = express.Router();
  * POST /questions
  * 인증된 사용자가 이슈나 질문을 제출합니다.
  */
-questionRouter.post('/', authMiddleware, storeValidator, validationHandler, questionsController.store);
+questionRouter.post('/',
+  // authMiddleware TODO: 주석풀기
+  storeValidator,
+  validationHandler,
+  questionsController.store);
 
 export default questionRouter;
 
