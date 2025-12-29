@@ -7,13 +7,13 @@
 import orderDlvUploader from "./uploaders/order.dlv.uploader.js";
 import partnerLogoUploader from "./uploaders/partner.logo.uploader.js";
 import profileUploader from "./uploaders/profile.uploader.js";
-import questionUploader from "./uploaders/question.uploader.js";
+import questionAttachmentUploader from "./uploaders/question.uploader.js";
 import riderLicenseUploader from "./uploaders/rider.license.uploader.js";
 
 export default {
   orderDlvUploader,
   profileUploader,
-  questionUploader,
+  questionAttachmentUploader,
   riderLicenseUploader,
   partnerLogoUploader,
 }

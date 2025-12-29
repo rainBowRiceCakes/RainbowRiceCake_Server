@@ -13,5 +13,10 @@ const fileRouter = express.Router();
 
 fileRouter.post('/licenses', authMiddleware, multerMiddleware.riderLicenseUploader, filesController.storeLicense);
 fileRouter.post('/logos', authMiddleware, multerMiddleware.partnerLogoUploader, filesController.storeLogo);
+fileRouter.post(
+  '/attachments',
+  // authMiddleware, TODO: 주석풀기
+  multerMiddleware.questionAttachmentUploader,
+  filesController.storeAttachments)
 
 export default fileRouter;
