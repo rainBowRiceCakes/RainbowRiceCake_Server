@@ -108,6 +108,24 @@ async function logout(t = null, id) {
   );
 }
 
+// 유저 권한 변경 (COM -> DLV, PTN)
+/**
+ * 유저 권한(Role) 변경
+ * @param {import("sequelize").Transaction} t 
+ * @param {number} id 
+ * @param {string} role 'DLV' | 'PTN' | 'ADM' ...
+ * @returns 
+ */
+async function updateRole(t = null, id, role) {
+  return await User.update(
+    { role: role },
+    {
+      where: { id: id },
+      transaction: t
+    }
+  );
+}
+
 export default {
   findByEmail,
   save,
@@ -116,4 +134,5 @@ export default {
   findByPk,
   create,
   logout,
+  updateRole,
 }

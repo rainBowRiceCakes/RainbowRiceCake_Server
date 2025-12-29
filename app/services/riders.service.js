@@ -5,7 +5,9 @@
  * 251229 BSONG update
  */
 
+import db from "../models/index.js";
 import riderRepository from "../repositories/rider.repository.js";
+import userRepository from "../repositories/user.repository.js";
 // import userRepository from "../repositories/user.repository.js";
 
 // --- 1. MY PROFILE WORKFLOW FOR RIDERS (기사와 관련된 profile 불러오기 & 업데이트) ---
@@ -86,15 +88,37 @@ async function create(data) {
   return await riderRepository.create(null, data);
 }
 
-// /**
-//  * 라이더 form 작성
-//  * @param {import("./users.service.type.js").riderStoreData} data
-//  */
-// async function riderStore(data) {
-//   return await db.sequelize.transaction(async t => {
-//     return await riderRepository.riderFormCreate(t, data);
-//   })
-// }
+/**
+ * 라이더 신청 form
+ * @param {import("./users.service.type.js").riderStoreData} data
+ */
+async function riderFormCreate(createData) {
+  return await db.sequelize.transaction(async (t) => {
+    // 중복 신청 체크 (비즈니스 로직)
+    const existingRider = await riderRepository.findByUserId(t, createData.userId);
+    
+    if (existingRider) {
+      // 이미 신청했거나 활동 중인 경우 에러 발생
+      throw myError("이미 라이더 신청이 접수되어 있거나 등록된 유저입니다.", CONFLICT_ERROR);
+    }
+
+    // DB 저장용 데이터 구성
+    const riderData = {
+      userId: createData.userId,
+      licenseNumber: createData.licenseNumber,
+      description: createData.description,
+      
+      // 초기 상태 설정(대기 상태)
+      status: 'pending',
+      
+      // 필요 시 추가 필드 매핑
+      // vehicleType: createData.vehicleType || 'motorcycle', 
+    };
+
+    // Repository 호출
+    return await riderRepository.create(t, riderData);
+  });
+}
 
 export default {
   getMyProfile,
@@ -102,5 +126,5 @@ export default {
   riderFindByPk,
   riderShow,
   create,
-  // riderStore,
+  riderFormCreate,
 }

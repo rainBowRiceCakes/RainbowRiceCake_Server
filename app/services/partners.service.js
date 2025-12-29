@@ -127,10 +127,43 @@ async function getPartnerById(partnerId) {
   return partner;
 }
 
+/**
+ * 파트너 신청 form
+ * @param {import("./users.service.type.js").riderStoreData} data
+ */
+async function partnerFormCreate(createData) {
+  return await db.sequelize.transaction(async (t) => {
+    // 중복 신청 체크 (비즈니스 로직)
+    const existingRider = await partnerRepository.findByUserId(t, createData.userId);
+    
+    if (existingRider) {
+      // 이미 신청했거나 활동 중인 경우 에러 발생
+      throw myError("이미 파트너 신청이 접수되어 있거나 등록된 유저입니다.", CONFLICT_ERROR);
+    }
+
+    // DB 저장용 데이터 구성
+    const partnerData = {
+      userId: createData.userId,
+      licenseNumber: createData.licenseNumber,
+      description: createData.description,
+      
+      // 초기 상태 설정(대기 상태)
+      status: 'pending',
+      
+      // 필요 시 추가 필드 매핑
+      // vehicleType: createData.vehicleType || 'motorcycle', 
+    };
+
+    // Repository 호출
+    return await partnerRepository.create(t, partnerData);
+  });
+}
+
 export default {
   createPartner,
   showPartnerProfile,
   updatePartnerProfile,
   listPartners,
   getPartnerById,
+  partnerFormCreate,
 };

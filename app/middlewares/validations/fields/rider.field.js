@@ -87,6 +87,7 @@ const lng = body('lng')
 ;
 
 const isWorking = body('isWorking')
+  .optional({ checkFalsy: true })
   .trim()
   .isBoolean()
   .withMessage('상태는 true 또는 false만 허용합니다')

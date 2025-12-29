@@ -104,35 +104,34 @@ async function riderCreate(req, res, next) {
   }
 }
 
-// async function riderFormStore(req, res, next) {
-//   try {
-//     // const data = {
-//     //   phone: req.body.phone,
-//     //   address: req.body.address,
-//     //   bank: req.body.bank,
-//     //   bankNum: req.body.bankNum,
-//     //   licenseImg: req.body.licenseImg
-//     // };
-//     const data = req.body;
-
-//     const result = await ridersService.riderStore(data);
-
-//     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
-//   }
-//   catch(error) {
-//     return next(error);
-//   }
-// }
-
 async function riderStore(req, res, next) {
   try {
     const data = req.body;
-    // data.userId = req.user.id; // TODO: 로그인기능 완성되면 추가할것
-    data.userId = 12; // TODO: 로그인기능 완성되면 제거할것
+    data.userId = req.user.id; // TODO: 로그인기능 완성되면 추가할것
+    // data.userId = 12; // TODO: 로그인기능 완성되면 제거할것
 
     await ridersService.create(data);
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS));
+  }
+  catch (error) {
+    return next(error);
+  }
+}
+
+// 라이더 신청(유저 -> 라이더)
+async function riderFormStore(req, res, next) {
+  try {
+    // 데이터 준비
+    const data = req.body;
+    data.userId = req.user.id; // 로그인 미들웨어에서 받은 userId 주입
+
+    // 서비스 호출 (신청 데이터만 저장)
+    const result = await ridersService.riderFormCreate(data);
+
+    // 응답 반환
+    // 성공 시 result에는 DB에 생성된 신청 정보가 들어있음
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   }
   catch (error) {
     return next(error);
@@ -145,6 +144,6 @@ export default {
   riderFindByPk,
   riderShow,
   riderCreate,
-  // riderFormStore,
-  riderStore
+  riderStore,
+  riderFormStore,
 }
