@@ -354,6 +354,54 @@ async function getOrderDetail({ orderId, userId, userRole }) {
 }
 
 /**
+ * 일반 유저용 배송 현황 조회 (주문 PK로만 조회)
+ * @param {Object} data { dlvId }
+ */
+async function getDeliveryStatus({ dlvId }) {
+  return await db.sequelize.transaction(async (t) => {
+    
+    // 1. 레포지토리의 findByIdOnly를 사용하여 주문 상세 정보 조회/Hotel과 Rider 정보를 Include
+    const order = await orderRepository.findByIdOnly(t, dlvId);
+
+    // 2. 주문 존재 여부 확인
+    if (!order) {
+      throw myError('해당 주문 번호에 대한 배송 정보를 찾을 수 없습니다.', NOT_FOUND_ERROR);
+    }
+
+    // 3. 해당 주문과 연결된 모든 이미지(픽업 사진, 완료 사진) 조회
+    // imageRepository는 dlvId를 기준으로 이미지를 찾습니다.
+    const images = await imageRepository.findAllByOrderId(t, dlvId);
+    
+    // 타입별 사진 분류 (PICK: 픽업, COM: 완료)
+    const pickupImage = images.find(img => img.type === 'PICK');
+    const completeImage = images.find(img => img.type === 'COM');
+
+    // 4. 유저에게 보여줄 응답 데이터 구성
+    return {
+      dlvId: order.id,
+      status: order.status, // 'req', 'match', 'pick', 'com' 상태값
+      customerName: order.name, // 주문자 이름
+      destination: {
+        hotelName: order.order_hotel ? order.order_hotel.hotelKrName : null, // 도착지 호텔명
+        address: order.order_hotel ? order.order_hotel.address : null // 도착지 주소
+      },
+      deliveryInfo: {
+        riderPhone: order.order_rider ? order.order_rider.phone : null, // 기사 연락처
+      },
+      timeline: {
+        orderedAt: order.createdAt, // 주문 시간
+        pickedAt: pickupImage ? pickupImage.createdAt : null, // 픽업 사진 등록 시간
+        completedAt: completeImage ? completeImage.createdAt : null // 완료 사진 등록 시간
+      },
+      images: {
+        pickup: pickupImage ? pickupImage.img : null,
+        complete: completeImage ? completeImage.img : null
+      }
+    };
+  });
+}
+
+/**
  * Admin에서 사용 할 order history 주문 히스토리 LIST 3개월치 조회
  * @param {Object} filter - 미들웨어에서 설정한 필터
  */
@@ -402,4 +450,5 @@ export default {
   getOrdersList,
   getOrderDetail,
   getOrdersListAdmin,
+  getDeliveryStatus,
 };

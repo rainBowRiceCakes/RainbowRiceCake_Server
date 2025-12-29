@@ -244,6 +244,31 @@ async function getStatusStats(t = null, filter = {}) {
 }
 
 /**
+ * 주문 PK로만 상세 정보 조회
+ * @param {import('sequelize').Transaction} t - 트랜잭션 객체
+ * @param {number} dlvId - 주문 PK (dlvId)
+ */
+async function findByIdOnly(t = null, dlvId) {
+  return await Order.findByPk(dlvId, {
+    transaction: t,
+    include: [
+      {
+        model: Hotel,
+        as: 'order_hotel', // Order.js의 associate 설정 참조
+        attributes: ['id', 'kr_name', 'address'], // 호텔 이름과 주소 포함
+        required: true
+      },
+      {
+        model: Rider,
+        as: 'order_rider', // Order.js의 associate 설정 참조
+        attributes: ['id', 'phone'], // 기사 연락처 포함
+        required: false // 배차 전일 수 있으므로 false
+      }
+    ]
+  });
+}
+
+/**
  * 주문 히스토리 조회
  */
 async function findOrderHistoryThreeMonth(t = null, { dateRange, limit, offset }) {
@@ -300,6 +325,7 @@ export default {
   existsByPk,
   findByPk,
   findByPkWithDetails,
+  findByIdOnly,
   countInProgressByRider,
   updateToMatched,
   updateToPicked,

@@ -12,7 +12,6 @@ import cookieUtil from "../utils/cookie/cookie.util.js";
 import { createBaseResponse } from "../utils/createBaseResponse.util.js";
 import socialKakaoUtil from "../utils/social/social.kakao.util.js";
 
-
 // ------------------------
 // public
 // ------------------------

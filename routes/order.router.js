@@ -128,7 +128,17 @@ orderRouter.get('/:orderId',
   ordersController.show                  
 );
 
+/**
+ * Track delivery status by Order ID
+ * GET /api/orders/deliverystatus/:dlvId
+ * 배송 현황을 조회합니다.
+ */
+orderRouter.get('/deliverystatus/:dlvId',
+  ordersController.getDeliveryStatus
+);
+
 export default orderRouter;
+
 
 // -------------------------------------------------------------
 // RESTful API 라우팅 규칙:

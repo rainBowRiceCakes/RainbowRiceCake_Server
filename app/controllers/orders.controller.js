@@ -10,6 +10,7 @@ import OrdersService from '../services/orders.service.js';
 import { createBaseResponse } from '../utils/createBaseResponse.util.js';
 import myError from '../errors/customs/my.error.js';
 import { BAD_REQUEST_ERROR } from '../../configs/responseCode.config.js';
+import ordersService from '../services/orders.service.js';
 
 // --- 1. ORDER WORKFLOW FOR PARNERS (파트너와 관련된 당일 내 이뤄지는 주문) ---
 /**
@@ -197,6 +198,25 @@ async function show(req, res, next) {
   }
 }
 
+/**
+ * 배송 현황 조회 (주문 PK로만 조회)
+ * GET /api/orders/deliverystatus?dlvId=4
+ */
+const getDeliveryStatus = async (req, res, next) => {
+  try {
+    // URL 파라미터에서 dlvId 추출
+    const { dlvId } = req.params; 
+
+    const result = await ordersService.getDeliveryStatus({ 
+      dlvId: parseInt(dlvId) 
+    });
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  } catch (error) {
+    return next(error);
+  }
+};
+
 export default {
   store,
   matchOrder,
@@ -205,6 +225,7 @@ export default {
   todayIndex,
   index,
   show,
+  getDeliveryStatus
 };
 
 // RESTful API Controller Method Naming Conventions
