@@ -28,6 +28,25 @@ async function noticeShow(req, res, next) {
 }
 
 /**
+ * Notice테이블의 정보 단일로 가져오는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function noticeShowDetail(req, res, next) {
+  try {
+    const id = req.params.id
+
+    const result = await noticesService.showDetail(id);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
+  } catch (error) {
+    return next(error)
+  }
+}
+
+/**
  * Notice테이블에 정보 등록 처리
  * @param {import("express").Request} req - 리퀘스트 객체
  * @param {import("express").Response} res - 레스폰스 객체
@@ -49,4 +68,5 @@ async function noticeCreate(req, res, next) {
 export default {
   noticeShow,
   noticeCreate,
+  noticeShowDetail,
 }

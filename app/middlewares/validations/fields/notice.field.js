@@ -4,7 +4,7 @@
  * 251223 v1.0.0 wook init
  */
 
-import { body } from "express-validator"
+import { body, param } from "express-validator"
 
 // 어드민 PK 필드
 export const adminId = body('adminId')
@@ -43,4 +43,14 @@ export const status = body('status')
   .trim()
   .isBoolean()
   .withMessage('boolean값만 허용')
+;
+
+export const id = param('id')
+  .trim()
+  .notEmpty()
+  .withMessage('필수 항목입니다.')
+  .bail()
+  .isNumeric()
+  .withMessage('숫자만 허용합니다.')
+  .toInt()
 ;

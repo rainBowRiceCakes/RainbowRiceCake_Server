@@ -106,9 +106,14 @@ orderRouter.get('/today',
  * GET /orders
  * 주문들의 목록을 조회합니다.
  */
+// orderRouter.get('/',
+//   authMiddleware,
+//   orderMiddleware.setOrderAccessFilter,  
+//   orderValidator.index,
+//   validationHandler,
+//   ordersController.index
+// );
 orderRouter.get('/',
-  authMiddleware,
-  orderMiddleware.setOrderAccessFilter,  
   orderValidator.index,
   validationHandler,
   ordersController.index

@@ -10,11 +10,16 @@ async function show(data) {
   return await noticeRepository.show(null, data.targetRole)
 }
 
+async function showDetail(id) {
+  return await noticeRepository.showDetail(null, id)
+}
+
 async function create(data) {
   return await noticeRepository.create(null, data)
 }
 
 export default {
   show,
+  showDetail,
   create,
 }

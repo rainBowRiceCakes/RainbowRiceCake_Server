@@ -6,7 +6,7 @@
  */
 
 import db from '../models/index.js';
-const { Partner } = db;
+const { Partner, User } = db;
 
 // --- 1. ADD PARTNER's INFO WORKFLOW FOR USERS ---
 /**
@@ -64,11 +64,12 @@ async function update(t = null, partnerId, updateData) {
  * @param {object} options - 조회 옵션 (limit, offset, where 등)
  * @returns {Promise<{rows: Array<import("../models/Partner.js").Partner>, count: number}>}
  */
-async function findAll(t = null, options = {}) {
-  return await Partner.findAndCountAll({
-    ...options,
+async function findAll(t = null) {
+  return await Partner.findAll(
+    {
     transaction: t
-  });
+    }
+  );
 }
 
 /**

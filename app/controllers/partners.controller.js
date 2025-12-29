@@ -83,8 +83,7 @@ async function updateProfile(req, res, next) {
  */
 async function index(req, res, next) {
   try {
-    const queryParams = req.query; // 페이징 관련
-    const result = await partnersService.listPartners(queryParams);
+    const result = await partnersService.listPartners();
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {

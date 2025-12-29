@@ -29,10 +29,10 @@ partnerRouter.put('/profile', authMiddleware, partnerUpdateValidator, validation
 
 // --- 3. ADMIN LOOKS UP PARTNER's INFO WORKFLOW FOR ADMIN (어드민 페이지와 관련됨) ---
 // 어드민이 partner들의 모든 정보를 list up 하기. 
-partnerRouter.get('/', authMiddleware, partnerIndexValidator, partnersController.index);
+partnerRouter.get('/', authMiddleware, partnerIndexValidator, validationHandler, partnersController.index);
 
 // 어드민이 Partner PK로 단일정보 가져오기
-partnerRouter.get('/:id', authMiddleware, partnerShowValidator, partnersController.show);
+partnerRouter.get('/:id', authMiddleware, partnerShowValidator, validationHandler, partnersController.show);
 
 export default partnerRouter;
 

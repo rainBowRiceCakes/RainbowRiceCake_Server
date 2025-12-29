@@ -30,6 +30,20 @@ async function show(t = null, targetRole) {
 }
 
 /**
+ * 공지 단일로 가져오기
+ * @param {import("sequelize").Transaction|null} t 
+ * @param {{limit: number, offset: number}} data 
+ * @returns {Promise<Array<import("../models/Notice.js").Notice>>}
+ */
+async function showDetail(t = null, id) {
+  return await Notice.findByPk(
+    id,
+    {
+      transaction: t,
+    })
+}
+
+/**
  * Admin의 공지 제작(발송)
  * @param {import("sequelize").Transaction|null} t 
  * @param {{limit: number, offset: number}} data 
@@ -46,5 +60,6 @@ async function create(t = null, data) {
 
 export default {
   show,
+  showDetail,
   create,
 }

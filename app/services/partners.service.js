@@ -27,8 +27,8 @@ async function createPartner(createData) {
     const partnerData = {
       userId: createData.userId,
       businessNum: createData.businessNum,
-      storeKrName: createData.storeKrName,
-      storeEnName: createData.storeEnName,
+      krName: createData.krName,
+      enName: createData.enName,
       manager: createData.manager,
       phone: createData.phone,
       status: 'req',  // 👈 초기 상태 설정 (비즈니스 규칙) 혹은 pending
@@ -108,31 +108,9 @@ async function updatePartnerProfile(userId, updateData) {
  * 어드민이 모든 파트너 리스트 조회
  * @param {object} queryParams - 필터 등의 쿼리 파라미터
  */
-async function listPartners(queryParams) {
+async function listPartners() {
   // 비즈니스 로직: 쿼리 파라미터 처리
-  const { status, search } = queryParams;
-  
-  const options = {
-    where: {}
-  };
-
-  // 필터 조건 추가
-  if (status) {
-    options.where.status = status;
-  }
-  
-  if (search) {
-    options.where.name = {
-      [db.sequelize.Op.like]: `%${search}%`
-    };
-  }
-
-  const { rows, count } = await partnerRepository.findAll(null, options);
-  
-  return {
-    partners: rows,
-    total: count
-  };
+  return await partnerRepository.findAll(null);
 }
 
 /**

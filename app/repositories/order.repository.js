@@ -47,7 +47,7 @@ async function findByPkWithDetails(t = null, id) {
         model: Partner,
         as: 'order_partner',
         attributes: [
-          'id', 'userId', 'storeKrName', 'storeEnName',
+          'id', 'userId', 'krName', 'enName',
           'manager', 'phone', 'address'
         ]
       },
@@ -55,7 +55,7 @@ async function findByPkWithDetails(t = null, id) {
         model: Hotel,
         as: 'order_hotel',
         attributes: [
-          'id', 'hotelKrName', 'hotelEnName',
+          'id', 'krName', 'enName',
           'manager', 'phone', 'address'
         ]
       },
@@ -149,13 +149,13 @@ async function findTodayOrdersByTab(t = null, { filter, statuses, today, limit, 
       {
         model: Partner,
         as: 'order_partner',
-        attributes: ['id', 'storeKrName', 'address'],
+        attributes: ['id', 'krName', 'address'],
         required: true
       },
       {
         model: Hotel,
         as: 'order_hotel',
-        attributes: ['id', 'hotelKrName', 'address'],
+        attributes: ['id', 'krName', 'address'],
         required: true
       },
       {
@@ -198,13 +198,13 @@ async function findOrderHistory(t = null, { filter, status, dateRange, limit, of
       {
         model: Partner,
         as: 'order_partner',
-        attributes: ['id', 'storeKrName', 'address'],
+        attributes: ['id', 'krName', 'address'],
         required: true
       },
       {
         model: Hotel,
         as: 'order_hotel',
-        attributes: ['id', 'hotelKrName', 'address'],
+        attributes: ['id', 'krName', 'address'],
         required: true
       },
       {
