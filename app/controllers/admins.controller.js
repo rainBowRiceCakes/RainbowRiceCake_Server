@@ -56,7 +56,6 @@ async function partnerUpdate(req, res, next) {
  */
 async function hotelUpdate(req, res, next) {
   try {
-    console.log(req.user)
     const data = req.body
 
     await adminsService.hotelUpdate(data);
@@ -73,7 +72,7 @@ async function hotelUpdate(req, res, next) {
  * @param {import("express").Response} res - 레스폰스 객체
  * @param {import("express").NextFunction} next - next 객체
  * @return {import("express").Response}
- */
+*/
 async function orderIndex(req, res, next) {
   try {
     const data = {
@@ -81,12 +80,48 @@ async function orderIndex(req, res, next) {
       page: parseInt(req.query.page) || 1,
       limit: parseInt(req.query.limit) || 9
     }
-
+    
     const result = await ordersService.getOrdersListAdmin(data)
-
+    
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
   } catch (error) {
     next(error)
+  }
+}
+
+/**
+ * admin이 hotel테이블에 강제로 정보 등록하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function orderUpdate(req, res, next) {
+  try {
+    const data = req.params
+    const result = await adminsService.orderUpdate(data);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
+  } catch (error) {
+    return next(error);
+  }
+}
+
+/**
+ * Get details of order history (주문 히스토리 DETAIL 조회)
+ * @param {import("express").Request} req - Request 객체
+ * @param {import("express").Response} res - Response 객체
+ * @param {import("express").NextFunction} next - NextFuction 객체
+ * @returns
+ */
+async function show(req, res, next) {
+  try {
+    const id = req.params.id;
+
+    const result = await adminsService.getOrderDetail(id);
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  } catch (error) {
+    return next(error);
   }
 }
 
@@ -95,4 +130,6 @@ export default {
   partnerUpdate,
   hotelUpdate,
   orderIndex,
+  orderUpdate,
+  show,
 }

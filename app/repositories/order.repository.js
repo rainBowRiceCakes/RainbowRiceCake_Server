@@ -62,8 +62,15 @@ async function findByPkWithDetails(t = null, id) {
       {
         model: Rider,
         as: 'order_rider',
-        attributes: ['id', 'name', 'phone'],
-        required: false
+        attributes: ['id', 'phone'],
+        required: false,
+        include: [
+        {
+          attributes: ['name'],
+          model: User,
+          as: 'rider_user',
+        }
+      ],
       }
     ]
   });

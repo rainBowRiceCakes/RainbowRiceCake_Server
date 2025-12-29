@@ -7,6 +7,7 @@
 import db from "../models/index.js";
 import adminRepository from "../repositories/admin.repository.js";
 import hotelRepository from "../repositories/hotel.repository.js";
+import orderRepository from "../repositories/order.repository.js";
 import partnerRepository from "../repositories/partner.repository.js";
 import riderRepository from "../repositories/rider.repository.js";
 import userRepository from "../repositories/user.repository.js";
@@ -111,8 +112,47 @@ async function hotelUpdate(data) {
   })
 }
 
+/**
+ * admin이 hotel테이블에 강제로 정보 등록하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function getOrderDetail(id) {
+    // partnerPK로 레코드 하나 가져오기
+    return await orderRepository.findByPkWithDetails(null, id);
+}
+
+/**
+ * admin이 hotel테이블에 강제로 정보 등록하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function orderUpdate(data) {
+  await db.sequelize.transaction(async t => {
+    // partnerPK로 레코드 하나 가져오기
+    const result = await orderRepository.findByPkWithDetails(t, data.id);
+    result.name = data.name
+    result.email = data.email
+    result.cntS = data.cntS
+    result.cntM = data.cntM
+    result.cntL = data.cntL
+    result.status = data.status
+    result.price = (data.cntS * 5000) + (data.cntM * 8000) + (data.cntL * 10000)
+    
+    await adminRepository.orderUpdate(t, result);
+    
+    return
+  })
+}
+
 export default {
   riderUpdate,
   partnerUpdate,
   hotelUpdate,
+  getOrderDetail,
+  orderUpdate,
 }

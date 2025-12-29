@@ -137,7 +137,7 @@ const Order = {
     db.Order.belongsTo(db.Rider, { targetKey: 'id', foreignKey: 'riderId', as: 'order_rider'}),
     db.Order.belongsTo(db.Partner, { targetKey: 'id', foreignKey: 'partnerId', as: 'order_partner'}),
     db.Order.belongsTo(db.Hotel, { targetKey: 'id', foreignKey: 'hotelId', as: 'order_hotel'});
-    db.Order.belongsTo(db.Settlement, { targetKey: 'id', foreignKey: 'stmId', as: 'order_settlement'});
+    db.Order.hasMany(db.Settlement, { targetKey: 'id', foreignKey: 'stmId', as: 'order_settlement'});
   },
 }
 
