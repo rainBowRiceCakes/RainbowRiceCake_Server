@@ -35,10 +35,10 @@ async function riderUpdate(data) {
     // rider의 user_id로 userByPK받아오기
     const userData = await userRepository.riderToUserPK(t, data.userId)
     // user의 role바뀌는 처리 추가
+    userData.name = data.rider_user.name
     if(data.status === "RES") {
       // 상태가 RES(승인)로 바뀌면 user권한 DLV로 변경
       userData.role = "DLV"
-      userData.name = data.name
       // 상태가 REQ(대기), REJ(반려)로 바뀌면 user권한 COM으로 변경
     } else userData.role = "COM"
     await userRepository.save(t, userData)

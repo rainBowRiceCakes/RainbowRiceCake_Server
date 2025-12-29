@@ -6,6 +6,7 @@
 
 import { SUCCESS } from "../../configs/responseCode.config.js";
 import adminsService from "../services/admins.service.js";
+import ordersService from "../services/orders.service.js";
 import { createBaseResponse } from "../utils/createBaseResponse.util.js";
 
 /**
@@ -66,8 +67,32 @@ async function hotelUpdate(req, res, next) {
   }
 }
 
+/**
+ * admin이 hotel테이블에 강제로 정보 등록하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function orderIndex(req, res, next) {
+  try {
+    const data = {
+      from: req.query.from,
+      page: parseInt(req.query.page) || 1,
+      limit: parseInt(req.query.limit) || 9
+    }
+
+    const result = await ordersService.getOrdersListAdmin(data)
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
+  } catch (error) {
+    next(error)
+  }
+}
+
 export default {
   riderUpdate,
   partnerUpdate,
   hotelUpdate,
+  orderIndex,
 }

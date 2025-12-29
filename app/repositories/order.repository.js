@@ -7,7 +7,7 @@
 
 import { Op } from 'sequelize';
 import db from '../models/index.js';
-const { Order, Partner, Hotel, Rider, Sequelize } = db;
+const { Order, Partner, Hotel, Rider, Sequelize, User } = db;
 
 /**
  * 주문 생성
@@ -236,6 +236,58 @@ async function getStatusStats(t = null, filter = {}) {
   });
 }
 
+/**
+ * 주문 히스토리 조회
+ */
+async function findOrderHistoryThreeMonth(t = null, { dateRange, limit, offset }) {
+  const where = {};
+
+  if (dateRange) {
+    where.createdAt = {
+      [Op.between]: [dateRange.start, dateRange.end]
+    };
+  }
+
+  return await Order.findAndCountAll({
+    where,
+    limit,
+    offset,
+    order: [['createdAt', 'DESC']],
+    transaction: t,
+    include: [
+      {
+        model: Partner,
+        as: 'order_partner',
+        attributes: ['id', 'krName', 'address'],
+        required: true
+      },
+      {
+        model: Hotel,
+        as: 'order_hotel',
+        attributes: ['id', 'krName', 'address'],
+        required: true
+      },
+      {
+        model: Rider,
+        as: 'order_rider',
+        attributes: ['id'],
+        required: false,
+        include: [
+          {
+            model: User,
+            as: 'rider_user',
+            attributes: ['name'],
+            required: true
+          }
+        ]
+      }
+    ],
+    attributes: [
+      'id', 'status', 'price', 'cntS', 'cntM', 'cntL', 'createdAt'
+    ]
+  });
+}
+
 export default {
   create,
   existsByPk,
@@ -248,6 +300,7 @@ export default {
   findTodayOrdersByTab,
   findOrderHistory,
   getStatusStats,
+  findOrderHistoryThreeMonth,
 };
 
 // Repository (DB 중심)	HTTP Method

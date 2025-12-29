@@ -363,6 +363,46 @@ async function getOrderDetail({ orderId, userId, userRole }) {
   });
 }
 
+/**
+ * Admin에서 사용 할 order history 주문 히스토리 LIST 3개월치 조회
+ * @param {Object} filter - 미들웨어에서 설정한 필터
+ */
+async function getOrdersListAdmin({ from, page, limit}) {
+  return await db.sequelize.transaction(async t => {
+    const offset = limit * (page - 1);
+
+    // 오늘 기준 3개월 전 ~ 오늘
+    const dateRange = (from)
+    ? {
+        start: dayjs(from).startOf('day').toDate(),
+        end: dayjs().endOf('day').toDate()
+      }
+    : {
+        start: dayjs().subtract(3, 'month').startOf('day').toDate(),
+        end: dayjs().endOf('day').toDate()
+      };
+
+    // Repository를 통한 조회
+    const result = await orderRepository.findOrderHistoryThreeMonth(t, {
+      dateRange,
+      limit,
+      offset
+    });
+
+    // 응답 데이터 구성
+    return {
+      orders: result.rows,
+      pagination: {
+        page,
+        limit,
+        total: result.count,
+        totalPages: Math.ceil(result.count / limit),
+      },
+      filters: { from },
+    };
+  });
+}
+
 export default {
   createNewOrder,
   matchOrder,
@@ -371,4 +411,5 @@ export default {
   getTodayOrders,
   getOrdersList,
   getOrderDetail,
+  getOrdersListAdmin,
 };

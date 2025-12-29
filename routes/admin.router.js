@@ -21,6 +21,7 @@ const adminRouter = express.Router();
 adminRouter.post('/rider', authMiddleware, riderCreateValidator, validationHandler , adminsController.riderUpdate)
 // adminRouter.post('/partner', authMiddleware, partnerCreateValidator, validationHandler , adminsController.partnerUpdate)
 adminRouter.post('/partner', adminsController.partnerUpdate)
+adminRouter.get('/orderindex', adminsController.orderIndex)
 
 // *완성*
 adminRouter.post('/hotel', authMiddleware, createValidator, validationHandler , adminsController.hotelUpdate);

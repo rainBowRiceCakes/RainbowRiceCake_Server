@@ -12,4 +12,4 @@ export const ROLE = {
 }
 Object.freeze(ROLE);
 
-export default [ROLE];
+export default ROLE;

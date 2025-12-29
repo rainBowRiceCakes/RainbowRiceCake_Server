@@ -49,7 +49,7 @@ function authorize(req) {
     // 권한 체크
     const userRole = req.user?.role;
     if(!userRole || !matchRole.roles.includes(userRole)) {
-      throw myError('권한 부족', FORBIDDEN_ERROR);
+      throw myError(`권한 부족`, FORBIDDEN_ERROR);
     }
   }
 }
