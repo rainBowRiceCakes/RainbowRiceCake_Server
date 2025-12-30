@@ -74,8 +74,8 @@ export const name = body('name')
   .notEmpty()
   .withMessage('이름은 필수입니다.')
   .bail()
-  .matches(/^[A-Za-z\s]{2,50}$/)
-  .withMessage('이름은 2~50자의 영문자만 허용됩니다.');
+  .matches(/^[가-힣A-Za-z\s]{2,50}$/)
+  .withMessage('이름은 2~50자의 한글,영문자만 허용됩니다.');
 
 export const hotelId = body('hotelId')
   .trim()
@@ -84,6 +84,15 @@ export const hotelId = body('hotelId')
   .bail()
   .isInt({ min: 1 })
   .withMessage('유효한 호텔 ID가 아닙니다.')
+  .toInt();
+
+export const partnerId = body('partnerId')
+  .trim()
+  .notEmpty()
+  .withMessage('매장 ID는 필수입니다.')
+  .bail()
+  .isInt({ min: 1 })
+  .withMessage('유효한 매장 ID가 아닙니다.')
   .toInt();
 
 export const price = body('price')
@@ -132,6 +141,7 @@ export default {
   email,
   name,
   hotelId,
+  partnerId,
   price,
   cntS,
   cntM,

@@ -134,14 +134,15 @@ async function getOrderDetail(id) {
 async function orderUpdate(data) {
   await db.sequelize.transaction(async t => {
     // partnerPK로 레코드 하나 가져오기
-    const result = await orderRepository.findByPkWithDetails(t, data.id);
+    const result = await orderRepository.findByPk(t, data.id);
     result.name = data.name
     result.email = data.email
     result.cntS = data.cntS
     result.cntM = data.cntM
     result.cntL = data.cntL
     result.status = data.status
-    result.price = (data.cntS * 5000) + (data.cntM * 8000) + (data.cntL * 10000)
+    result.price = data.price
+    result.hotelId = data.hotelId
     
     await adminRepository.orderUpdate(t, result);
     

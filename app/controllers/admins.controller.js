@@ -7,6 +7,7 @@
 import { SUCCESS } from "../../configs/responseCode.config.js";
 import adminsService from "../services/admins.service.js";
 import ordersService from "../services/orders.service.js";
+import partnersService from "../services/partners.service.js";
 import { createBaseResponse } from "../utils/createBaseResponse.util.js";
 
 /**
@@ -67,7 +68,7 @@ async function hotelUpdate(req, res, next) {
 }
 
 /**
- * admin이 hotel테이블에 강제로 정보 등록하는 처리
+ * admin이 order테이블에 정보 조회하는 처리
  * @param {import("express").Request} req - 리퀘스트 객체
  * @param {import("express").Response} res - 레스폰스 객체
  * @param {import("express").NextFunction} next - next 객체
@@ -90,7 +91,7 @@ async function orderIndex(req, res, next) {
 }
 
 /**
- * admin이 hotel테이블에 강제로 정보 등록하는 처리
+ * admin이 order테이블에 강제로 정보 등록하는 처리
  * @param {import("express").Request} req - 리퀘스트 객체
  * @param {import("express").Response} res - 레스폰스 객체
  * @param {import("express").NextFunction} next - next 객체
@@ -98,10 +99,46 @@ async function orderIndex(req, res, next) {
  */
 async function orderUpdate(req, res, next) {
   try {
-    const data = req.params
-    const result = await adminsService.orderUpdate(data);
+    const data = req.body
+    await adminsService.orderUpdate(data);
 
-    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS))
+  } catch (error) {
+    return next(error);
+  }
+}
+
+/**
+ * admin이 order테이블에 강제로 정보 등록하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function orderCreate(req, res, next) {
+  try {
+    const data = req.body
+    await ordersService.createNewOrder(data);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS))
+  } catch (error) {
+    return next(error);
+  }
+}
+
+/**
+ * admin이 order테이블에 강제로 정보 등록하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function partnerCreate(req, res, next) {
+  try {
+    const data = req.body
+    await partnersService.createPartner(data);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS))
   } catch (error) {
     return next(error);
   }
@@ -132,4 +169,6 @@ export default {
   orderIndex,
   orderUpdate,
   show,
+  orderCreate,
+  partnerCreate,
 }

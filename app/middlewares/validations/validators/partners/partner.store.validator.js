@@ -13,7 +13,6 @@ export default [
   partner.manager,
   partner.phone,
   partner.status,
-  partner.logoImg,
   partner.address,
   partner.lat,
   partner.lng,

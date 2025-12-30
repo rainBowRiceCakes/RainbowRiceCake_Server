@@ -55,6 +55,20 @@ const show = [
   order.orderId,
 ];
 
+/**
+ * 어드민 강제수정 validator
+ */
+const force = [
+  order.statusQuery,
+  order.email,
+  order.name,
+  order.hotelId,
+  order.price,
+  order.cntS,
+  order.cntM,
+  order.cntL
+];
+
 export default {
   store,
   match,
@@ -62,4 +76,5 @@ export default {
   todayIndex,
   index,
   show,
+  force,
 };

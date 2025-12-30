@@ -11,11 +11,19 @@ import riderCreateValidator from '../app/middlewares/validations/validators/ride
 import ridersController from '../app/controllers/riders.controller.js';
 import partnerCreateValidator from '../app/middlewares/validations/validators/partners/partner.create.validator.js';
 import partnersController from '../app/controllers/partners.controller.js';
+import usersController from '../app/controllers/users.controller.js';
 
 
 const userRouter = express.Router();
 
 userRouter.post('/rider/form', authMiddleware, riderCreateValidator, validationHandler, ridersController.riderFormStore);
 userRouter.post('/partner/form', authMiddleware, partnerCreateValidator, validationHandler, partnersController.partnerFormStore);
+
+
+// ----------------아래 어드민 페이지 사용----------------------
+userRouter.get('/show', authMiddleware, usersController.showIndex)
+userRouter.get('/show/:id', authMiddleware, usersController.showDetail)
+userRouter.put('/update', authMiddleware, usersController.userUpdate)
+userRouter.post('/store', authMiddleware, usersController.store)
 
 export default userRouter;

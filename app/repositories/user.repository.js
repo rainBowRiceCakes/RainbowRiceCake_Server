@@ -126,6 +126,29 @@ async function updateRole(t = null, id, role) {
   );
 }
 
+ /**
+  * User테이블 모든정보 가져오는 처리
+  * @param {import("sequelize").Transaction} t 
+  * @returns 
+  */
+async function showIndex(t = null, limit, offset) {
+  return await User.findAndCountAll(
+    limit,
+    offset,
+    {transaction:  t}
+  )}
+
+ /**
+  * Admin의 User테이블 수동 등록처리
+  * @param {import("sequelize").Transaction} t 
+  * @returns 
+  */
+async function store(t = null, data) {
+  return await User.create(
+    data,
+    {transaction:  t}
+  )}
+
 export default {
   findByEmail,
   save,
@@ -135,4 +158,6 @@ export default {
   create,
   logout,
   updateRole,
+  showIndex,
+  store,
 }

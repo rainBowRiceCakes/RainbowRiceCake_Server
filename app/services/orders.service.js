@@ -28,15 +28,7 @@ import dayjs from 'dayjs';
 */
 async function createNewOrder(createData) {
   return await db.sequelize.transaction(async t => {
-    // 1. 파트너 존재 및 승인 상태 확인
-    const partner = await partnerRepository.findByPk(t, createData.partnerId);
-    if (!partner) {
-      throw myError('파트너 정보를 찾을 수 없습니다.', NOT_FOUND_ERROR);
-    }
-
-    if (partner.status !== 'res') {
-      throw myError('승인된 파트너만 주문을 등록할 수 있습니다.', FORBIDDEN_ERROR);
-    }
+    // 1. 파트너 존재 및 승인 상태 확인 (없어짐)
 
     // 2. 호텔 존재 확인
     const hotel = await hotelRepository.findByPk(t, createData.hotelId);

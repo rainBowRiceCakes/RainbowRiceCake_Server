@@ -6,4 +6,4 @@
 
 import rider from '../../fields/rider.field.js'
 
-export default [ rider.address, rider.bank, rider.bankNum, rider.licenseImg, rider.phone, rider.lat, rider.lng, rider.isWorking ]
+export default [ rider.address, rider.bank, rider.bankNum, rider.phone, rider.lat, rider.lng, rider.isWorking ]

@@ -60,7 +60,7 @@ async function orderUpdate(t = null, result) {
     {
       transaction: t
     }
-  )
+  ) 
 }
 
 /**

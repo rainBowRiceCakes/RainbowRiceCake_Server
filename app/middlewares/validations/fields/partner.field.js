@@ -72,8 +72,8 @@ const status = body('status')
   .notEmpty()
   .withMessage('상태는 필수 항목입니다')
   .bail()
-  .isIn(['req', 'res', 'rej'])
-  .withMessage('상태는 req, res, rej 중 하나여야 합니다')
+  .isIn(['REQ', 'RES', 'REJ'])
+  .withMessage('상태는 REQ, RES, REJ 중 하나여야 합니다')
 ;
 
 const logoImg = body('logoImg')
