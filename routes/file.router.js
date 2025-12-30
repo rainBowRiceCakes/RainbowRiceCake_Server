@@ -11,10 +11,26 @@ import filesController from '../app/controllers/files.controller.js';
 
 const fileRouter = express.Router();
 
-fileRouter.post('/licenses', authMiddleware, multerMiddleware.riderLicenseUploader, filesController.storeLicense);
-fileRouter.post('/logos', authMiddleware, multerMiddleware.partnerLogoUploader, filesController.storeLogo);
-fileRouter.post(
-  '/attachments',
+fileRouter.post('/licenses',
+  /* #swagger.tags = ['Files']
+  #swagger.summary = '라이더용 라이센스 업로드'
+  #swagger.description = '라이더가 라이센스를 업로드합니다.' */
+  authMiddleware,
+  multerMiddleware.riderLicenseUploader,
+  filesController.storeLicense)
+
+fileRouter.post('/logos',
+  /* #swagger.tags = ['Files']
+  #swagger.summary = '파트너용 로고 업로드'
+  #swagger.description = '파트너가 로고를 업로드합니다.' */
+  authMiddleware,
+  multerMiddleware.partnerLogoUploader,
+  filesController.storeLogo)
+
+fileRouter.post('/attachments',
+  /* #swagger.tags = ['Files']
+  #swagger.summary = '유저/파트너/라이더용 첨부파일 업로드'
+  #swagger.description = '유저/파트너/라이더(로그인 후)가 첨부파일을 업로드합니다.' */
   // authMiddleware, TODO: 주석풀기
   multerMiddleware.questionAttachmentUploader,
   filesController.storeAttachments)

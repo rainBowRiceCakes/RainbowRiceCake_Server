@@ -18,41 +18,54 @@ const partnerRouter = express.Router();
 
 // --- 1. ADD PARTNER's INFO WORKFLOW FOR USERS (유저 페이지와 관련됨) ---
 // Partner table에 유저가 가입하고 제휴 폼 작성하고 승인나면 정보 등록하기 ※ JWT로 유저id(PK)를 받아와야 함. req.user.id
-partnerRouter.post('/', authMiddleware, partnerStoreValidator, validationHandler, partnersController.store);
+partnerRouter.post('/',
+  /* #swagger.tags = ['Partners']
+  #swagger.summary = '유저용 파트너 정보 등록'
+  #swagger.description = '유저가 파트너 제휴 신청서를 작성해서 파트너 정보를 등록합니다.' */
+  authMiddleware,
+  partnerStoreValidator,
+  validationHandler,
+  partnersController.store);
 
 // --- 2. LOOK UP and UPDAETE PARTNER's INFO WORKFLOW FOR PARTNERS (파트너 페이지와 관련됨) ---
 // 파트너가 Partner table에 있는 정보(profile) 가져오기
-partnerRouter.get('/profile', authMiddleware, validationHandler, partnersController.showProfile); // validator 없어도 실무적으로 OK (단건 조회)
+partnerRouter.get('/profile',
+  /* #swagger.tags = ['Partners']
+  #swagger.summary = '파트너용 파트너 정보 조회'
+  #swagger.description = '파트너가 자신의 정보를 조회합니다.' */
+  authMiddleware,
+  validationHandler,
+  partnersController.showProfile); // validator 없어도 실무적으로 OK (단건 조회)
 
 // 파트너가 Partner table에 있는 정보(profile) 수정하기
-partnerRouter.put('/profile', authMiddleware, partnerUpdateValidator, validationHandler, partnersController.updateProfile);
+partnerRouter.put('/profile',
+  /* #swagger.tags = ['Partners']
+  #swagger.summary = '파트너용 파트너 정보 수정'
+  #swagger.description = '파트너가 자신의 정보를 수정합니다.' */
+  authMiddleware,
+  partnerUpdateValidator,
+  validationHandler,
+  partnersController.updateProfile);
 
 // --- 3. ADMIN LOOKS UP PARTNER's INFO WORKFLOW FOR ADMIN (어드민 페이지와 관련됨) ---
 // 어드민이 partner들의 모든 정보를 list up 하기. 
-partnerRouter.get('/', authMiddleware, partnerIndexValidator, validationHandler, partnersController.index);
+partnerRouter.get('/',
+  /* #swagger.tags = ['Partners']
+  #swagger.summary = '어드민용 파트너 정보 조회'
+  #swagger.description = '어드민이 파트너들의 모든 정보를 조회합니다.' */
+  authMiddleware,
+  partnerIndexValidator,
+  validationHandler,
+  partnersController.index);
 
 // 어드민이 Partner PK로 단일정보 가져오기
-partnerRouter.get('/:id', authMiddleware, partnerShowValidator, validationHandler, partnersController.show);
+partnerRouter.get('/:id',
+  /* #swagger.tags = ['Partners']
+  #swagger.summary = '어드민용 파트너 정보 조회'
+  #swagger.description = '어드민이 파트너의 단일 정보를 조회합니다.' */
+  authMiddleware,
+  partnerShowValidator,
+  validationHandler,
+  partnersController.show);
 
 export default partnerRouter;
-
-// 참고: 각 validator의 용도
-// storeValidator - CREATE and UPDATE (생성 및 업데이트 시 사용)
-// indexValidator - DETAIL (상세 조회 시 사용)
-// showValidator - LIST (목록 조회 시 사용)
-// destroyValidator - DELETE (삭제 시 사용, 현재 미사용)
-// -------------------------------------------------------------
-// GET    /        -> index
-// POST   /        -> store
-// GET    /:id    -> show
-// PUT    /:id    -> update
-// DELETE /:id    -> destroy
-// -------------------------------------------------------------
-// index    // 리스트 조회
-// show     // 단건 조회
-// store    // 생성
-// update   // 수정
-// destroy  // 삭제
-
-// create   // 작성 페이지
-// edit     // 수정 페이지

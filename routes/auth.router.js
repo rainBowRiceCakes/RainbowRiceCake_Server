@@ -14,12 +14,53 @@ import authMiddleware from '../app/middlewares/auth/auth.middleware.js';
 
 const authRouter = express.Router();
 
-authRouter.post('/login', loginValidator, validationHandler, authController.adminLogin);
-authRouter.post('/logout', authMiddleware, authController.adminLogout);
-authRouter.post('/social/login', loginValidator, validationHandler, authController.login);
-authRouter.post('/user/logout', authMiddleware, authController.logout);
-authRouter.post('/reissue', authController.reissue);
-authRouter.get('/social/kakao', validationHandler, authController.social);
-authRouter.get('/callback/kakao', authController.socialCallback);
+authRouter.post('/login',
+  /* #swagger.tags = ['Auth']
+  #swagger.summary = '로그인'
+  #swagger.description = '인증된 사용자가 로그인합니다.' */
+  loginValidator,
+  validationHandler,
+  authController.adminLogin)
+
+authRouter.post('/logout',
+  /* #swagger.tags = ['Auth']
+  #swagger.summary = '로그아웃'
+  #swagger.description = '인증된 사용자가 로그아웃합니다.' */
+  authMiddleware,
+  authController.adminLogout)
+
+authRouter.post('/social/login',
+  /* #swagger.tags = ['Auth']
+  #swagger.summary = '소셜 로그인'
+  #swagger.description = '인증된 사용자가 소셜 로그인합니다.' */
+  loginValidator,
+  validationHandler,
+  authController.login)
+
+authRouter.post('/user/logout',
+  /* #swagger.tags = ['Auth']
+  #swagger.summary = '소셜 로그인'
+  #swagger.description = '인증된 사용자가 소셜 로그인합니다.' */
+  authMiddleware,
+  authController.logout)
+
+authRouter.post('/reissue',
+  /* #swagger.tags = ['Auth']
+  #swagger.summary = '재발급'
+  #swagger.description = '인증된 사용자가 재발급합니다.' */
+  authController.reissue)
+
+authRouter.get('/social/kakao',
+  /* #swagger.tags = ['Auth']
+  #swagger.summary = '소셜 로그인'
+  #swagger.description = '인증된 사용자가 소셜 로그인합니다.' */
+  validationHandler,
+  authController.social)
+
+authRouter.get('/callback/kakao',
+  /* #swagger.tags = ['Auth']
+  #swagger.summary = '소셜 로그인'
+  #swagger.description = '인증된 사용자가 소셜 로그인합니다.' */
+  authController.socialCallback)
 
 export default authRouter;

@@ -1,0 +1,866 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Rainbow Rice Cake API",
+    "version": "1.0.0",
+    "description": ""
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "로그인",
+        "description": "인증된 사용자가 로그인합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "로그아웃",
+        "description": "인증된 사용자가 로그아웃합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/social/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "소셜 로그인",
+        "description": "인증된 사용자가 소셜 로그인합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/user/logout": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "소셜 로그인",
+        "description": "인증된 사용자가 소셜 로그인합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/reissue": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "재발급",
+        "description": "인증된 사용자가 재발급합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/social/kakao": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "소셜 로그인",
+        "description": "인증된 사용자가 소셜 로그인합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/auth/callback/kakao": {
+      "get": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "소셜 로그인",
+        "description": "인증된 사용자가 소셜 로그인합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/hotels/{id}": {
+      "get": {
+        "tags": [
+          "Hotels"
+        ],
+        "summary": "어드민용 호텔 정보 조회",
+        "description": "어드민이 호텔 정보를 조회합니다.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/hotels/": {
+      "get": {
+        "tags": [
+          "Hotels"
+        ],
+        "summary": "어드민용 호텔들 LIST 조회",
+        "description": "어드민이 호텔들을 조회합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Hotels"
+        ],
+        "summary": "어드민용 호텔 등록",
+        "description": "어드민이 호텔을 등록합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/notices/": {
+      "get": {
+        "tags": [
+          "Notices"
+        ],
+        "summary": "어드민용 공지사항 조회",
+        "description": "어드민이 공지사항을 조회합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Notices"
+        ],
+        "summary": "어드민용 공지사항 등록",
+        "description": "어드민이 공지사항을 등록합니다.",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "adminId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/notices/{id}": {
+      "get": {
+        "tags": [
+          "Notices"
+        ],
+        "summary": "어드민용 공지사항 디테일 조회",
+        "description": "어드민이 공지사항의 디테일을 조회합니다.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/notices/role": {
+      "get": {
+        "tags": [
+          "Notices"
+        ],
+        "summary": "파트너, 기사용 공지사항 조회",
+        "description": "파트너와 기사가 어드민이 올린 공지사항을 조회합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/riders/profile": {
+      "get": {
+        "tags": [
+          "Riders"
+        ],
+        "summary": "라이더용 내 프로필 조회",
+        "description": "인증된 라이더가 자신의 프로필 정보를 조회합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Riders"
+        ],
+        "summary": "라이더용 내 프로필 수정",
+        "description": "인증된 라이더가 자신의 프로필 정보를 수정합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/riders/{id}": {
+      "get": {
+        "tags": [
+          "Riders"
+        ],
+        "summary": "어드민이 PK로 라이더의 프로필 조회",
+        "description": "어드민이 PK로 라이더의 프로필 정보를 조회합니다.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/riders/": {
+      "get": {
+        "tags": [
+          "Riders"
+        ],
+        "summary": "어드민이 PK로 라이더의 프로필 조회",
+        "description": "어드민이 PK로 라이더의 프로필 정보를 조회합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Riders"
+        ],
+        "summary": "어드민이 PK로 라이더의 프로필 조회",
+        "description": "어드민이 PK로 라이더의 프로필 정보를 조회합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/partners/": {
+      "post": {
+        "tags": [
+          "Partners"
+        ],
+        "summary": "유저용 파트너 정보 등록",
+        "description": "유저가 파트너 제휴 신청서를 작성해서 파트너 정보를 등록합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Partners"
+        ],
+        "summary": "어드민용 파트너 정보 조회",
+        "description": "어드민이 파트너들의 모든 정보를 조회합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/partners/profile": {
+      "get": {
+        "tags": [
+          "Partners"
+        ],
+        "summary": "파트너용 파트너 정보 조회",
+        "description": "파트너가 자신의 정보를 조회합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Partners"
+        ],
+        "summary": "파트너용 파트너 정보 수정",
+        "description": "파트너가 자신의 정보를 수정합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/partners/{id}": {
+      "get": {
+        "tags": [
+          "Partners"
+        ],
+        "summary": "어드민용 파트너 정보 조회",
+        "description": "어드민이 파트너의 단일 정보를 조회합니다.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/admins/userindex": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/admins/rider": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/admins/partner": {
+      "put": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/admins/orderindex": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/admins/order/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/admins/order": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/admins/hotel": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/questions/": {
+      "post": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "파트너, 유저, 라이더용 이슈나 질문 등록",
+        "description": "파트너, 유저, 라이더가 이슈나 질문을 등록합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/users/rider/form": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/users/partner/form": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "userId": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/users/show": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/users/show/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/users/update": {
+      "put": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/users/store": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/orders/": {
+      "post": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "파트너용 주문 등록",
+        "description": "파트너가 주문을 등록합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "라이더와 파트너와 어드민용 주문 목록 조회",
+        "description": "라이더와 파트너와 어드민이 주문 목록을 조회합니다.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/orders/{orderId}/match": {
+      "post": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "라이더용 주문 수락",
+        "description": "라이더가 주문을 수락합니다.",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/orders/{orderId}/pickup-photo": {
+      "post": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "라이더용 주문 픽업 사진 업로드",
+        "description": "라이더가 주문 픽업 사진을 업로드합니다.",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/orders/{orderId}/complete-photo": {
+      "post": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "라이더용 주문 완료 사진 업로드",
+        "description": "라이더가 주문 완료 사진을 업로드합니다.",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/orders/today": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "라이더와 파트너용 오늘의 주문 리스트 조회",
+        "description": "라이더와 파트너가 오늘의 주문 리스트를 조회합니다.",
+        "parameters": [
+          {
+            "name": "tab",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/orders/{orderId}": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "라이더와 파트너와 어드민용 주문 내역 조회",
+        "description": "라이더와 파트너와 어드민이 주문 내역을 조회합니다.",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/orders/deliverystatus/{dlvId}": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "라이더와 파트너와 어드민용 배송 현황 조회",
+        "description": "라이더와 파트너와 어드민이 배송 현황을 조회합니다.",
+        "parameters": [
+          {
+            "name": "dlvId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/files/licenses": {
+      "post": {
+        "tags": [
+          "Files"
+        ],
+        "summary": "라이더용 라이센스 업로드",
+        "description": "라이더가 라이센스를 업로드합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/files/logos": {
+      "post": {
+        "tags": [
+          "Files"
+        ],
+        "summary": "파트너용 로고 업로드",
+        "description": "파트너가 로고를 업로드합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/files/attachments": {
+      "post": {
+        "tags": [
+          "Files"
+        ],
+        "summary": "유저/파트너/라이더용 첨부파일 업로드",
+        "description": "유저/파트너/라이더(로그인 후)가 첨부파일을 업로드합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    }
+  }
+}

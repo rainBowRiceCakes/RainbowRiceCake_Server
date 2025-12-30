@@ -13,11 +13,29 @@ import findPKValidator from '../app/middlewares/validations/validators/hotels/fi
 
 const hotelRouter = express.Router();
 
-// Hotel table에 id값으로 정보 가져오기
-hotelRouter.get('/:id', authMiddleware, findPKValidator, validationHandler, hotelsController.hotelFindByPK)
-// Hotel table에 있는 정보 모두 가져오기
-hotelRouter.get('/', authMiddleware, hotelsController.hotelShow)
-// Hotel table에 정보 등록하기 ※ JWT로 유저id(PK)를 받아와야 함. req.user.id
-hotelRouter.post('/', authMiddleware, createValidator, validationHandler, hotelsController.hotelCreate)
+hotelRouter.get('/:id',
+  /* #swagger.tags = ['Hotels']
+  #swagger.summary = '어드민용 호텔 정보 조회'
+  #swagger.description = '어드민이 호텔 정보를 조회합니다.' */
+  authMiddleware,
+  findPKValidator,
+  validationHandler,
+  hotelsController.hotelFindByPK)
+
+hotelRouter.get('/',
+  /* #swagger.tags = ['Hotels']
+  #swagger.summary = '어드민용 호텔들 LIST 조회'
+  #swagger.description = '어드민이 호텔들을 조회합니다.' */
+  authMiddleware,
+  hotelsController.hotelShow)
+
+hotelRouter.post('/',
+  /* #swagger.tags = ['Hotels']
+  #swagger.summary = '어드민용 호텔 등록'
+  #swagger.description = '어드민이 호텔을 등록합니다.' */
+  authMiddleware,
+  createValidator,
+  validationHandler,
+  hotelsController.hotelCreate)
 
 export default hotelRouter;

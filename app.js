@@ -19,12 +19,21 @@ import questionRouter from './routes/question.router.js';
 import userRouter from './routes/user.router.js';
 import orderRouter from './routes/order.router.js';
 import fileRouter from './routes/file.router.js';
-
+import swaggerUi from 'swagger-ui-express';
+import fs from 'fs';
 
 const app = express();
 app.use(express.json()); // JSON 요청 파싱 처리
 app.use(cookieParser()); // 쿠키파서
 
+const swaggerFile = JSON.parse(
+    fs.readFileSync('./swagger_output.json', 'utf-8')
+);
+
+// ---------------------
+// Swagger UI
+// ---------------------
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerFile));
 // ---------------------
 // 라우터 정의
 // ---------------------

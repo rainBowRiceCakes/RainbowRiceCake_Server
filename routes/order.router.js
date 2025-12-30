@@ -22,42 +22,36 @@ const orderRouter = express.Router();
 
 // --- 1. ORDER WORKFLOW FOR PARTNERS (파트너와 관련된 당일 내 이뤄지는 주문) ---
 // 이 섹션은 파트너가 주문을 등록하고 라이더들이 수락할 수 있도록 하는 워크플로우를 처리합니다.
-/**
- * Submit order for riders to accept
- * POST /orders
- * 파트너가 주문을 제출하여 라이더들이 수락할 수 있게 합니다.
- */
 orderRouter.post('/',
-  authMiddleware,                        
-  orderMiddleware.requirePartnerRole,    
+  /* #swagger.tags = ['Orders']
+  #swagger.summary = '파트너용 주문 등록'
+  #swagger.description = '파트너가 주문을 등록합니다.' */
+  authMiddleware,
+  orderMiddleware.requirePartnerRole,
   orderValidator.store,
   validationHandler,
-  ordersController.store                 
+  ordersController.store
 );
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // --- 2. ORDER WORKFLOW FOR RIDERS (기사와 관련된 당일 내 이뤄지는 주문) ---
 // 이 섹션은 라이더가 주문을 매칭하고, 픽업/완료 사진을 업로드하는 워크플로우를 처리합니다.
-/**
- * Accept the order
- * POST /orders/:orderId/match
- * 라이더가 특정 주문을 매칭하여 수락합니다.
- */
 orderRouter.post('/:orderId/match',
-  authMiddleware,                        
-  orderMiddleware.checkOrderExists,      
-  orderMiddleware.requireRiderRole,      
+  /* #swagger.tags = ['Orders']
+  #swagger.summary = '라이더용 주문 수락'
+  #swagger.description = '라이더가 주문을 수락합니다.' */
+  authMiddleware,
+  orderMiddleware.checkOrderExists,
+  orderMiddleware.requireRiderRole,
   orderValidator.match,
   validationHandler,
-  ordersController.matchOrder            
+  ordersController.matchOrder
 );
 
-/**
- * Drop a pick-up picture
- * POST /orders/:orderId/pickup-photo
- * 라이더가 주문을 픽업할 때 사진을 업로드합니다.
- */
 orderRouter.post('/:orderId/pickup-photo',
+  /* #swagger.tags = ['Orders']
+  #swagger.summary = '라이더용 주문 픽업 사진 업로드'
+  #swagger.description = '라이더가 주문 픽업 사진을 업로드합니다.' */
   authMiddleware,                        // 1. 인증 확인
   orderMiddleware.checkOrderExists,      // 2. 주문 존재 확인
   orderMiddleware.requireRiderRole,      // 3. 라이더 역할 확인
@@ -67,12 +61,10 @@ orderRouter.post('/:orderId/pickup-photo',
   ordersController.uploadPickupPhoto     // 7. 비즈니스 로직
 )
 
-/**
- * Drop a complete picture
- * POST /orders/:orderId/complete-photo
- * 라이더가 주문을 완료할 때 사진을 업로드합니다.
- */
 orderRouter.post('/:orderId/complete-photo',
+  /* #swagger.tags = ['Orders']
+  #swagger.summary = '라이더용 주문 완료 사진 업로드'
+  #swagger.description = '라이더가 주문 완료 사진을 업로드합니다.' */
   authMiddleware,
   orderMiddleware.checkOrderExists,
   orderMiddleware.requireRiderRole,
@@ -85,12 +77,10 @@ orderRouter.post('/:orderId/complete-photo',
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // --- 3. ORDER WORKFLOW FOR RIDERS and PARTNERS (라이더와 파트너와 관련된 당일 내 이뤄지는 주문) ---
 // 이 섹션은 라이더가 당일 주문을 탭별로 조회하는 워크플로우를 처리합니다. (파트너는 자기 주문만)
-/**
- * Get list of rirders for the day by tab (오늘 자 탭별 주문 리스트 조회 - 대기중/진행중/완료)
- * GET /orders/today?tab=waiting&page=1
- * 라이더가 오늘의 주문을 상태별(대기중, 진행중, 완료)로 조회합니다.
- */
 orderRouter.get('/today',
+  /* #swagger.tags = ['Orders']
+  #swagger.summary = '라이더와 파트너용 오늘의 주문 리스트 조회'
+  #swagger.description = '라이더와 파트너가 오늘의 주문 리스트를 조회합니다.' */
   authMiddleware,
   orderMiddleware.setOrderAccessFilter,
   orderValidator.todayIndex,
@@ -100,45 +90,36 @@ orderRouter.get('/today',
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // --- 4. ORDERS HISTORY FOR PARTNERS and RIDERS and ADMIN ---
-// 이 섹션은 주문들의 히스토리를 조회하는 기능을 처리합니다.
-/**
- * Get list of order history (주문들 LIST 보기)
- * GET /orders
- * 주문들의 목록을 조회합니다.
- */
 orderRouter.get('/',
+  /* #swagger.tags = ['Orders']
+  #swagger.summary = '라이더와 파트너와 어드민용 주문 목록 조회'
+  #swagger.description = '라이더와 파트너와 어드민이 주문 목록을 조회합니다.' */
   authMiddleware,
-  orderMiddleware.setOrderAccessFilter,  
+  orderMiddleware.setOrderAccessFilter,
   orderValidator.index,
   validationHandler,
   ordersController.index
 );
 
-
-// /**
-//  * Get details of order history (주문 내역 DETAIL 보기)
-//  * GET /orders/:orderId
-//  * 주문의 상세 정보를 조회합니다.
-//  */
 orderRouter.get('/:orderId',
-  authMiddleware,                        
-  orderMiddleware.checkOrderExists,      
+  /* #swagger.tags = ['Orders']
+  #swagger.summary = '라이더와 파트너와 어드민용 주문 내역 조회'
+  #swagger.description = '라이더와 파트너와 어드민이 주문 내역을 조회합니다.' */
+  authMiddleware,
+  orderMiddleware.checkOrderExists,
   orderValidator.show,
   validationHandler,
-  ordersController.show                  
+  ordersController.show
 );
 
-/**
- * Track delivery status by Order ID
- * GET /api/orders/deliverystatus/:dlvId
- * 배송 현황을 조회합니다.
- */
 orderRouter.get('/deliverystatus/:dlvId',
+  /* #swagger.tags = ['Orders']
+  #swagger.summary = '라이더와 파트너와 어드민용 배송 현황 조회'
+  #swagger.description = '라이더와 파트너와 어드민이 배송 현황을 조회합니다.' */
   ordersController.getDeliveryStatus
 );
 
 export default orderRouter;
-
 
 // -------------------------------------------------------------
 // RESTful API 라우팅 규칙:
