@@ -17,15 +17,16 @@ import { createBaseResponse } from "../utils/createBaseResponse.util.js";
  */
 async function noticeShow(req, res, next) {
   try {
-    const data = req.body
+    const userRole = req.user.role;
 
-    const result = await noticesService.show(data);
+    const result = await noticesService.show(null, userRole);
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
   } catch (error) {
     return next(error)
   }
 }
+
 
 /**
  * Notice테이블의 정보 단일로 가져오는 처리

@@ -14,13 +14,13 @@ const { Notice } = db;
  * @param {{limit: number, offset: number}} data 
  * @returns {Promise<Array<import("../models/Notice.js").Notice>>}
  */
-async function show(t = null, targetRole) {
+async function show(t = null, userRole) {
   return await Notice.findAll(
     {
       where: {
         [Op.or]: [
-          {targetRole: targetRole},
-          {targetRole: 'ALL'}
+          { targetRole: userRole },
+          { targetRole: 'ALL' }
         ]
       }
     },
