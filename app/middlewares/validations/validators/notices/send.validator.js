@@ -4,6 +4,6 @@
  * 251223 v1.0.0 wook init
  */
 
-import { adminId, content, status, targetRole, title } from '../../fields/notice.field.js';
+import { content, status, targetRole, title } from '../../fields/notice.field.js';
 
-export default [ adminId, content, status, targetRole, title ];
+export default [ content, status, targetRole, title ];

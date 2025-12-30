@@ -5,18 +5,17 @@
  */
 
 import noticeRepository from "../repositories/notice.repository.js"
-import myError from "../errors/customs/my.error.js";
-import { BAD_REQUEST_ERROR } from "../../configs/responseCode.config.js";
 
-/**
- * 공지사항 조회 (role 기반)
- */
-async function show(t = null, userRole) {
+async function show() {
+  return await noticeRepository.show(null)
+}
+
+async function showRole(targetRole) {
   if (!userRole) {
     throw myError('role 정보가 필요합니다.', BAD_REQUEST_ERROR);
   }
 
-  return await noticeRepository.show(t, userRole);
+  return await noticeRepository.showRole(null, targetRole)
 }
 
 /**
@@ -35,6 +34,7 @@ async function create(t = null, data) {
 
 export default {
   show,
+  showRole,
   showDetail,
   create,
 }

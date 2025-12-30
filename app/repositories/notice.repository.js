@@ -14,7 +14,20 @@ const { Notice } = db;
  * @param {{limit: number, offset: number}} data 
  * @returns {Promise<Array<import("../models/Notice.js").Notice>>}
  */
-async function show(t = null, userRole) {
+async function show(t = null) {
+  return await Notice.findAll(
+    {
+      transaction: t,
+    })
+}
+
+/**
+ * 공지 권한별로 가져오기
+ * @param {import("sequelize").Transaction|null} t 
+ * @param {{limit: number, offset: number}} data 
+ * @returns {Promise<Array<import("../models/Notice.js").Notice>>}
+ */
+async function showRole(t = null, targetRole) {
   return await Notice.findAll(
     {
       where: {
@@ -60,6 +73,7 @@ async function create(t = null, data) {
 
 export default {
   show,
+  showRole,
   showDetail,
   create,
 }

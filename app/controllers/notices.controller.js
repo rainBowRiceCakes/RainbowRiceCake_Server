@@ -17,9 +17,27 @@ import { createBaseResponse } from "../utils/createBaseResponse.util.js";
  */
 async function noticeShow(req, res, next) {
   try {
-    const userRole = req.user.role;
 
-    const result = await noticesService.show(null, userRole);
+    const result = await noticesService.show();
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
+  } catch (error) {
+    return next(error)
+  }
+}
+
+/**
+ * Notice테이블의 정보 모두 가져오는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function noticeShowRole(req, res, next) {
+  try {
+    const userRole = req.user.role
+
+    const result = await noticesService.showRole(userRole);
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
   } catch (error) {
@@ -57,6 +75,7 @@ async function noticeShowDetail(req, res, next) {
 async function noticeCreate(req, res, next) {
   try {
     const data = req.body
+    data.adminId = req.user.id
 
     await noticesService.create(data);
 
@@ -70,4 +89,5 @@ export default {
   noticeShow,
   noticeCreate,
   noticeShowDetail,
+  noticeShowRole,
 }
