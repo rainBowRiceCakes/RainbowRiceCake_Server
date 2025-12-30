@@ -129,33 +129,41 @@ async function getPartnerById(partnerId) {
 
 /**
  * 파트너 신청 form
- * @param {import("./users.service.type.js").riderStoreData} data
+ * @param {import("./users.service.type.js").partnerStoreData} data
  */
 async function partnerFormCreate(createData) {
   return await db.sequelize.transaction(async (t) => {
+    const { userId } = createData;
+
     // 중복 신청 체크 (비즈니스 로직)
-    const existingRider = await partnerRepository.findByUserId(t, createData.userId);
+    const existingPartner = await partnerRepository.findByUserId(t, userId);
     
-    if (existingRider) {
+    if (existingPartner) {
       // 이미 신청했거나 활동 중인 경우 에러 발생
       throw myError("이미 파트너 신청이 접수되어 있거나 등록된 유저입니다.", CONFLICT_ERROR);
+      // return existingPartner
     }
 
     // DB 저장용 데이터 구성
     const partnerData = {
-      userId: createData.userId,
-      licenseNumber: createData.licenseNumber,
-      description: createData.description,
-      
-      // 초기 상태 설정(대기 상태)
-      status: 'pending',
-      
-      // 필요 시 추가 필드 매핑
-      // vehicleType: createData.vehicleType || 'motorcycle', 
+      userId: userId,
+      manager: createData.manager,
+      phone: createData.phone,
+      krName: createData.krName,
+      enName: createData.enName,
+      businessNum: createData.businessNum,
+      address: createData.address,
+      logoImg: createData.logoImg,
+      lat: createData.lat, 
+      lng: createData.lng,
     };
 
+    console.log(partnerData, '데이터 체크!!!!!!!!!!!!!!!!!!!!!!!');
+
     // Repository 호출
-    return await partnerRepository.create(t, partnerData);
+    const newPartner = await partnerRepository.create(t, partnerData);
+
+    return newPartner
   });
 }
 

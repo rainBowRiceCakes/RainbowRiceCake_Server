@@ -424,17 +424,6 @@ async function socialKakao(code) {
     return refreshToken;
   });
 
-  // 카카오 로그아웃 처리
-  try {
-    // util 수정본에 맞춰 id 파라미터 제거
-    const logoutRequest = socialKakaoUtil.getLogoutRequest(kakaoId, access_token);
-    await axios.post(process.env.SOCIAL_KAKAO_API_URL_LOGOUT, logoutRequest.searchParams, { headers: logoutRequest.headers });
-    console.log("✅ 카카오 로그아웃 성공");
-  } catch (e) {
-    // 에러를 throw하지 않고 로그만 남김 (Soft Fail)
-    console.warn("⚠️ 카카오 로그아웃 실패 (서비스 이용엔 지장 없음):", e.response?.status);
-  }
-
   return refreshToken;
 }
 

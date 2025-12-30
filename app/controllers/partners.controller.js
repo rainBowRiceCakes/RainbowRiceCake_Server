@@ -117,11 +117,11 @@ async function partnerFormStore(req, res, next) {
     data.userId = req.user.id; // 로그인 미들웨어에서 받은 userId 주입
 
     // 서비스 호출 (신청 데이터 저장)
-    const result = await partnersService.partnerFormCreate(data);
+    await partnersService.partnerFormCreate(data);
 
     // 응답 반환
     // 성공 시 result에는 DB에 생성된 신청 정보가 들어있음.
-    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS));
   }
   catch (error) {
     return next(error);

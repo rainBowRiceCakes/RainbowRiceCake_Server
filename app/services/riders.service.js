@@ -5,9 +5,11 @@
  * 251229 BSONG update
  */
 
+import myError from "../errors/customs/my.error.js";
 import db from "../models/index.js";
 import riderRepository from "../repositories/rider.repository.js";
-import userRepository from "../repositories/user.repository.js";
+import { CONFLICT_ERROR, NOT_FOUND_ERROR, BAD_REQUEST_ERROR } from "../../configs/responseCode.config.js";
+
 // import userRepository from "../repositories/user.repository.js";
 
 // --- 1. MY PROFILE WORKFLOW FOR RIDERS (기사와 관련된 profile 불러오기 & 업데이트) ---
@@ -94,29 +96,31 @@ async function create(data) {
  */
 async function riderFormCreate(createData) {
   return await db.sequelize.transaction(async (t) => {
+    const { userId } = createData;
+
     // 중복 신청 체크 (비즈니스 로직)
-    const existingRider = await riderRepository.findByUserId(t, createData.userId);
+    const existingRider = await riderRepository.findByUserId(t, userId);
     
     if (existingRider) {
       // 이미 신청했거나 활동 중인 경우 에러 발생
       throw myError("이미 라이더 신청이 접수되어 있거나 등록된 유저입니다.", CONFLICT_ERROR);
+      // return existingRider;
     }
 
     // DB 저장용 데이터 구성
     const riderData = {
-      userId: createData.userId,
-      licenseNumber: createData.licenseNumber,
-      description: createData.description,
-      
-      // 초기 상태 설정(대기 상태)
-      status: 'pending',
-      
-      // 필요 시 추가 필드 매핑
-      // vehicleType: createData.vehicleType || 'motorcycle', 
+      userId: userId,
+      phone: createData.phone,
+      address: createData.address,
+      bank: createData.bank,
+      bankNum: createData.bankNum,
+      licenseImg: createData.licenseImg,
     };
 
-    // Repository 호출
-    return await riderRepository.create(t, riderData);
+    // Repository 통해 DB에 저장
+    const newRider = await riderRepository.create(t, riderData);
+
+    return newRider
   });
 }
 
