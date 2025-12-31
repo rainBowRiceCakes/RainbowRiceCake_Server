@@ -27,25 +27,6 @@ partnerRouter.post('/',
   validationHandler,
   partnersController.store);
 
-// --- 2. LOOK UP and UPDAETE PARTNER's INFO WORKFLOW FOR PARTNERS (파트너 페이지와 관련됨) ---
-// 파트너가 Partner table에 있는 정보(profile) 가져오기
-partnerRouter.get('/profile',
-  /* #swagger.tags = ['Partners']
-  #swagger.summary = '파트너용 파트너 정보 조회'
-  #swagger.description = '파트너가 자신의 정보를 조회합니다.' */
-  authMiddleware,
-  validationHandler,
-  partnersController.showProfile); // validator 없어도 실무적으로 OK (단건 조회)
-
-// 파트너가 Partner table에 있는 정보(profile) 수정하기
-partnerRouter.put('/profile',
-  /* #swagger.tags = ['Partners']
-  #swagger.summary = '파트너용 파트너 정보 수정'
-  #swagger.description = '파트너가 자신의 정보를 수정합니다.' */
-  authMiddleware,
-  partnerUpdateValidator,
-  validationHandler,
-  partnersController.updateProfile);
 
 // --- 3. ADMIN LOOKS UP PARTNER's INFO WORKFLOW FOR ADMIN (어드민 페이지와 관련됨) ---
 // 어드민이 partner들의 모든 정보를 list up 하기. 

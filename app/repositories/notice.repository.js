@@ -27,19 +27,19 @@ async function show(t = null) {
  * @param {{limit: number, offset: number}} data 
  * @returns {Promise<Array<import("../models/Notice.js").Notice>>}
  */
-async function showRole(t = null, targetRole) {
-  return await Notice.findAll(
+async function showRole(t = null, targetRoles) {
+  return Notice.findAndCountAll(
     {
+      attributes: ['targetRole', 'title', 'content', 'createdAt'],
       where: {
-        [Op.or]: [
-          { targetRole: userRole },
-          { targetRole: 'ALL' }
-        ]
-      }
-    },
-    {
-      transaction: t,
-    })
+        targetRole: {
+          [Op.in]: targetRoles
+        }
+      },
+      order: [['createdAt', 'DESC']],
+      transaction: t
+    }
+  );
 }
 
 /**

@@ -28,6 +28,8 @@
     "swagger-autogen": "^2.23.7",
     "swagger-jsdoc": "^6.2.8",
     "swagger-parser": "^10.0.3",
+    "swagger-ui": "^5.31.0",
+    "swagger-ui-dist": "^5.31.0",
     "swagger-ui-express": "^5.0.1",
     "web-push": "^3.6.7",
     "winston": "^3.18.3"

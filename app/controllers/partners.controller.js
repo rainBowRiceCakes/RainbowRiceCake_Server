@@ -21,51 +21,12 @@ async function store(req, res, next) {
   try {
     const data = req.body;
 
-    const createData = { 
-      ...data, 
+    const createData = {
+      ...data,
       userId: req.user.id,
     };
 
     const result = await partnersService.createPartner(createData);
-
-    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
-  } catch (error) {
-    return next(error);
-  }
-}
-
-// --- 2. LOOK UP and UPDAETE PARTNER's INFO WORKFLOW FOR PARTNERS (파트너 페이지와 관련됨) ---
-/**
- * 파트너 본인의 정보 조회 (자기 자신만)
- * @param {import("express").Request} req
- * @param {import("express").Response} res
- * @param {import("express").NextFunction} next
- * @return {import("express").Response}
- */
-async function showProfile(req, res, next) {
-  try {
-    const userId = req.user.id; // 현재 로그인한 유저 ID
-    const result = await partnersService.showPartnerProfile(userId);
-
-    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
-  } catch (error) {
-    return next(error);
-  }
-}
-
-/**
- * 파트너 본인의 정보 수정
- * @param {import("express").Request} req
- * @param {import("express").Response} res
- * @param {import("express").NextFunction} next
- * @return {import("express").Response}
- */
-async function updateProfile(req, res, next) {
-  try {
-    const userId = req.user.id; // 현재 로그인한 유저 ID
-    const updateData = req.body;
-
-    const result = await partnersService.updatePartnerProfile(userId, updateData);
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {
@@ -130,8 +91,6 @@ async function partnerFormStore(req, res, next) {
 
 export default {
   store,
-  showProfile,
-  updateProfile,
   index,
   show,
   partnerFormStore

@@ -26,12 +26,12 @@ noticeRouter.post('/',
 // --------------------------------------------- 파트너/기사용 -------------------------------------------------
 // Notice table에 있는 정보 권한별로 가져오기
 noticeRouter.get('/',
-    /* #swagger.tags = ['Notices']
-    #swagger.summary = '파트너, 기사용 공지사항 조회'
-    #swagger.description = '파트너와 기사가 어드민이 올린 공지사항을 조회합니다.' */
-    // authMiddleware,
-    // showNoticeValidator,
-    // validationHandler, // TODO: 주석풀기
-    noticesController.noticeShowRole)
+    noticeRouter.get('/',
+        /* #swagger.tags = ['Notices']
+        #swagger.summary = '파트너, 기사용 공지사항 조회'
+        #swagger.description = '파트너와 기사가 어드민이 올린 공지사항을 조회합니다.' */
+        authMiddleware,
+        validationHandler,
+        noticesController.noticeShowRole)
 
 export default noticeRouter;

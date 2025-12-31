@@ -67,7 +67,7 @@ async function update(t = null, partnerId, updateData) {
 async function findAll(t = null) {
   return await Partner.findAll(
     {
-    transaction: t
+      transaction: t
     }
   );
 }
@@ -82,9 +82,9 @@ async function findByPk(t = null, partnerId) {
   return await Partner.findByPk(partnerId, {
     include: [
       {
+        attributes: ['id', 'name', 'email', 'role', 'createdAt'],
         model: User,
-        as: 'partner_user',
-        attributes: ['id', 'name', 'email', 'role', 'createdAt']
+        as: 'partner_user'
       }
     ],
     transaction: t

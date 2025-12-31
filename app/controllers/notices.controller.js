@@ -37,7 +37,7 @@ async function noticeShowRole(req, res, next) {
   try {
     const userRole = req.user.role
 
-    const result = await noticesService.showRole(userRole);
+    const result = await noticesService.showRole(null, userRole);
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
   } catch (error) {

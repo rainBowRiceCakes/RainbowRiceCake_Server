@@ -86,7 +86,7 @@ async function riderShow(t = null) {
           as: 'rider_user',
         }
       ],
-    transaction: t,
+      transaction: t,
     })
 }
 

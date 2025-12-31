@@ -75,25 +75,11 @@ orderRouter.post('/:orderId/complete-photo',
 );
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// --- 3. ORDER WORKFLOW FOR RIDERS and PARTNERS (라이더와 파트너와 관련된 당일 내 이뤄지는 주문) ---
-// 이 섹션은 라이더가 당일 주문을 탭별로 조회하는 워크플로우를 처리합니다. (파트너는 자기 주문만)
-orderRouter.get('/today',
-  /* #swagger.tags = ['Orders']
-  #swagger.summary = '라이더와 파트너용 오늘의 주문 리스트 조회'
-  #swagger.description = '라이더와 파트너가 오늘의 주문 리스트를 조회합니다.' */
-  authMiddleware,
-  orderMiddleware.setOrderAccessFilter,
-  orderValidator.todayIndex,
-  validationHandler,
-  ordersController.todayIndex
-);
-
-// -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
-// --- 4. ORDERS HISTORY FOR PARTNERS and RIDERS and ADMIN ---
+// --- 3. ORDERS HISTORY FOR PARTNERS and RIDERS ---
 orderRouter.get('/',
   /* #swagger.tags = ['Orders']
-  #swagger.summary = '라이더와 파트너와 어드민용 주문 목록 조회'
-  #swagger.description = '라이더와 파트너와 어드민이 주문 목록을 조회합니다.' */
+  #swagger.summary = '라이더와 파트너용 주문 목록 조회'
+  #swagger.description = '라이더와 파트너가 주문 목록을 조회합니다.' */
   authMiddleware,
   orderMiddleware.setOrderAccessFilter,
   orderValidator.index,
@@ -103,17 +89,23 @@ orderRouter.get('/',
 
 orderRouter.get('/deliverystatus',
   /* #swagger.tags = ['Orders']
-  #swagger.summary = '라이더와 파트너와 어드민용 배송 현황 조회'
-  #swagger.description = '라이더와 파트너와 어드민이 배송 현황을 조회합니다.' */
+  #swagger.summary = '라이더와 파트너용 배송 현황 조회'
+  #swagger.description = '라이더와 파트너가 배송 현황을 조회합니다.' */
   ordersController.getDeliveryStatus
 );
 
 export default orderRouter;
 
-// -------------------------------------------------------------
-// RESTful API 라우팅 규칙:
-// GET    /        -> index (목록 조회)
-// POST   /        -> store (생성)
-// GET    /:id    -> show (상세 조회)
-// PUT    /:id    -> update (수정)
-// DELETE /:id    -> destroy (삭제)
+
+
+
+// orderRouter.get('/today',
+//   /* #swagger.tags = ['Orders']
+//   #swagger.summary = '라이더와 파트너용 오늘의 주문 리스트 조회'
+//   #swagger.description = '라이더와 파트너가 오늘의 주문 리스트를 조회합니다.' */
+//   authMiddleware,
+//   orderMiddleware.setOrderAccessFilter,
+//   orderValidator.todayIndex,
+//   validationHandler,
+//   ordersController.todayIndex
+// );

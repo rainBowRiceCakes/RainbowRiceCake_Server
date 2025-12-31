@@ -42,67 +42,6 @@ async function createPartner(createData) {
   });
 }
 
-// --- 2. LOOK UP and UPDAETE PARTNER's INFO WORKFLOW FOR PARTNERS (파트너 페이지와 관련됨) ---
-/**
- * 파트너 본인의 정보 조회
- * @param {number} userId - 현재 로그인한 유저 ID
- */
-async function showPartnerProfile(userId) {
-  const partner = await partnerRepository.findByUserId(null, userId);
-
-  if (!partner) {
-    throw myError("파트너 정보를 찾을 수 없습니다.", NOT_FOUND_ERROR);
-  }
-
-  return partner;
-}
-
-/**
- * 파트너 본인의 정보 수정
- * @param {number} userId - 현재 로그인한 유저 ID
- * @param {object} updateData - 수정할 데이터
- */
-async function updatePartnerProfile(userId, updateData) {
-  return await db.sequelize.transaction(async t => {
-    const partner = await partnerRepository.findByUserId(t, userId);
-
-    if (!partner) {
-      throw myError("파트너 정보를 찾을 수 없습니다.", NOT_FOUND_ERROR);
-    }
-
-    const allowedFields = [
-      'business_num',
-      'kr_name',
-      'en_name',
-      'manger',
-      'phone',
-      'logo_img',
-      'address',
-      'lat',
-      'lng'
-    ];
-
-    // 허용된 필드만 추출
-    const allowedData = {};
-    allowedFields.forEach(field => {
-      if (updateData[field] !== undefined) {
-        allowedData[field] = updateData[field];
-      }
-    });
-
-    // 수정할 데이터가 비어있는지 확인
-    if (Object.keys(allowedData).length === 0) {
-      throw myError("수정할 데이터가 없습니다.", BAD_REQUEST_ERROR);
-    }
-
-    // 업데이트 실행
-    await partnerRepository.update(t, partner.id, allowedData);
-
-    // 업데이트된 정보 반환
-    return await partnerRepository.findByPk(t, partner.id);
-  });
-}
-
 // --- 3. ADMIN LOOKS UP PARTNER's INFO WORKFLOW FOR ADMIN (어드민 페이지와 관련됨) ---
 /**
  * 어드민이 모든 파트너 리스트 조회
@@ -137,7 +76,7 @@ async function partnerFormCreate(createData) {
 
     // 중복 신청 체크 (비즈니스 로직)
     const existingPartner = await partnerRepository.findByUserId(t, userId);
-    
+
     if (existingPartner) {
       // 이미 신청했거나 활동 중인 경우 에러 발생
       throw myError("이미 파트너 신청이 접수되어 있거나 등록된 유저입니다.", CONFLICT_ERROR);
@@ -154,7 +93,7 @@ async function partnerFormCreate(createData) {
       businessNum: createData.businessNum,
       address: createData.address,
       logoImg: createData.logoImg,
-      lat: createData.lat, 
+      lat: createData.lat,
       lng: createData.lng,
     };
 
@@ -167,8 +106,6 @@ async function partnerFormCreate(createData) {
 
 export default {
   createPartner,
-  showPartnerProfile,
-  updatePartnerProfile,
   listPartners,
   getPartnerById,
   partnerFormCreate,

@@ -14,7 +14,8 @@ const ROLE_PERMISSIONS = {
     // { path: 정규식, roles: [권한 확인] }
     // /api/posts/:id 를 검증하는 정규식
     // ex) { path: /^\/api\/posts\/[0-9]+$/, roles: [NORMAL, SUPER] },
-
+    { path: /^\/api\/profiles$/, roles: [PTN, DLV] },
+    { path: /^\/api\/notices$/, roles: [PTN, DLV] },
   ],
   POST: [
     // ex) { path: /^\/api\/auth\/logout$/, roles: [NORMAL, SUPER] },
@@ -36,7 +37,11 @@ const ROLE_PERMISSIONS = {
     { path: /^\/api\/admins\/rider$/, roles: [ADM] },
     { path: /^\/api\/admins\/partner$/, roles: [ADM] },
     { path: /^\/api\/admins\/notice$/, roles: [ADM] },
-    
+
+    { path: /^\/api\/orders$/, roles: [DLV, ADM] },
+    { path: /^\/api\/riders$/, roles: [COM, DLV, ADM] },
+    { path: /^\/api\/partners$/, roles: [COM, PTN, ADM] },
+    { path: /^\/api\/profiles$/, roles: [PTN, DLV, ADM] },
   ],
   DELETE: [
     { path: /^\/api\/admins\/order\/[0-9]+$/, roles: [ADM] },
@@ -44,7 +49,7 @@ const ROLE_PERMISSIONS = {
     { path: /^\/api\/admins\/partner\/[0-9]+$/, roles: [ADM] },
     { path: /^\/api\/admins\/notice\/[0-9]+$/, roles: [ADM] },
 
-    
+
   ]
 }
 Object.freeze(ROLE_PERMISSIONS);

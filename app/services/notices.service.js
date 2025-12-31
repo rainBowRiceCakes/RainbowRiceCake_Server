@@ -4,18 +4,24 @@
  * 251223 wook init
  */
 
+import myError from '../errors/customs/my.error.js';
+import { BAD_REQUEST_ERROR } from "../../configs/responseCode.config.js";
 import noticeRepository from "../repositories/notice.repository.js"
 
 async function show() {
   return await noticeRepository.show(null)
 }
 
-async function showRole(targetRole) {
+/**
+ * 공지사항 조회 (role 기반)
+ */
+async function showRole(t = null, userRole) {
   if (!userRole) {
     throw myError('role 정보가 필요합니다.', BAD_REQUEST_ERROR);
   }
 
-  return await noticeRepository.showRole(null, targetRole)
+  const targetRoles = [userRole, 'ALL'];
+  return await noticeRepository.showRole(t, targetRoles);
 }
 
 /**

@@ -217,8 +217,16 @@ async function findOrderHistory(t = null, { filter, status, dateRange, limit, of
       {
         model: Rider,
         as: 'order_rider',
-        attributes: ['id', 'name'],
-        required: false
+        attributes: ['id'],
+        required: false,
+        include: [
+          {
+            model: User,
+            as: 'rider_user',
+            attributes: ['name'],
+            required: false
+          }
+        ]
       }
     ],
     attributes: [
