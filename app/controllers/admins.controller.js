@@ -181,7 +181,7 @@ async function noticeUpdate(req, res, next) {
 }
 
 /**
- * admin이 order테이블에 강제로 정보 등록하는 처리
+ * admin이 notice테이블에 강제로 정보 등록하는 처리
  * @param {import("express").Request} req - 리퀘스트 객체
  * @param {import("express").Response} res - 레스폰스 객체
  * @param {import("express").NextFunction} next - next 객체
@@ -198,6 +198,61 @@ async function noticeDelete(req, res, next) {
   }
 }
 
+/**
+ * admin이 order테이블에 강제로 정보 등록하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function orderDelete(req, res, next) {
+  try {
+    const id = req.params.id
+    await adminsService.orderDelete(id);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS))
+  } catch (error) {
+    return next(error);
+  }
+}
+
+/**
+ * admin이 order테이블에 강제로 정보 등록하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function hotelDelete(req, res, next) {
+  try {
+    const id = req.params.id
+    await adminsService.hotelDelete(id);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS))
+  } catch (error) {
+    return next(error);
+  }
+}
+
+/**
+ * admin이 order테이블에 강제로 정보 등록하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function partnerDelete(req, res, next) {
+  try {
+    const id = req.params.id
+    await adminsService.partnerDelete(id);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS))
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
 export default {
   riderUpdate,
   partnerUpdate,
@@ -209,4 +264,7 @@ export default {
   partnerCreate,
   noticeUpdate,
   noticeDelete,
+  orderDelete,
+  hotelDelete,
+  partnerDelete,
 }

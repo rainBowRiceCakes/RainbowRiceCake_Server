@@ -91,10 +91,15 @@ async function findByPk(t = null, partnerId) {
   });
 }
 
+async function partnerDelete(t = null, id) {
+  return await Partner.destroy({where: {id: id}}, {transaction: t})
+}
+
 export default {
   create,
   findByUserId,
   update,
   findAll,
-  findByPk
+  findByPk,
+  partnerDelete
 };

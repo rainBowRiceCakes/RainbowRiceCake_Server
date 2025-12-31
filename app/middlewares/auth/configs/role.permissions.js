@@ -32,12 +32,17 @@ const ROLE_PERMISSIONS = {
     { path: /^\/api\/users\/partner\/form$/, roles: [COM, ADM] },
   ],
   PUT: [
-    { path: /^\/api\/orders$/, roles: [DLV, ADM] },
-    { path: /^\/api\/riders$/, roles: [COM, DLV, ADM] },
-    { path: /^\/api\/partners$/, roles: [COM, PTN, ADM] },
-
+    { path: /^\/api\/admins\/order$/, roles: [ADM] },
+    { path: /^\/api\/admins\/rider$/, roles: [ADM] },
+    { path: /^\/api\/admins\/partner$/, roles: [ADM] },
+    { path: /^\/api\/admins\/notice$/, roles: [ADM] },
+    
   ],
   DELETE: [
+    { path: /^\/api\/admins\/order\/[0-9]+$/, roles: [ADM] },
+    { path: /^\/api\/admins\/rider\/[0-9]+$/, roles: [ADM] },
+    { path: /^\/api\/admins\/partner\/[0-9]+$/, roles: [ADM] },
+    { path: /^\/api\/admins\/notice\/[0-9]+$/, roles: [ADM] },
 
     
   ]

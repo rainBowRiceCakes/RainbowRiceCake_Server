@@ -83,7 +83,7 @@ async function findByPk(t = null, id) {
 /**
  * 데이터 삭제
  */
-async function deleteNotice(t = null, id) {
+async function noticeDelete(t = null, id) {
   return await Notice.destroy({
     where: {
       id: id
@@ -100,5 +100,5 @@ export default {
   showDetail,
   create,
   findByPk,
-  deleteNotice,
+  noticeDelete,
 }

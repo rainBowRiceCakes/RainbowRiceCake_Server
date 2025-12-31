@@ -263,6 +263,12 @@ async function findByIdOnly(t = null, dlvId) {
         as: 'order_rider', // Order.js의 associate 설정 참조
         attributes: ['id', 'phone'], // 기사 연락처 포함
         required: false // 배차 전일 수 있으므로 false
+      },
+      {
+        model: Partner,
+        as: 'order_partner', // Order.js의 associate 설정 참조
+        attributes: ['id', 'kr_name', 'address'], // 호텔 이름과 주소 포함
+        required: true
       }
     ]
   });
@@ -320,6 +326,10 @@ async function findOrderHistoryThreeMonth(t = null, { dateRange, limit, offset }
   });
 }
 
+async function orderDelete(t = null, id) {
+  return await Order.destroy({where: {id: id}}, {transaction: t})
+}
+
 export default {
   create,
   existsByPk,
@@ -334,6 +344,7 @@ export default {
   findOrderHistory,
   getStatusStats,
   findOrderHistoryThreeMonth,
+  orderDelete,
 };
 
 // Repository (DB 중심)	HTTP Method

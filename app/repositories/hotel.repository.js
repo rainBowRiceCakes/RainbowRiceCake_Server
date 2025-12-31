@@ -49,8 +49,13 @@ async function create(t = null, data) {
   )
 }
 
+async function hotelDelete(t = null, id) {
+  return await Hotel.destroy({where: {id: id}}, {transaction: t})
+}
+
 export default {
   findByPk,
   findAll,
   create,
+  hotelDelete,
 }

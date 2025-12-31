@@ -181,7 +181,43 @@ async function noticeUpdate(data) {
  * @return {import("express").Response}
  */
 async function noticeDelete(id) {  
-  await noticeRepository.deleteNotice(null, id);
+  await noticeRepository.noticeDelete(null, id);
+  return
+}
+
+/**
+ * admin이 notice테이블에 강제로 정보 삭제하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function orderDelete(id) {  
+  await orderRepository.orderDelete(null, id);
+  return
+}
+
+/**
+ * admin이 notice테이블에 강제로 정보 삭제하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function hotelDelete(id) {  
+  await hotelRepository.hotelDelete(null, id);
+  return
+}
+
+/**
+ * admin이 notice테이블에 강제로 정보 삭제하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function partnerDelete(id) {  
+  await partnerRepository.partnerDelete(null, id);
   return
 }
 
@@ -193,4 +229,7 @@ export default {
   orderUpdate,
   noticeUpdate,
   noticeDelete,
+  orderDelete,
+  hotelDelete,
+  partnerDelete,
 }

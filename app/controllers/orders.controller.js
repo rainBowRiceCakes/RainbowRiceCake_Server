@@ -205,7 +205,7 @@ async function show(req, res, next) {
 const getDeliveryStatus = async (req, res, next) => {
   try {
     // URL 파라미터에서 dlvId 추출
-    const { dlvId } = req.params; 
+    const { dlvId } = req.body; 
 
     const result = await ordersService.getDeliveryStatus({ 
       dlvId: parseInt(dlvId) 

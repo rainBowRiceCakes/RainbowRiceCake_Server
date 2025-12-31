@@ -35,37 +35,42 @@ adminRouter.put('/partner', authMiddleware,
   // partnerStoreValidator, validationHandler , 
   adminsController.partnerUpdate)
 adminRouter.post('/partner', authMiddleware, adminsController.partnerCreate)
+adminRouter.delete('/partner/:id', authMiddleware, adminsController.partnerDelete)
 
 // -------------어드민 orderpage--------------------------
 adminRouter.get('/orderindex', authMiddleware, adminsController.orderIndex)
 adminRouter.get('/order/:id', adminsController.show)
 adminRouter.post('/order', authMiddleware, orderValidator.store, validationHandler, adminsController.orderCreate)
 adminRouter.put('/order', authMiddleware, orderValidator.force, validationHandler, adminsController.orderUpdate)
+adminRouter.delete('/order/:id', authMiddleware, adminsController.orderDelete)
 
+// -------------어드민 hotelpage--------------------------
 // *adress -> 좌표처리 필요*
 adminRouter.post('/hotel', authMiddleware,
   // createValidator, validationHandler , 
   adminsController.hotelUpdate);
-  
-  // -------------어드민 noticepage--------------------------
-  // Notice table에 있는 정보 모두 가져오기
-  adminRouter.get('/notice',
-      authMiddleware,
-      noticesController.noticeShow)
-  
-  // Notice table에 있는 정보 단일로 가져오기
-  adminRouter.get('/notice/:id',
-      authMiddleware,
-      showNoticeDetailValidator,
-      validationHandler,
-      noticesController.noticeShowDetail)
+  // Hotel 정보 삭제
+  adminRouter.delete('/hotel/:id', authMiddleware, adminsController.hotelDelete)
 
-  // Notice Detail정보 수정
-  adminRouter.put('/notice', authMiddleware, sendValidator, validationHandler,
-    adminsController.noticeUpdate
-  )
+// -------------어드민 noticepage--------------------------
+// Notice table에 있는 정보 모두 가져오기
+adminRouter.get('/notice',
+    authMiddleware,
+    noticesController.noticeShow)
+
+// Notice table에 있는 정보 단일로 가져오기
+adminRouter.get('/notice/:id',
+    authMiddleware,
+    showNoticeDetailValidator,
+    validationHandler,
+    noticesController.noticeShowDetail)
+
+// Notice Detail정보 수정
+adminRouter.put('/notice', authMiddleware, sendValidator, validationHandler,
+  adminsController.noticeUpdate
+)
   
   // Notice 정보 삭제
-  adminRouter.delete('/notice/:id', authMiddleware, adminsController.noticeDelete)
-  
-  export default adminRouter;
+adminRouter.delete('/notice/:id', authMiddleware, adminsController.noticeDelete)
+
+export default adminRouter;

@@ -373,8 +373,12 @@ async function getDeliveryStatus({ dlvId }) {
       dlvId: order.id,
       status: order.status, // 'req', 'match', 'pick', 'com' 상태값
       customerName: order.name, // 주문자 이름
+      departure: {
+        partnerName: order.order_partner ? order.order_partner.krName : null, // 출발지 매장명
+        address: order.order_partner ? order.order_partner.address : null, // 출발지 매장명
+      },
       destination: {
-        hotelName: order.order_hotel ? order.order_hotel.hotelKrName : null, // 도착지 호텔명
+        hotelName: order.order_hotel ? order.order_hotel.krName : null, // 도착지 호텔명
         address: order.order_hotel ? order.order_hotel.address : null // 도착지 주소
       },
       deliveryInfo: {
