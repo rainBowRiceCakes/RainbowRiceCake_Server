@@ -158,8 +158,6 @@ async function partnerFormCreate(createData) {
       lng: createData.lng,
     };
 
-    console.log(partnerData, '데이터 체크!!!!!!!!!!!!!!!!!!!!!!!');
-
     // Repository 호출
     const newPartner = await partnerRepository.create(t, partnerData);
 
