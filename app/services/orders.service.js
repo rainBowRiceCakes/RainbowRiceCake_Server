@@ -349,9 +349,8 @@ async function getOrderDetail({ orderId, userId, userRole }) {
  * 일반 유저용 배송 현황 조회 (주문 PK로만 조회)
  * @param {Object} data { dlvId }
  */
-async function getDeliveryStatus({ dlvId }) {
+async function getDeliveryStatus(dlvId) {
   return await db.sequelize.transaction(async (t) => {
-    
     // 1. 레포지토리의 findByIdOnly를 사용하여 주문 상세 정보 조회/Hotel과 Rider 정보를 Include
     const order = await orderRepository.findByIdOnly(t, dlvId);
 
@@ -363,7 +362,7 @@ async function getDeliveryStatus({ dlvId }) {
     // 3. 해당 주문과 연결된 모든 이미지(픽업 사진, 완료 사진) 조회
     // imageRepository는 dlvId를 기준으로 이미지를 찾습니다.
     const images = await imageRepository.findAllByOrderId(t, dlvId);
-    
+    console.log(images, '@@@@@@@@@@@@@@@@@@@@@@@@@');
     // 타입별 사진 분류 (PICK: 픽업, COM: 완료)
     const pickupImage = images.find(img => img.type === 'PICK');
     const completeImage = images.find(img => img.type === 'COM');

@@ -101,18 +101,7 @@ orderRouter.get('/',
   ordersController.index
 );
 
-orderRouter.get('/:orderId',
-  /* #swagger.tags = ['Orders']
-  #swagger.summary = '라이더와 파트너와 어드민용 주문 내역 조회'
-  #swagger.description = '라이더와 파트너와 어드민이 주문 내역을 조회합니다.' */
-  authMiddleware,
-  orderMiddleware.checkOrderExists,
-  orderValidator.show,
-  validationHandler,
-  ordersController.show
-);
-
-orderRouter.get('/deliverystatus/:dlvId',
+orderRouter.get('/deliverystatus',
   /* #swagger.tags = ['Orders']
   #swagger.summary = '라이더와 파트너와 어드민용 배송 현황 조회'
   #swagger.description = '라이더와 파트너와 어드민이 배송 현황을 조회합니다.' */

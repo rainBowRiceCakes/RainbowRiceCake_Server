@@ -205,11 +205,9 @@ async function show(req, res, next) {
 const getDeliveryStatus = async (req, res, next) => {
   try {
     // URL 파라미터에서 dlvId 추출
-    const { dlvId } = req.body; 
+    const dlvId = req.body.dlvId; 
 
-    const result = await ordersService.getDeliveryStatus({ 
-      dlvId: parseInt(dlvId) 
-    });
+    const result = await ordersService.getDeliveryStatus(dlvId);
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {
