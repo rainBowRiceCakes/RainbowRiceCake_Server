@@ -362,7 +362,6 @@ async function getDeliveryStatus(dlvId) {
     // 3. 해당 주문과 연결된 모든 이미지(픽업 사진, 완료 사진) 조회
     // imageRepository는 dlvId를 기준으로 이미지를 찾습니다.
     const images = await imageRepository.findAllByOrderId(t, dlvId);
-    console.log(images, '@@@@@@@@@@@@@@@@@@@@@@@@@');
     // 타입별 사진 분류 (PICK: 픽업, COM: 완료)
     const pickupImage = images.find(img => img.type === 'PICK');
     const completeImage = images.find(img => img.type === 'COM');
@@ -400,17 +399,17 @@ async function getDeliveryStatus(dlvId) {
  * Admin에서 사용 할 order history 주문 히스토리 LIST 3개월치 조회
  * @param {Object} filter - 미들웨어에서 설정한 필터
  */
-async function getOrdersListAdmin({ from, page, limit}) {
+async function getOrdersListAdmin({ from, page, limit }) {
   return await db.sequelize.transaction(async t => {
     const offset = limit * (page - 1);
 
     // 오늘 기준 3개월 전 ~ 오늘
     const dateRange = (from)
-    ? {
+      ? {
         start: dayjs(from).startOf('day').toDate(),
         end: dayjs().endOf('day').toDate()
       }
-    : {
+      : {
         start: dayjs().subtract(3, 'month').startOf('day').toDate(),
         end: dayjs().endOf('day').toDate()
       };
