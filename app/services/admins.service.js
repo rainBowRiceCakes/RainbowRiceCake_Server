@@ -7,6 +7,7 @@
 import db from "../models/index.js";
 import adminRepository from "../repositories/admin.repository.js";
 import hotelRepository from "../repositories/hotel.repository.js";
+import noticeRepository from "../repositories/notice.repository.js";
 import orderRepository from "../repositories/order.repository.js";
 import partnerRepository from "../repositories/partner.repository.js";
 import riderRepository from "../repositories/rider.repository.js";
@@ -125,7 +126,7 @@ async function getOrderDetail(id) {
 }
 
 /**
- * admin이 hotel테이블에 강제로 정보 등록하는 처리
+ * admin이 order테이블에 강제로 정보 등록하는 처리
  * @param {import("express").Request} req - 리퀘스트 객체
  * @param {import("express").Response} res - 레스폰스 객체
  * @param {import("express").NextFunction} next - next 객체
@@ -150,10 +151,46 @@ async function orderUpdate(data) {
   })
 }
 
+/**
+ * admin이 notice테이블에 강제로 정보 등록하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function noticeUpdate(data) {
+  await db.sequelize.transaction(async t => {
+    // partnerPK로 레코드 하나 가져오기
+    const result = await noticeRepository.findByPk(t, data.id);
+    result.title = data.title
+    result.content = data.content
+    result.targetRole = data.targetRole
+    result.status = data.status
+    
+    await adminRepository.save(t, result);
+    
+    return
+  })
+}
+
+/**
+ * admin이 notice테이블에 강제로 정보 삭제하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function noticeDelete(id) {  
+  await noticeRepository.delete(null, id);
+  return
+}
+
 export default {
   riderUpdate,
   partnerUpdate,
   hotelUpdate,
   getOrderDetail,
   orderUpdate,
+  noticeUpdate,
+  noticeDelete,
 }

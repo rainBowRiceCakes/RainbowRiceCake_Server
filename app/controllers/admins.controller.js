@@ -114,11 +114,65 @@ async function orderUpdate(req, res, next) {
  * @param {import("express").Response} res - 레스폰스 객체
  * @param {import("express").NextFunction} next - next 객체
  * @return {import("express").Response}
- */
+*/
 async function orderCreate(req, res, next) {
   try {
     const data = req.body
     await ordersService.createNewOrder(data);
+    
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS))
+  } catch (error) {
+    return next(error);
+  }
+}
+
+/**
+ * admin이 order테이블에 강제로 정보 등록하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+*/
+async function partnerCreate(req, res, next) {
+  try {
+    const data = req.body
+    await partnersService.createPartner(data);
+    
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS))
+  } catch (error) {
+    return next(error);
+  }
+}
+
+/**
+ * Get details of order history (주문 히스토리 DETAIL 조회)
+ * @param {import("express").Request} req - Request 객체
+ * @param {import("express").Response} res - Response 객체
+ * @param {import("express").NextFunction} next - NextFuction 객체
+ * @returns
+*/
+async function show(req, res, next) {
+  try {
+    const id = req.params.id;
+    
+    const result = await adminsService.getOrderDetail(id);
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+/**
+ * admin이 order테이블에 강제로 정보 등록하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function noticeUpdate(req, res, next) {
+  try {
+    const data = req.body
+    await adminsService.noticeUpdate(data);
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS))
   } catch (error) {
@@ -133,30 +187,12 @@ async function orderCreate(req, res, next) {
  * @param {import("express").NextFunction} next - next 객체
  * @return {import("express").Response}
  */
-async function partnerCreate(req, res, next) {
+async function noticeDelete(req, res, next) {
   try {
-    const data = req.body
-    await partnersService.createPartner(data);
+    const id = req.params.id
+    await adminsService.noticeDelete(id);
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS))
-  } catch (error) {
-    return next(error);
-  }
-}
-
-/**
- * Get details of order history (주문 히스토리 DETAIL 조회)
- * @param {import("express").Request} req - Request 객체
- * @param {import("express").Response} res - Response 객체
- * @param {import("express").NextFunction} next - NextFuction 객체
- * @returns
- */
-async function show(req, res, next) {
-  try {
-    const id = req.params.id;
-
-    const result = await adminsService.getOrderDetail(id);
-    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {
     return next(error);
   }
@@ -171,4 +207,6 @@ export default {
   show,
   orderCreate,
   partnerCreate,
+  noticeUpdate,
+  noticeDelete,
 }

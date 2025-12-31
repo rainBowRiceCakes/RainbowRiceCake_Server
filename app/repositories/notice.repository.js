@@ -71,9 +71,34 @@ async function create(t = null, data) {
   )
 }
 
+/**
+ * 기본 조회 (조인 없음)
+ */
+async function findByPk(t = null, id) {
+  return await Notice.findByPk(id, {
+    transaction: t
+  });
+}
+
+/**
+ * 데이터 삭제
+ */
+async function deleteNotice(t = null, id) {
+  return await Notice.destroy({
+    where: {
+      id: id
+    }
+  },
+  {
+    transaction: t
+  });
+}
+
 export default {
   show,
   showRole,
   showDetail,
   create,
+  findByPk,
+  deleteNotice,
 }

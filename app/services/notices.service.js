@@ -21,15 +21,15 @@ async function showRole(targetRole) {
 /**
  * 공지사항 조회 (id 기반)
  */
-async function showDetail(t = null, id) {
-  return await noticeRepository.showDetail(t, id)
+async function showDetail(id) {
+  return await noticeRepository.showDetail(null, id)
 }
 
 /**
  * 공지사항 생성
  */
-async function create(t = null, data) {
-  return await noticeRepository.create(t, data)
+async function create(data) {
+  return await noticeRepository.create(null, data)
 }
 
 export default {

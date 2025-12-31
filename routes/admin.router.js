@@ -11,6 +11,9 @@ import riderCreateValidator from '../app/middlewares/validations/validators/ride
 import validationHandler from '../app/middlewares/validations/validationHandler.js';
 import partnerStoreValidator from '../app/middlewares/validations/validators/partners/partner.store.validator.js';
 import orderValidator from '../app/middlewares/validations/validators/orders/order.validator.js';
+import noticesController from '../app/controllers/notices.controller.js';
+import showNoticeDetailValidator from '../app/middlewares/validations/validators/notices/show.notice.detail.validator.js';
+import sendValidator from '../app/middlewares/validations/validators/notices/send.validator.js';
 
 const adminRouter = express.Router();
 
@@ -43,5 +46,26 @@ adminRouter.put('/order', authMiddleware, orderValidator.force, validationHandle
 adminRouter.post('/hotel', authMiddleware,
   // createValidator, validationHandler , 
   adminsController.hotelUpdate);
+  
+  // -------------어드민 noticepage--------------------------
+  // Notice table에 있는 정보 모두 가져오기
+  adminRouter.get('/notice',
+      authMiddleware,
+      noticesController.noticeShow)
+  
+  // Notice table에 있는 정보 단일로 가져오기
+  adminRouter.get('/notice/:id',
+      authMiddleware,
+      showNoticeDetailValidator,
+      validationHandler,
+      noticesController.noticeShowDetail)
 
-export default adminRouter;
+  // Notice Detail정보 수정
+  adminRouter.put('/notice', authMiddleware, sendValidator, validationHandler,
+    adminsController.noticeUpdate
+  )
+  
+  // Notice 정보 삭제
+  adminRouter.delete('/notice', authMiddleware, showNoticeDetailValidator, validationHandler, adminsController.noticeDelete)
+  
+  export default adminRouter;
