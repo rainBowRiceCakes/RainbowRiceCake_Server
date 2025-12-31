@@ -46,7 +46,7 @@ const attributes = {
   res: {
     field: 'res',
     type: DataTypes.STRING(500),
-    allowNull: false,
+    allowNull: true,
     comment: '답변'
   },
   status: {
