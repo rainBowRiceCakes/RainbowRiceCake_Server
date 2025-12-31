@@ -181,7 +181,7 @@ async function noticeUpdate(data) {
  * @return {import("express").Response}
  */
 async function noticeDelete(id) {  
-  await noticeRepository.delete(null, id);
+  await noticeRepository.deleteNotice(null, id);
   return
 }
 

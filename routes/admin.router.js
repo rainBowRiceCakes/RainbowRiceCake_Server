@@ -66,6 +66,6 @@ adminRouter.post('/hotel', authMiddleware,
   )
   
   // Notice 정보 삭제
-  adminRouter.delete('/notice', authMiddleware, showNoticeDetailValidator, validationHandler, adminsController.noticeDelete)
+  adminRouter.delete('/notice/:id', authMiddleware, adminsController.noticeDelete)
   
   export default adminRouter;
