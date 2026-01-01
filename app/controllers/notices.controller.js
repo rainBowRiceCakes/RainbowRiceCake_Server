@@ -27,17 +27,17 @@ async function noticeShow(req, res, next) {
 }
 
 /**
- * Notice테이블의 정보 모두 가져오는 처리
+ * 파트너와 기사가 notice 정보 가져오기. 
  * @param {import("express").Request} req - 리퀘스트 객체
  * @param {import("express").Response} res - 레스폰스 객체
  * @param {import("express").NextFunction} next - next 객체
  * @return {import("express").Response}
  */
-async function noticeShowRole(req, res, next) {
+async function getNoticesByRole(req, res, next) {
   try {
-    const userRole = req.user.role
-
-    const result = await noticesService.showRole(null, userRole);
+    // TODO: 테스트용 role, 배포 전 제거
+    const userRole = req.user?.role || 'ALL';
+    const result = await noticesService.getNoticesByRole(null, userRole);
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
   } catch (error) {
@@ -87,7 +87,7 @@ async function noticeCreate(req, res, next) {
 
 export default {
   noticeShow,
+  getNoticesByRole,
   noticeCreate,
   noticeShowDetail,
-  noticeShowRole,
 }

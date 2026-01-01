@@ -21,7 +21,7 @@ export const page = query('page')
 export const statusQuery = query('status')
   .optional()
   .trim()
-  .isIn(['req', 'match', 'pick', 'com'])
+  .isIn(['req', 'mat', 'pick', 'com'])
   .withMessage('유효하지 않은 status 값입니다.');
 
 export const tab = query('tab')

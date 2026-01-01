@@ -38,9 +38,7 @@ async function getMyProfile(user) {
   const config = _getConfig(user);
   const profile = await config.repository.findByUserId(null, user.id);
 
-  if (!profile) {
-    throw myError(config.errorMessage, NOT_FOUND_ERROR);
-  }
+  if (!profile) throw myError(config.errorMessage, NOT_FOUND_ERROR);
   return profile;
 }
 

@@ -16,11 +16,12 @@ import db from '../models/index.js';
 async function create(createData) {
 
   const questionsData = {
-    // authorId: createData.userid, // 인증된 사용자의 ID
-    // position: createData.userRole, // 사용자의 역할 (rider, partner, user 등)
-    title: createData.title, // 질문 제목
-    content: createData.content, // 질문 내용
-    imageUrl: createData.qnaImg, // 첨부 이미지 URL (선택적)
+    userId: createData.userId,   // 서비스의 authorId -> DB의 user_id
+    userRole: createData.userRole, // 서비스의 userRole -> DB의 user_role
+    title: createData.title,        // 제목
+    content: createData.content,    // 내용
+    qnaImg: createData.imageUrl,   // 서비스의 imageUrl -> DB의 qna_img
+    status: false,                     // 스키마상 NOT NULL이므로 기본값 설정
   }
 
   return await db.sequelize.transaction(async t => {

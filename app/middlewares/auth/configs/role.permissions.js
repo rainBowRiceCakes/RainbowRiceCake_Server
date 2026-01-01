@@ -16,6 +16,9 @@ const ROLE_PERMISSIONS = {
     // ex) { path: /^\/api\/posts\/[0-9]+$/, roles: [NORMAL, SUPER] },
     { path: /^\/api\/profiles$/, roles: [PTN, DLV] },
     { path: /^\/api\/notices$/, roles: [PTN, DLV] },
+    { path: /^\/api\/orders$/, roles: [PTN, DLV, ADM] },
+    { path: /^\/api\/orders\/[0-9]+$/, roles: [PTN, DLV] },
+    { path: /^\/api\/orders\/[0-9]+\/match$/, roles: [DLV] },
   ],
   POST: [
     // ex) { path: /^\/api\/auth\/logout$/, roles: [NORMAL, SUPER] },
@@ -26,11 +29,14 @@ const ROLE_PERMISSIONS = {
     { path: /^\/api\/admins\/rider$/, roles: [ADM] },
     { path: /^\/api\/notices$/, roles: [ADM] },
     { path: /^\/api\/orders$/, roles: [PTN, ADM] },
+    { path: /^\/api\/orders\/[0-9]+$/, roles: [DLV, ADM] },
     { path: /^\/api\/riders$/, roles: [COM, ADM] },
     { path: /^\/api\/partners$/, roles: [COM, ADM] },
     { path: /^\/api\/users$/, roles: [COM, ADM] },
     { path: /^\/api\/users\/rider\/form$/, roles: [COM, ADM] },
     { path: /^\/api\/users\/partner\/form$/, roles: [COM, ADM] },
+    { path: /^\/api\/orders\/[0-9]+\/pickup-photo$/, roles: [DLV] },
+    { path: /^\/api\/orders\/[0-9]+\/complete-photo$/, roles: [DLV] },
   ],
   PUT: [
     { path: /^\/api\/admins\/order$/, roles: [ADM] },
@@ -48,8 +54,6 @@ const ROLE_PERMISSIONS = {
     { path: /^\/api\/admins\/rider\/[0-9]+$/, roles: [ADM] },
     { path: /^\/api\/admins\/partner\/[0-9]+$/, roles: [ADM] },
     { path: /^\/api\/admins\/notice\/[0-9]+$/, roles: [ADM] },
-
-
   ]
 }
 Object.freeze(ROLE_PERMISSIONS);

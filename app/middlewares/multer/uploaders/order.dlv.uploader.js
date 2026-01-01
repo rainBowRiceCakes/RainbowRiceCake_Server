@@ -16,17 +16,17 @@ import pathUtil from '../../../utils/path/path.util.js';
  * when riders pick up the order and completed the order, 이미지 업로더 처리 미들웨어
  * @param {string} photoType - 'pick' 또는 'com'
  */
-export default function(photoType) {
+export default function (photoType) {
   // photoType 검증
   if (!['pick', 'com'].includes(photoType)) {
     throw new Error('Invalid photoType. Must be "pick" or "com"');
   }
 
-  return function(req, res, next) {
+  return function (req, res, next) {
     const upload = multer({
       storage: multer.diskStorage({
         destination(req, file, callback) {
-          const fullPath = pathUtil.getDeliveryPhotoPath();
+          const fullPath = pathUtil.getOrdersImagePath();
 
           if (!fs.existsSync(fullPath)) {
             fs.mkdirSync(fullPath, {
@@ -41,13 +41,13 @@ export default function(photoType) {
         filename(req, file, callback) {
           // URL 파라미터에서 orderId 가져오기
           const orderId = req.params.orderId;
-          
+
           if (!orderId) {
             return callback(new Error("orderId 누락"));
           }
 
           const ext = file.originalname.split(".").pop().toLowerCase();
-          
+
           // 화이트리스트 확장자 체크
           const allowedExts = ['jpg', 'jpeg', 'png', 'gif'];
           if (!allowedExts.includes(ext)) {
@@ -68,11 +68,11 @@ export default function(photoType) {
       fileFilter(req, file, callback) {
         // MIME 타입 체크
         const allowedMimes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-        
+
         if (!allowedMimes.includes(file.mimetype)) {
           return callback(myError("이미지 파일만 업로드 가능합니다 (jpg, png, gif)", BAD_FILE_ERROR));
         }
-        
+
         callback(null, true);
       },
 
@@ -93,7 +93,7 @@ export default function(photoType) {
         }
         return next(myError(err.message, BAD_FILE_ERROR));
       }
-      
+
       if (err) {
         return next(err);
       }

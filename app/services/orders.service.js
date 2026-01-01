@@ -8,7 +8,6 @@
 import db from '../models/index.js';
 import orderRepository from "../repositories/order.repository.js";
 import riderRepository from "../repositories/rider.repository.js";
-import partnerRepository from "../repositories/partner.repository.js";
 import hotelRepository from "../repositories/hotel.repository.js";
 import imageRepository from "../repositories/image.repository.js";
 import myError from "../errors/customs/my.error.js";
@@ -19,6 +18,8 @@ import {
   CONFLICT_ERROR
 } from "../../configs/responseCode.config.js";
 import dayjs from 'dayjs';
+import { Op } from 'sequelize';
+import ROLE from '../middlewares/auth/configs/role.enum.js';
 
 // --- 1. ORDER WORKFLOW FOR PARNERS (파트너와 관련된 당일 내 이뤄지는 주문) ---
 /**
@@ -93,24 +94,24 @@ async function matchOrder({ orderId, riderId }) {
     }
 
     // 4. 라이더 존재 확인
-    const rider = await riderRepository.findByPk(t, riderId);
+    const rider = await riderRepository.findByUserId(t, riderId);
     if (!rider) {
       throw myError('라이더 정보를 찾을 수 없습니다.', NOT_FOUND_ERROR);
     }
 
-    // 5. 라이더 활성 상태 확인
-    if (rider.status !== 'active') {
-      throw myError('현재 배달 가능한 상태가 아닙니다.', FORBIDDEN_ERROR);
-    }
+    // // 5. 라이더 활성 상태 확인
+    // if (rider.status !== 'active') {
+    //   throw myError('현재 배달 가능한 상태가 아닙니다.', FORBIDDEN_ERROR);
+    // }
 
-    // 6. 라이더의 진행중인 주문 개수 확인 (예: 최대 3개)
-    const inProgressCount = await orderRepository.getInProgressCountByRider(t, riderId);
-    if (inProgressCount >= 3) {
-      throw myError('진행 중인 주문이 너무 많습니다. (최대 3개)', BAD_REQUEST_ERROR);
-    }
+    // // 6. 라이더의 진행중인 주문 개수 확인 (예: 최대 3개)
+    // const inProgressCount = await orderRepository.getInProgressCountByRider(t, riderId);
+    // if (inProgressCount >= 3) {
+    //   throw myError('진행 중인 주문이 너무 많습니다. (최대 3개)', BAD_REQUEST_ERROR);
+    // }
 
     // 5. 주문 업데이트 (Repository가 처리)
-    await orderRepository.updateToMatched(t, orderId, riderId);
+    await orderRepository.updateToMatched(t, orderId, rider.id);
 
     // 6. 업데이트된 주문 조회
     return await orderRepository.findByPkWithDetails(t, orderId);
@@ -130,12 +131,13 @@ async function uploadPickupPhoto({ orderId, riderId, photoPath }) {
     }
 
     // 2. 권한 확인 - "이 라이더가 이 주문의 담당자인가?"
-    if (order.riderId !== riderId) {
+    const rider = await riderRepository.findByUserId(t, riderId); // 12로 라이더(3) 조회
+    if (!rider || order.riderId !== rider.id) {
       throw myError('이 주문을 처리할 권한이 없습니다.', FORBIDDEN_ERROR);
     }
 
     // 3. 주문 상태 확인 - "픽업 사진을 업로드할 수 있는 상태인가?"
-    if (order.status !== 'match') {
+    if (order.status !== 'mat') {
       throw myError('픽업 사진은 매칭 후에만 업로드할 수 있습니다.', BAD_REQUEST_ERROR);
     }
 
@@ -181,7 +183,8 @@ async function uploadCompletePhoto({ orderId, riderId, photoPath }) {
     }
 
     // 2. 권한 확인 - "이 라이더가 이 주문의 담당자인가?"
-    if (order.riderId !== riderId) {
+    const rider = await riderRepository.findByUserId(t, riderId); // 12로 라이더(3) 조회
+    if (!rider || order.riderId !== rider.id) {
       throw myError('이 주문을 처리할 권한이 없습니다.', FORBIDDEN_ERROR);
     }
 
@@ -238,7 +241,7 @@ async function getTodayOrders({ filter, tab, page }) {
     // 탭별 상태 매핑
     const statusMap = {
       waiting: ['req'],
-      inprogress: ['match', 'pick'],
+      inprogress: ['match'],
       completed: ['com'],
     };
 
@@ -248,7 +251,7 @@ async function getTodayOrders({ filter, tab, page }) {
     const result = await orderRepository.findTodayOrdersByTab(t, {
       filter,
       statuses,
-      today,
+      today: { start: startOfDay, end: endOfDay },
       limit,
       offset
     });
@@ -268,51 +271,9 @@ async function getTodayOrders({ filter, tab, page }) {
   });
 }
 
-
-/**
- * Get order history 주문 히스토리 LIST 조회
- * @param {Object} filter - 미들웨어에서 설정한 필터
- */
-async function getOrdersList({ filter, status, from, to, page, limit = 9 }) {
-  return await db.sequelize.transaction(async t => {
-    const offset = limit * (page - 1);
-
-    // 날짜 범위 계산 (비즈니스 로직)
-    const dateRange = (from && to) ? {
-      start: dayjs(from).startOf('day').toDate(),
-      end: dayjs(to).endOf('day').toDate()
-    } : null;
-
-    // Repository를 통한 조회
-    const result = await orderRepository.findOrderHistory(t, {
-      filter,
-      status,
-      dateRange,
-      limit,
-      offset
-    });
-
-    // 통계 조회
-    const stats = await orderRepository.getStatusStats(t, filter);
-
-    // 응답 데이터 구성
-    return {
-      orders: result.rows,
-      pagination: {
-        page,
-        limit,
-        total: result.count,
-        totalPages: Math.ceil(result.count / limit),
-      },
-      stats,
-      filters: { status, from, to },
-    };
-  });
-}
-
 /**
  * Get details of order history 상세 조회 (Detail)
- */
+*/
 async function getOrderDetail({ orderId, userId, userRole }) {
   return await db.sequelize.transaction(async t => {
     // 1. 주문 조회
@@ -348,7 +309,7 @@ async function getOrderDetail({ orderId, userId, userRole }) {
 /**
  * 일반 유저용 배송 현황 조회 (주문 PK로만 조회)
  * @param {Object} data { dlvId }
- */
+*/
 async function getDeliveryStatus(dlvId) {
   return await db.sequelize.transaction(async (t) => {
     // 1. 레포지토리의 findByIdOnly를 사용하여 주문 상세 정보 조회/Hotel과 Rider 정보를 Include
@@ -398,7 +359,7 @@ async function getDeliveryStatus(dlvId) {
 /**
  * Admin에서 사용 할 order history 주문 히스토리 LIST 3개월치 조회
  * @param {Object} filter - 미들웨어에서 설정한 필터
- */
+*/
 async function getOrdersListAdmin({ from, page, limit }) {
   return await db.sequelize.transaction(async t => {
     const offset = limit * (page - 1);
@@ -435,14 +396,101 @@ async function getOrdersListAdmin({ from, page, limit }) {
   });
 }
 
+// ------------------------------------------ 2026.01.01 추가
+/**
+ * 주문 목록 조회 (Rider/Partner 공통)
+ * @param {Object} params
+ * @param {string} params.userId - 사용자 ID
+ * @param {string} params.role - 'DLV' | 'PTN'
+ * @param {string|string[]} params.status - 주문 상태 (단일 또는 배열)
+ * @param {string} params.date - 'today' | 'all' (기본값: 'all')
+ * @param {number} params.page - 페이지 번호 (기본값: 1)
+ * @param {number} params.limit - 페이지당 항목 수 (기본값: 20)
+ */
+export const getOrdersList = async ({ userId, role, status, date, page, limit }) => {
+  const where = {};
+
+  const statusArray = status
+    ? (Array.isArray(status) ? status : [status])
+    : [];
+
+  // 역할별 필터링 (라이더/파트너 구분)
+  if (role === ROLE.DLV) {
+    const rider = await riderRepository.findByUserId(null, userId);
+
+    if (!rider) {
+      console.warn(`[OrdersService] 유저 ID(${userId})에 해당하는 라이더 정보가 없습니다.`);
+      return { rows: [], count: 0 };
+    }
+
+    // 💡 핵심: statusArray에 'req'가 포함되어 있는지 체크
+    const isWaitingTab = statusArray.includes('req');
+
+    if (isWaitingTab) {
+      // '대기 중' 탭: riderId 필터 없이 전체 목록 노출
+    } else {
+      // '진행 중(mat, pick)' 또는 '완료(com)' 탭: 
+      // 반드시 "내가(로그인한 라이더)" 수락한 주문만 필터링
+      where.riderId = rider.id;
+    }
+  } else if (role === ROLE.PTN) {
+    where.partnerId = userId;
+  }
+
+  // 2. 상태 필터 (DB 쿼리용)
+  if (statusArray.length > 0 && !statusArray.includes('all')) {
+    // 배열 안에 값이 여러 개면 [Op.in]으로 처리됩니다.
+    where.status = { [Op.in]: statusArray };
+  }
+
+  // 날짜 필터
+  if (date === 'today') {
+    where.createdAt = {
+      [Op.between]: [
+        dayjs().startOf('day').toDate(),
+        dayjs().endOf('day').toDate()
+      ]
+    };
+  }
+
+  // 페이지네이션 설정
+  const pageNum = parseInt(page) || 1;
+  const limitNum = parseInt(limit) || 5;  // 기본값 5개
+  const offset = (pageNum - 1) * limitNum;
+
+  // Repository 호출
+  try {
+    const result = await orderRepository.findOrdersList(null, {
+      where,
+      limit: limitNum,
+      offset: offset,
+      order: [['createdAt', 'DESC']]
+    });
+    // 💡 프론트엔드에서 요구하는 pagination 정보를 함께 리턴합니다.
+    return {
+      data: result.rows, // 실제 주문 목록 배열
+      pagination: {
+        totalItems: result.count, // 전체 개수 (예: 5개)
+        totalPages: Math.ceil(result.count / limitNum), // 전체 페이지 수 (예: 5/5 = 1)
+        currentPage: pageNum,
+        itemsPerPage: limitNum
+      }
+    }
+  } catch (error) {
+    console.error('주문 목록 조회 중 오류:', error);
+    throw error;
+  }
+
+};
+
 export default {
   createNewOrder,
   matchOrder,
   uploadPickupPhoto,
   uploadCompletePhoto,
   getTodayOrders,
-  getOrdersList,
-  getOrderDetail,
   getOrdersListAdmin,
   getDeliveryStatus,
+  getOrdersList,
+  getOrderDetail,
 };

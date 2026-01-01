@@ -15,13 +15,13 @@ async function show() {
 /**
  * 공지사항 조회 (role 기반)
  */
-async function showRole(t = null, userRole) {
+async function getNoticesByRole(t = null, userRole) {
   if (!userRole) {
     throw myError('role 정보가 필요합니다.', BAD_REQUEST_ERROR);
   }
 
   const targetRoles = [userRole, 'ALL'];
-  return await noticeRepository.showRole(t, targetRoles);
+  return await noticeRepository.getNoticesByRole(t, targetRoles);
 }
 
 /**
@@ -40,7 +40,7 @@ async function create(data) {
 
 export default {
   show,
-  showRole,
+  getNoticesByRole,
   showDetail,
   create,
 }

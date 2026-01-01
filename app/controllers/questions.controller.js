@@ -22,18 +22,18 @@ async function store(req, res, next) {
   try {
 
     const data = req.body;
-    // const { id, role } = req.user;
+    const { id, role } = req.user;
 
     const createData = {
       ...data,
-      // userId: id,
-      // userRole: role
-};
+      userId: id,
+      userRole: role
+    };
     console.log('✅ createData:', createData);
     const result = await questionsService.create(createData);
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
-  } catch(error) {
+  } catch (error) {
     return next(error);
   }
 }

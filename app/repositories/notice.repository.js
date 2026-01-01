@@ -27,7 +27,7 @@ async function show(t = null) {
  * @param {{limit: number, offset: number}} data 
  * @returns {Promise<Array<import("../models/Notice.js").Notice>>}
  */
-async function showRole(t = null, targetRoles) {
+async function getNoticesByRole(t = null, targetRoles) {
   return Notice.findAndCountAll(
     {
       attributes: ['targetRole', 'title', 'content', 'createdAt'],
@@ -89,14 +89,14 @@ async function noticeDelete(t = null, id) {
       id: id
     }
   },
-  {
-    transaction: t
-  });
+    {
+      transaction: t
+    });
 }
 
 export default {
   show,
-  showRole,
+  getNoticesByRole,
   showDetail,
   create,
   findByPk,

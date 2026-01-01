@@ -10,7 +10,7 @@ import OrdersService from '../services/orders.service.js';
 import { createBaseResponse } from '../utils/createBaseResponse.util.js';
 import myError from '../errors/customs/my.error.js';
 import { BAD_REQUEST_ERROR } from '../../configs/responseCode.config.js';
-import ordersService from '../services/orders.service.js';
+import ROLE from '../middlewares/auth/configs/role.enum.js';
 
 // --- 1. ORDER WORKFLOW FOR PARNERS (파트너와 관련된 당일 내 이뤄지는 주문) ---
 /**
@@ -26,11 +26,11 @@ async function store(req, res, next) {
       ...req.body,
       partnerId: req.user.id
     }
-    
+
     const result = await OrdersService.createNewOrder(createData);
-    
+
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
-  } catch(error) {
+  } catch (error) {
     return next(error);
   }
 }
@@ -47,11 +47,13 @@ async function matchOrder(req, res, next) {
   try {
     const orderId = req.params.orderId;
     const riderId = req.user.id;
-    
+
     const result = await OrdersService.matchOrder({ orderId, riderId });
-    
+    console.log('🔥 matchOrder:', req.params.orderId, req.user.id);
+
+
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
-  } catch(error) {
+  } catch (error) {
     return next(error);
   }
 }
@@ -65,6 +67,7 @@ async function matchOrder(req, res, next) {
  * @returns
  */
 async function uploadPickupPhoto(req, res, next) {
+  console.log('파일 확인:', req.file);
   try {
     if (!req.file) {
       throw myError('사진 파일이 필요합니다.', BAD_REQUEST_ERROR);
@@ -74,14 +77,14 @@ async function uploadPickupPhoto(req, res, next) {
     const riderId = req.user.id;
     const photoPath = req.file.filename;
 
-    const result = await OrdersService.uploadPickupPhoto({ 
+    const result = await OrdersService.uploadPickupPhoto({
       orderId,
       riderId,
-      photoPath 
+      photoPath
     });
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
-  } catch(error) {
+  } catch (error) {
     return next(error);
   }
 }
@@ -103,36 +106,10 @@ async function uploadCompletePhoto(req, res, next) {
     const riderId = req.user.id;
     const photoPath = req.file.filename;
 
-    const result = await OrdersService.uploadCompletePhoto({ 
+    const result = await OrdersService.uploadCompletePhoto({
       orderId,
       riderId,
-      photoPath 
-    });
-
-    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
-  } catch(error) {
-    return next(error);
-  }
-}
-
-// --- 3. ORDER WORKFLOW FOR RIDERS & PARTNERS & ADMIN (기사/점주/어드민) ---
-/**
- * Get orders for the day by Tab (오늘 자 탭별 주문 리스트 조회 - 대기중/진행중/완료)
- * @param {import("express").Request} req - Request 객체
- * @param {import("express").Response} res - Response 객체
- * @param {import("express").NextFunction} next - NextFuction 객체
- * @returns
- */
-async function todayIndex(req, res, next) {
-  try {
-    const filter = req.orderFilter;
-    const tab = req.query.tab || 'waiting';
-    const page = parseInt(req.query.page) || 1;
-
-    const result = await OrdersService.getTodayOrders({
-      filter,
-      tab,
-      page
+      photoPath
     });
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
@@ -140,38 +117,6 @@ async function todayIndex(req, res, next) {
     return next(error);
   }
 }
-
-/**
- * Get list of order history (주문 히스토리 LIST 조회)
- * @param {import("express").Request} req - Request 객체
- * @param {import("express").Response} res - Response 객체
- * @param {import("express").NextFunction} next - NextFuction 객체
- * @returns
-*/
-async function index(req, res, next) {
-  try {
-    const filter = req.orderFilter;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 9;
-    const status = req.query.status;
-    const from = req.query.from;
-    const to = req.query.to;
-
-    const result = await OrdersService.getOrdersList({
-      filter,
-      status,
-      from,
-      to,
-      page,
-      limit,
-    });
-
-    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
-  } catch (error) {
-    return next(error);
-  }
-}
-
 
 /**
  * Get details of order history (주문 히스토리 DETAIL 조회)
@@ -186,10 +131,10 @@ async function show(req, res, next) {
     const userId = req.user.id;
     const userRole = req.user.role;
 
-    const result = await OrdersService.getOrderDetail({ 
-      orderId, 
-      userId, 
-      userRole 
+    const result = await OrdersService.getOrderDetail({
+      orderId,
+      userId,
+      userRole
     });
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
@@ -198,32 +143,45 @@ async function show(req, res, next) {
   }
 }
 
+// ------------------------------------------ 2026.01.01 추가
 /**
- * 배송 현황 조회 (주문 PK로만 조회)
- * GET /api/orders/deliverystatus?dlvId=4
- */
-const getDeliveryStatus = async (req, res, next) => {
+ * Get list of order history (주문 히스토리 LIST 조회)
+ * @param {import("express").Request} req - Request 객체
+ * @param {import("express").Response} res - Response 객체
+ * @param {import("express").NextFunction} next - NextFuction 객체
+ * @returns
+*/
+async function index(req, res, next) {
   try {
-    // URL 파라미터에서 dlvId 추출
-    const dlvId = req.body.dlvId; 
+    const { id: userId, role } = req.user;
 
-    const result = await ordersService.getDeliveryStatus(dlvId);
+    const { status, date, page, limit, riderId } = req.query;
 
-    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+    const result = await OrdersService.getOrdersList({
+      userId,
+      role,
+      date,
+      status,
+      page,
+      limit,
+      riderId,
+    });
+
+    return res
+      .status(SUCCESS.status)
+      .send(createBaseResponse(SUCCESS, result));
   } catch (error) {
     return next(error);
   }
-};
+}
 
 export default {
   store,
   matchOrder,
   uploadPickupPhoto,
   uploadCompletePhoto,
-  todayIndex,
-  index,
   show,
-  getDeliveryStatus
+  index,
 };
 
 // RESTful API Controller Method Naming Conventions

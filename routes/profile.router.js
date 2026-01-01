@@ -17,7 +17,8 @@ profileRouter.get('/',
   /* #swagger.tags = ['Profile']
     #swagger.summary = '내 프로필 조회'
     #swagger.description = '파트너/기사가 자신의 프로필 정보를 조회합니다.' */
-  authMiddleware, validationHandler,
+  authMiddleware,
+  validationHandler,
   profilesController.getMyProfile
 ); // validator 없어도 실무적으로 OK (단건 조회)
 

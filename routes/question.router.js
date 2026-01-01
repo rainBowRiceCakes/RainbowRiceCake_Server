@@ -8,10 +8,10 @@
  */
 
 import express from 'express';
-// import authMiddleware from '../app/middlewares/auth/auth.middleware.js';
 import storeValidator from '../app/middlewares/validations/validators/questions/store.validator.js';
 import validationHandler from '../app/middlewares/validations/validationHandler.js';
 import questionsController from '../app/controllers/questions.controller.js';
+import authMiddleware from '../app/middlewares/auth/auth.middleware.js';
 
 const questionRouter = express.Router();
 
@@ -21,7 +21,7 @@ questionRouter.post('/',
   /* #swagger.tags = ['Questions']
   #swagger.summary = '파트너, 유저, 라이더용 이슈나 질문 등록'
   #swagger.description = '파트너, 유저, 라이더가 이슈나 질문을 등록합니다.' */
-  // authMiddleware TODO: 주석풀기
+  authMiddleware,
   storeValidator,
   validationHandler,
   questionsController.store);

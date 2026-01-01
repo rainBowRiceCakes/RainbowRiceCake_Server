@@ -76,4 +76,9 @@ app.use(errorHandler);
 // ---------------------
 // 해당 Port로 express 실행
 // ---------------------
-app.listen(parseInt(process.env.APP_PORT));
+
+const PORT = Number(process.env.APP_PORT) || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Server running on ${PORT}`);
+});

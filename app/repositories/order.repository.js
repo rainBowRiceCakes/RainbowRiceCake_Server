@@ -65,12 +65,12 @@ async function findByPkWithDetails(t = null, id) {
         attributes: ['id', 'phone'],
         required: false,
         include: [
-        {
-          attributes: ['name'],
-          model: User,
-          as: 'rider_user',
-        }
-      ],
+          {
+            attributes: ['name'],
+            model: User,
+            as: 'rider_user',
+          }
+        ],
       }
     ]
   });
@@ -96,8 +96,8 @@ async function updateToMatched(t = null, orderId, riderId) {
   return await Order.update(
     {
       riderId,
-      status: 'match',
-      matchedAt: new Date()
+      status: 'mat',
+      updatedAt: new Date()
     },
     {
       where: { id: orderId },
@@ -113,7 +113,7 @@ async function updateToPicked(t = null, orderId) {
   return await Order.update(
     {
       status: 'pick',
-      pickedAt: new Date()
+      updatedAt: new Date()
     },
     {
       where: { id: orderId },
@@ -129,7 +129,7 @@ async function updateToCompleted(t = null, orderId) {
   return await Order.update(
     {
       status: 'com',
-      completedAt: new Date()
+      updatedAt: new Date()
     },
     {
       where: { id: orderId },
@@ -335,7 +335,50 @@ async function findOrderHistoryThreeMonth(t = null, { dateRange, limit, offset }
 }
 
 async function orderDelete(t = null, id) {
-  return await Order.destroy({where: {id: id}}, {transaction: t})
+  return await Order.destroy({ where: { id: id } }, { transaction: t })
+}
+
+// ------------------------------------------ 2026.01.01 추가
+async function findOrdersList(t = null, { where, limit, offset }) {
+  return await Order.findAndCountAll({
+    where,
+    limit,
+    offset,
+    distinct: true,
+    order: [['createdAt', 'DESC']],
+    transaction: t,
+    include: [
+      {
+        model: Partner,
+        as: 'order_partner',
+        attributes: ['id', 'krName', 'address'],
+        required: true
+      },
+      {
+        model: Hotel,
+        as: 'order_hotel',
+        attributes: ['id', 'krName', 'address'],
+        required: true
+      },
+      {
+        model: Rider,
+        as: 'order_rider',
+        attributes: ['id'],
+        required: false,
+        include: [
+          {
+            model: User,
+            as: 'rider_user',
+            attributes: ['name'],
+            required: false
+          }
+        ]
+      }
+    ],
+    attributes: [
+      'id', 'status', 'price', 'cntS', 'cntM', 'cntL', 'createdAt', 'updatedAt'
+    ]
+  });
 }
 
 export default {
@@ -353,6 +396,7 @@ export default {
   getStatusStats,
   findOrderHistoryThreeMonth,
   orderDelete,
+  findOrdersList
 };
 
 // Repository (DB 중심)	HTTP Method

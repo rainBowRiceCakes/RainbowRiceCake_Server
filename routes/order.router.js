@@ -36,13 +36,13 @@ orderRouter.post('/',
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // --- 2. ORDER WORKFLOW FOR RIDERS (기사와 관련된 당일 내 이뤄지는 주문) ---
 // 이 섹션은 라이더가 주문을 매칭하고, 픽업/완료 사진을 업로드하는 워크플로우를 처리합니다.
-orderRouter.post('/:orderId/match',
+orderRouter.post('/:orderId',
   /* #swagger.tags = ['Orders']
   #swagger.summary = '라이더용 주문 수락'
   #swagger.description = '라이더가 주문을 수락합니다.' */
   authMiddleware,
-  orderMiddleware.checkOrderExists,
-  orderMiddleware.requireRiderRole,
+  // orderMiddleware.checkOrderExists,
+  // orderMiddleware.requireRiderRole,
   orderValidator.match,
   validationHandler,
   ordersController.matchOrder
@@ -53,11 +53,11 @@ orderRouter.post('/:orderId/pickup-photo',
   #swagger.summary = '라이더용 주문 픽업 사진 업로드'
   #swagger.description = '라이더가 주문 픽업 사진을 업로드합니다.' */
   authMiddleware,                        // 1. 인증 확인
-  orderMiddleware.checkOrderExists,      // 2. 주문 존재 확인
-  orderMiddleware.requireRiderRole,      // 3. 라이더 역할 확인
+  // orderMiddleware.checkOrderExists,      // 2. 주문 존재 확인
+  // orderMiddleware.requireRiderRole,      // 3. 라이더 역할 확인
   orderDlvUploader('pick'),              // 👈 4. 파일 업로드 처리 (여기가 맞음!)
-  orderValidator.uploadPhoto,            // 5. validation
-  validationHandler,                     // 6. validation 결과 처리
+  // orderValidator.uploadPhoto,            // 5. validation
+  // validationHandler,                     // 6. validation 결과 처리
   ordersController.uploadPickupPhoto     // 7. 비즈니스 로직
 )
 
@@ -66,8 +66,8 @@ orderRouter.post('/:orderId/complete-photo',
   #swagger.summary = '라이더용 주문 완료 사진 업로드'
   #swagger.description = '라이더가 주문 완료 사진을 업로드합니다.' */
   authMiddleware,
-  orderMiddleware.checkOrderExists,
-  orderMiddleware.requireRiderRole,
+  // orderMiddleware.checkOrderExists,
+  // orderMiddleware.requireRiderRole,
   orderDlvUploader('com'),               // 👈 여기가 맞음!
   orderValidator.uploadPhoto,
   validationHandler,
@@ -76,27 +76,29 @@ orderRouter.post('/:orderId/complete-photo',
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // --- 3. ORDERS HISTORY FOR PARTNERS and RIDERS ---
+// ------------------------------------------ 2026.01.01 추가
 orderRouter.get('/',
   /* #swagger.tags = ['Orders']
   #swagger.summary = '라이더와 파트너용 주문 목록 조회'
   #swagger.description = '라이더와 파트너가 주문 목록을 조회합니다.' */
   authMiddleware,
-  orderMiddleware.setOrderAccessFilter,
   orderValidator.index,
   validationHandler,
   ordersController.index
 );
 
-orderRouter.get('/deliverystatus',
+orderRouter.get('/:orderId',
   /* #swagger.tags = ['Orders']
-  #swagger.summary = '라이더와 파트너용 배송 현황 조회'
-  #swagger.description = '라이더와 파트너가 배송 현황을 조회합니다.' */
-  ordersController.getDeliveryStatus
+  #swagger.summary = '라이더와 파트너용 주문 상세 조회'
+  #swagger.description = '라이더와 파트너가 주문 상세를 조회합니다.' */
+  authMiddleware,
+  orderValidator.show,
+  validationHandler,
+  ordersController.show
 );
 
+
 export default orderRouter;
-
-
 
 
 // orderRouter.get('/today',
@@ -108,4 +110,11 @@ export default orderRouter;
 //   orderValidator.todayIndex,
 //   validationHandler,
 //   ordersController.todayIndex
+// );
+
+// orderRouter.get('/deliverystatus',
+//   /* #swagger.tags = ['Orders']
+//   #swagger.summary = '라이더와 파트너용 배송 현황 조회'
+//   #swagger.description = '라이더와 파트너가 배송 현황을 조회합니다.' */
+//   ordersController.getDeliveryStatus
 // );

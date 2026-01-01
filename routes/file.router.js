@@ -31,7 +31,7 @@ fileRouter.post('/attachments',
   /* #swagger.tags = ['Files']
   #swagger.summary = '유저/파트너/라이더용 첨부파일 업로드'
   #swagger.description = '유저/파트너/라이더(로그인 후)가 첨부파일을 업로드합니다.' */
-  // authMiddleware, TODO: 주석풀기
+  authMiddleware,
   multerMiddleware.questionAttachmentUploader,
   filesController.storeAttachments)
 

@@ -31,6 +31,6 @@ noticeRouter.get('/',
     #swagger.description = '파트너와 기사가 어드민이 올린 공지사항을 조회합니다.' */
     authMiddleware,
     validationHandler,
-    noticesController.noticeShowRole)
+    noticesController.getNoticesByRole)
 
 export default noticeRouter;
