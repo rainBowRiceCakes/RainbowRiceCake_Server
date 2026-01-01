@@ -26,8 +26,8 @@ adminRouter.get('/userindex', authMiddleware, adminsController.orderIndex)
 
 
 // -------------어드민 riderpage--------------------------
-adminRouter.post('/rider', authMiddleware, 
-  // riderCreateValidator, validationHandler , 
+adminRouter.put('/rider', authMiddleware, 
+  riderCreateValidator, validationHandler, 
   adminsController.riderUpdate)
 
   // -------------어드민 partnerpage--------------------------

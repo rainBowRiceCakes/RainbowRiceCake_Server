@@ -50,6 +50,12 @@ authRouter.post('/reissue',
   #swagger.description = '인증된 사용자가 재발급합니다.' */
   authController.reissue)
 
+authRouter.post('/admreissue',
+  /* #swagger.tags = ['Auth']
+  #swagger.summary = '재발급'
+  #swagger.description = '인증된 사용자가 재발급합니다.' */
+  authController.adminReissue)
+
 authRouter.get('/social/kakao',
   /* #swagger.tags = ['Auth']
   #swagger.summary = '소셜 로그인'

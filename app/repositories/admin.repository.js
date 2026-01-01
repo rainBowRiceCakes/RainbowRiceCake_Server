@@ -107,6 +107,16 @@ async function logout(t = null, id) {
   );
 }
 
+/**
+ * id로 어드민 정보 조회
+ * @param {import("sequelize").Transaction} t 
+ * @param {number} id
+ * @returns {promise<import("../models/User.js").User>}
+ */
+async function findByPk(t = null, id) {
+  return await Admin.findByPk(id, { transaction: t });
+}
+
 export default {
   findByEmail,
   riderUpdate,
@@ -115,4 +125,5 @@ export default {
   orderUpdate,
   save,
   logout,
+  findByPk,
 }

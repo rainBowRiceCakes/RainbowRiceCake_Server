@@ -51,6 +51,9 @@ app.use('/api/files', fileRouter);
 app.use('/api/profiles', profileRouter);
 
 // ---------------------
+// 사진 프론트에 보여주는 처리
+app.use('/storage', express.static('storage'));
+// ---------------------
 // 404 처리
 // ---------------------
 app.use(notFoundRouter);

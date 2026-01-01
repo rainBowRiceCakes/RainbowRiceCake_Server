@@ -88,7 +88,8 @@ function setCookieRefreshToken(res, refreshToken) {
     parseInt(process.env.JWT_REFRESH_TOKEN_EXPIRY),
     true,
     true,
-    process.env.JWT_REISS_URI
+    '/'
+    // process.env.JWT_REISS_URI
   );
 }
 

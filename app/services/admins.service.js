@@ -28,9 +28,10 @@ async function riderUpdate(data) {
     result.status = data.status
     result.bank = data.bank
     result.bankNum = data.bankNum
-    result.address= data.address
-    result.phone= data.phone
-    result.isWorking= data.isWorking
+    result.address = data.address
+    result.phone = data.phone
+    result.isWorking = data.isWorking
+    result.licenseImg = data.licenseImg
     // 레코드 하나만 save처리
     await adminRepository.riderUpdate(t, result);
 
@@ -221,6 +222,18 @@ async function partnerDelete(id) {
   return
 }
 
+/**
+ * admin이 partner테이블에 강제로 정보 등록하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function partnerCreate(data) {
+  await partnerRepository.create(null, data);
+  return
+}
+
 export default {
   riderUpdate,
   partnerUpdate,
@@ -232,4 +245,5 @@ export default {
   orderDelete,
   hotelDelete,
   partnerDelete,
+  partnerCreate,
 }

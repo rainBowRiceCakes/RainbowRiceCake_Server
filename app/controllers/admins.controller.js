@@ -136,7 +136,7 @@ async function orderCreate(req, res, next) {
 async function partnerCreate(req, res, next) {
   try {
     const data = req.body
-    await partnersService.createPartner(data);
+    await adminsService.partnerCreate(data);
     
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS))
   } catch (error) {

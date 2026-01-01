@@ -61,7 +61,7 @@ export default function(req, res, next) {
     limits: {
       fileSize: parseInt(process.env.FILE_USER_PROFILE_SIZE),
     }
-  }).single('logoImage');
+  }).single('logoImg');
 
   // 예외 처리
   upload(req, res, err => {
