@@ -149,6 +149,20 @@ async function store(t = null, data) {
     {transaction:  t}
   )}
 
+/**
+ * 데이터 삭제
+ */
+async function userDelete(t = null, id) {
+  return await User.destroy({
+    where: {
+      id: id
+    }
+  },
+    {
+      transaction: t
+    });
+}
+
 export default {
   findByEmail,
   save,
@@ -160,4 +174,5 @@ export default {
   updateRole,
   showIndex,
   store,
+  userDelete,
 }

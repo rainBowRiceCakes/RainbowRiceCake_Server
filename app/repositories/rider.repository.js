@@ -105,10 +105,40 @@ async function create(t = null, data) {
   )
 }
 
+/**
+ * PK로 데이터 삭제
+ */
+async function riderDelete(t = null, id) {
+  return await Rider.destroy({
+    where: {
+      id: id
+    }
+  },
+    {
+      transaction: t
+    });
+}
+
+/**
+ * 유저ID로 데이터 삭제
+ */
+async function riderDeleteUser(t = null, id) {
+  return await Rider.destroy({
+    where: {
+      userId: id
+    }
+  },
+    {
+      transaction: t
+    });
+}
+
 export default {
   findByUserId,
   update,
   findByPk,
   riderShow,
   create,
+  riderDelete,
+  riderDeleteUser,
 };

@@ -50,6 +50,44 @@ async function riderUpdate(data) {
 }
 
 /**
+ * admin이 notice테이블에 강제로 정보 삭제하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function riderDelete(id) {  
+  await riderRepository.riderDelete(null, id);
+  return
+}
+
+/**
+ * admin이 notice테이블에 강제로 정보 삭제하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function userDelete(id) {  
+  await db.sequelize.transaction(async t => {
+    // rider정보 삭제
+    const riderInfo = await riderRepository.findByUserId(t, id)
+    if(riderInfo) {
+      await riderRepository.riderDeleteUser(t, id)
+    }
+
+    // partner정보 삭제
+    const partnerInfo = await partnerRepository.findByUserId(t, id)
+    if(partnerInfo) {
+      await partnerRepository.partnerDeleteUser(t, id)
+    }
+
+    await userRepository.userDelete(t, id);
+    return
+  })
+}
+
+/**
  * admin이 partner테이블에 강제로 정보 등록하는 처리
  * @param {import("express").Request} req - 리퀘스트 객체
  * @param {import("express").Response} res - 레스폰스 객체
@@ -236,6 +274,8 @@ async function partnerCreate(data) {
 
 export default {
   riderUpdate,
+  riderDelete,
+  userDelete,
   partnerUpdate,
   hotelUpdate,
   getOrderDetail,

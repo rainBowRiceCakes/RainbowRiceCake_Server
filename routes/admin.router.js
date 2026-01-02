@@ -23,12 +23,14 @@ const adminRouter = express.Router();
 // 상세 들어가서 수정(*id값도 함께 받아와야 함)
 // -------------어드민 userpage--------------------------
 adminRouter.get('/userindex', authMiddleware, adminsController.orderIndex)
+adminRouter.delete('/user/:id', authMiddleware, adminsController.userDelete)
 
 
 // -------------어드민 riderpage--------------------------
 adminRouter.put('/rider', authMiddleware, 
   riderCreateValidator, validationHandler, 
   adminsController.riderUpdate)
+adminRouter.delete('/rider/:id', authMiddleware, adminsController.riderDelete)
 
   // -------------어드민 partnerpage--------------------------
 adminRouter.put('/partner', authMiddleware, 
@@ -54,23 +56,16 @@ adminRouter.post('/hotel', authMiddleware,
 
 // -------------어드민 noticepage--------------------------
 // Notice table에 있는 정보 모두 가져오기
-adminRouter.get('/notice',
-    authMiddleware,
-    noticesController.noticeShow)
-
-// Notice table에 있는 정보 단일로 가져오기
-adminRouter.get('/notice/:id',
-    authMiddleware,
-    showNoticeDetailValidator,
-    validationHandler,
-    noticesController.noticeShowDetail)
-
-// Notice Detail정보 수정
-adminRouter.put('/notice', authMiddleware, sendValidator, validationHandler,
-  adminsController.noticeUpdate
-)
+adminRouter.get('/notice', authMiddleware, noticesController.noticeShow)
   
+  // Notice table에 있는 정보 단일로 가져오기
+  adminRouter.get('/notice/:id', authMiddleware, showNoticeDetailValidator, validationHandler, noticesController.noticeShowDetail)
+  // Notice Detail정보 수정
+  adminRouter.put('/notice', authMiddleware, sendValidator, validationHandler, adminsController.noticeUpdate
+  )
   // Notice 정보 삭제
-adminRouter.delete('/notice/:id', authMiddleware, adminsController.noticeDelete)
+  adminRouter.delete('/notice/:id', authMiddleware, adminsController.noticeDelete)
+  
+  // -------------어드민 noticepage--------------------------
 
 export default adminRouter;
