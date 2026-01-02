@@ -22,6 +22,7 @@ import fileRouter from './routes/file.router.js';
 import profileRouter from './routes/profile.router.js';
 import swaggerUi from 'swagger-ui-express';
 import fs from 'fs';
+import settlementRouter from './routes/settlement.router.js';
 
 const app = express();
 app.use(express.json()); // JSON 요청 파싱 처리
@@ -49,6 +50,7 @@ app.use('/api/users', userRouter);
 app.use('/api/orders', orderRouter);
 app.use('/api/files', fileRouter);
 app.use('/api/profiles', profileRouter);
+app.use('/api/settlements', settlementRouter);
 
 // ---------------------
 // 사진 프론트에 보여주는 처리
