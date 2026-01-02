@@ -21,8 +21,9 @@ async function create(createData) {
     userRole: createData.userRole, // 서비스의 userRole -> DB의 user_role
     title: createData.title,        // 제목
     content: createData.content,    // 내용
-    qnaImg: createData.imageUrl,   // 서비스의 imageUrl -> DB의 qna_img
+    qnaImg: createData.qnaImg,   // 서비스의 imageUrl -> DB의 qna_img
     status: false,                     // 스키마상 NOT NULL이므로 기본값 설정
+    res: createData.res || null,
   }
   
   return await db.sequelize.transaction(async t => {

@@ -30,7 +30,7 @@ async function show(t = null) {
 async function getNoticesByRole(t = null, targetRoles) {
   return Notice.findAndCountAll(
     {
-      attributes: ['targetRole', 'title', 'content', 'createdAt'],
+      attributes: ['targetRole', 'title', 'content', 'createdAt', 'status'],
       where: {
         targetRole: {
           [Op.in]: targetRoles

@@ -14,11 +14,12 @@ const ROLE_PERMISSIONS = {
     // { path: 정규식, roles: [권한 확인] }
     // /api/posts/:id 를 검증하는 정규식
     // ex) { path: /^\/api\/posts\/[0-9]+$/, roles: [NORMAL, SUPER] },
-    { path: /^\/api\/profiles$/, roles: [PTN, DLV] },
-    { path: /^\/api\/notices$/, roles: [PTN, DLV] },
+    { path: /^\/api\/profiles$/, roles: [PTN, DLV, ADM] },
+    { path: /^\/api\/notices$/, roles: [PTN, DLV, ADM] },
     { path: /^\/api\/orders$/, roles: [PTN, DLV, ADM] },
-    { path: /^\/api\/orders\/[0-9]+$/, roles: [PTN, DLV] },
-    { path: /^\/api\/orders\/[0-9]+\/match$/, roles: [DLV] },
+    { path: /^\/api\/orders\/[0-9]+$/, roles: [PTN, DLV, ADM] },
+    { path: /^\/api\/orders\/[0-9]+\/match$/, roles: [DLV, ADM] },
+    { path: /^\/api\/partners$/, roles: [COM, ADM] },
   ],
   POST: [
     // ex) { path: /^\/api\/auth\/logout$/, roles: [NORMAL, SUPER] },
@@ -27,6 +28,7 @@ const ROLE_PERMISSIONS = {
     { path: /^\/api\/admins\/hotel$/, roles: [ADM] },
     { path: /^\/api\/admins\/partner$/, roles: [ADM] },
     { path: /^\/api\/admins\/rider$/, roles: [ADM] },
+    { path: /^\/api\/admins\/notice$/, roles: [ADM] },
     { path: /^\/api\/notices$/, roles: [ADM] },
     { path: /^\/api\/orders$/, roles: [PTN, ADM] },
     { path: /^\/api\/orders\/[0-9]+$/, roles: [DLV, ADM] },
@@ -37,6 +39,7 @@ const ROLE_PERMISSIONS = {
     { path: /^\/api\/users\/partner\/form$/, roles: [COM, ADM] },
     { path: /^\/api\/orders\/[0-9]+\/pickup-photo$/, roles: [DLV] },
     { path: /^\/api\/orders\/[0-9]+\/complete-photo$/, roles: [DLV] },
+    { path: /^\/api\/questions$/, roles: [DLV, PTN, ADM, COM] }, // issue reports 나 질문하기, 신고하기 전용
   ],
   PUT: [
     { path: /^\/api\/admins\/order$/, roles: [ADM] },

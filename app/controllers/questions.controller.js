@@ -21,13 +21,18 @@ import { createBaseResponse } from '../utils/createBaseResponse.util.js';
 async function store(req, res, next) {
   try {
 
+    console.log('📥 오리지널 바디:', req.body); // 👈 여기서 qnaImg가 있는지 확인!
+
     const data = req.body;
-    const { id, role } = req.user;
+    // req.user에서 id와 role을 꺼내고, 
+    // 사용할 때는 userId, userRole이라는 이름으로 할당합니다.
+    const { id: userId, role: userRole } = req.user;
 
     const createData = {
       ...data,
-      userId: id,
-      userRole: role
+      userId: userId,
+      userRole: userRole,
+      res: "" // 👈 일단 빈 값을 강제로 넣어줌
     };
     console.log('✅ createData:', createData);
     const result = await questionsService.create(createData);
