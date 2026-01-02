@@ -14,6 +14,7 @@ import orderValidator from '../app/middlewares/validations/validators/orders/ord
 import noticesController from '../app/controllers/notices.controller.js';
 import showNoticeDetailValidator from '../app/middlewares/validations/validators/notices/show.notice.detail.validator.js';
 import sendValidator from '../app/middlewares/validations/validators/notices/send.validator.js';
+import questionsController from '../app/controllers/questions.controller.js';
 
 const adminRouter = express.Router();
 
@@ -51,21 +52,25 @@ adminRouter.delete('/order/:id', authMiddleware, adminsController.orderDelete)
 adminRouter.post('/hotel', authMiddleware,
   // createValidator, validationHandler , 
   adminsController.hotelUpdate);
-  // Hotel 정보 삭제
-  adminRouter.delete('/hotel/:id', authMiddleware, adminsController.hotelDelete)
+// Hotel 정보 삭제
+adminRouter.delete('/hotel/:id', authMiddleware, adminsController.hotelDelete)
 
 // -------------어드민 noticepage--------------------------
 // Notice table에 있는 정보 모두 가져오기
 adminRouter.get('/notice', authMiddleware, noticesController.noticeShow)
   
-  // Notice table에 있는 정보 단일로 가져오기
-  adminRouter.get('/notice/:id', authMiddleware, showNoticeDetailValidator, validationHandler, noticesController.noticeShowDetail)
-  // Notice Detail정보 수정
-  adminRouter.put('/notice', authMiddleware, sendValidator, validationHandler, adminsController.noticeUpdate
-  )
-  // Notice 정보 삭제
-  adminRouter.delete('/notice/:id', authMiddleware, adminsController.noticeDelete)
-  
-  // -------------어드민 noticepage--------------------------
+// Notice table에 있는 정보 단일로 가져오기
+adminRouter.get('/notice/:id', authMiddleware, showNoticeDetailValidator, validationHandler, noticesController.noticeShowDetail)
+// Notice Detail정보 수정
+adminRouter.put('/notice', authMiddleware, sendValidator, validationHandler, adminsController.noticeUpdate
+)
+// Notice 정보 삭제
+adminRouter.delete('/notice/:id', authMiddleware, adminsController.noticeDelete)
+
+// -------------어드민 qnapage--------------------------
+adminRouter.get('/qna', authMiddleware, questionsController.qnaShow)
+adminRouter.get('/qna/:id', authMiddleware, questionsController.qnaShowDetail)
+adminRouter.put('/qna', authMiddleware, adminsController.qnaUpdate)
+adminRouter.delete('/qna/:id', authMiddleware, adminsController.qnaDelete)
 
 export default adminRouter;

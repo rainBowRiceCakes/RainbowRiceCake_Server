@@ -288,6 +288,42 @@ async function userDelete(req, res, next) {
   }
 }
 
+/**
+ * admin이 order테이블에 강제로 정보 등록하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function qnaDelete(req, res, next) {
+  try {
+    const id = req.params.id
+    await adminsService.qnaDelete(id);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS))
+  } catch (error) {
+    return next(error);
+  }
+}
+
+/**
+ * admin이 qna테이블에 강제로 정보 등록하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function qnaUpdate(req, res, next) {
+  try {
+    const data = req.body
+    await adminsService.qnaUpdate(data);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS))
+  } catch (error) {
+    return next(error);
+  }
+}
+
 
 export default {
   riderUpdate,
@@ -305,4 +341,6 @@ export default {
   partnerDelete,
   riderDelete,
   userDelete,
+  qnaDelete,
+  qnaUpdate,
 }

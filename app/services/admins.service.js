@@ -10,6 +10,7 @@ import hotelRepository from "../repositories/hotel.repository.js";
 import noticeRepository from "../repositories/notice.repository.js";
 import orderRepository from "../repositories/order.repository.js";
 import partnerRepository from "../repositories/partner.repository.js";
+import questionRepository from "../repositories/question.repository.js";
 import riderRepository from "../repositories/rider.repository.js";
 import userRepository from "../repositories/user.repository.js";
 
@@ -266,10 +267,42 @@ async function partnerDelete(id) {
  * @param {import("express").Response} res - 레스폰스 객체
  * @param {import("express").NextFunction} next - next 객체
  * @return {import("express").Response}
- */
+*/
 async function partnerCreate(data) {
   await partnerRepository.create(null, data);
   return
+}
+
+/**
+ * admin이 notice테이블에 강제로 정보 삭제하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function qnaDelete(id) {  
+  await questionRepository.qnaDelete(null, id);
+  return
+}
+
+/**
+ * admin이 qna테이블에 강제로 정보 등록하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function qnaUpdate(data) {
+  await db.sequelize.transaction(async t => {
+    // partnerPK로 레코드 하나 가져오기
+    const result = await questionRepository.findByPk(t, data.id);
+    result.res = data.res
+    result.status = data.status
+
+    await adminRepository.save(t, result);
+    
+    return
+  })
 }
 
 export default {
@@ -286,4 +319,6 @@ export default {
   hotelDelete,
   partnerDelete,
   partnerCreate,
+  qnaDelete,
+  qnaUpdate,
 }

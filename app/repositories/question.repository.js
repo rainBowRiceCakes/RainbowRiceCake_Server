@@ -5,7 +5,7 @@
  */
 
 import db from '../models/index.js';
-const { Question } = db;
+const { Question, User } = db;
 
 /**
  * Question 작성
@@ -17,8 +17,34 @@ async function create(t = null, data) {
   return await Question.create(data);
 }
 
+async function qnaDelete(t = null, id) {
+  return await Question.destroy({where: {id: id}}, {transaction: t})
+}
+
+async function show(t = null) {
+  return await Question.findAll(
+    {
+      include: [
+        {
+          attributes: ['name'],
+          model: User,
+          as: 'question_user',
+        }
+      ],
+      transaction: t,
+    }
+  )
+}
+
+async function findByPk(t = null, id) {
+  return await Question.findByPk(id, {transaction: t})
+}
+
 export default {
   create,
+  qnaDelete,
+  show,
+  findByPk,
 };
 
 // Repository (DB 중심)	HTTP Method
