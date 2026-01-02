@@ -134,8 +134,8 @@ export const status = body('status')
 export const answer = body('answer')
   .optional({ nullable: true, checkFalsy: true })
   .trim()
-  .isLength({ min: 10, max: 10000 })
-  .withMessage('답변은 10~10000자로 입력해주세요.')
+  .isLength({ min: 5, max: 10000 })
+  .withMessage('답변은 5~10000자로 입력해주세요.')
   .bail()
   .custom(val => {
     if (!val) return true;

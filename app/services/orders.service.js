@@ -413,9 +413,13 @@ export const getOrdersList = async ({ userId, role, status, date, page, limit })
   const statusArray = status
     ? (Array.isArray(status) ? status : [status])
     : [];
-
-  // 역할별 필터링 (라이더/파트너 구분)
-  if (role === ROLE.DLV) {
+    
+  // ------------------------------------------ 2026.01.02 sara 추가(관리자, 일반 유저 추가)
+  // 역할별 필터링 (관리자/라이더/파트너/일반유저 구분)
+  if (role === ROLE.ADM) {
+    // 관리자: 모든 주문 조회 (where 필터 없음)
+  } else if (role === ROLE.DLV) {
+    // 라이더: '내가 수락한 주문' + '대기 중인 주문' 포함
     const rider = await riderRepository.findByUserId(null, userId);
 
     if (!rider) {
@@ -434,7 +438,11 @@ export const getOrdersList = async ({ userId, role, status, date, page, limit })
       where.riderId = rider.id;
     }
   } else if (role === ROLE.PTN) {
+    // 파트너: '본인 매장의 주문'만 조회
     where.partnerId = userId;
+  } else if (role === ROLE.COM) {
+    // 일반 유저: '본인이 주문한 내역'만 조회
+    where.email = userId;
   }
 
   // 2. 상태 필터 (DB 쿼리용)

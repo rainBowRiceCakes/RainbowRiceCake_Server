@@ -89,8 +89,8 @@ orderRouter.get('/',
 
 orderRouter.get('/:orderId',
   /* #swagger.tags = ['Orders']
-  #swagger.summary = '라이더와 파트너용 주문 상세 조회'
-  #swagger.description = '라이더와 파트너가 주문 상세를 조회합니다.' */
+  #swagger.summary = '로그인한 유저와 라이더와 파트너용 주문 상세 조회'
+  #swagger.description = '로그인한 유저와 라이더와 파트너가 주문 상세를 조회합니다.' */
   authMiddleware,
   orderValidator.show,
   validationHandler,
@@ -110,11 +110,4 @@ export default orderRouter;
 //   orderValidator.todayIndex,
 //   validationHandler,
 //   ordersController.todayIndex
-// );
-
-// orderRouter.get('/deliverystatus',
-//   /* #swagger.tags = ['Orders']
-//   #swagger.summary = '라이더와 파트너용 배송 현황 조회'
-//   #swagger.description = '라이더와 파트너가 배송 현황을 조회합니다.' */
-//   ordersController.getDeliveryStatus
 // );
