@@ -23,6 +23,8 @@ import profileRouter from './routes/profile.router.js';
 import swaggerUi from 'swagger-ui-express';
 import fs from 'fs';
 import settlementRouter from './routes/settlement.router.js';
+import { initInvoiceScheduler } from './app/schedulers/invoice.schedule.js';
+import invoiceRouter from './routes/invoice.router.js';
 
 const app = express();
 app.use(express.json()); // JSON 요청 파싱 처리
@@ -51,6 +53,7 @@ app.use('/api/orders', orderRouter);
 app.use('/api/files', fileRouter);
 app.use('/api/profiles', profileRouter);
 app.use('/api/settlements', settlementRouter);
+app.use('/api/invoices', invoiceRouter);
 
 // ---------------------
 // 사진 프론트에 보여주는 처리
@@ -78,7 +81,7 @@ app.use(errorHandler);
 // ---------------------
 // 해당 Port로 express 실행
 // ---------------------
-
+initInvoiceScheduler();
 const PORT = Number(process.env.APP_PORT) || 3000;
 
 app.listen(PORT, () => {
