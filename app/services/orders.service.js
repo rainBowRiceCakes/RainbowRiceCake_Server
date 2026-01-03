@@ -442,7 +442,7 @@ export const getOrdersList = async ({ userId, role, status, date, page, limit })
     where.partnerId = userId;
   } else if (role === ROLE.COM) {
     // 일반 유저: '본인이 주문한 내역'만 조회
-    where.email = userId;
+    where.email = user.email;
   }
 
   // 2. 상태 필터 (DB 쿼리용)
