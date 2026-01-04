@@ -23,7 +23,7 @@ export default {
     for (let i = 1; i <= reqCount; i++) {
       records.push({
         riderId: null, partnerId: i, hotelId: i,
-        order_code: 2026010454321+i,
+        orderCode: 2026010454321+i,
         email: 'email', name: '정XX',
         price: 22000, cntS: 1, cntM: 1, cntL: 1,
         status: 'req'
@@ -33,7 +33,7 @@ export default {
     for (let i = 6; i <= matchCount; i++) {
       records.push({
         riderId: i, partnerId: i, hotelId: i,
-        order_code: 2026010454321+i,
+        orderCode: 2026010454321+i,
         email: 'email', name: '정XX',
         price: 22000, cntS: 1, cntM: 1, cntL: 1,
         status: 'mat'
@@ -43,7 +43,7 @@ export default {
     for (let i = 11; i <= pickCount; i++) {
       records.push({
         riderId: i, partnerId: i, hotelId: i,
-        order_code: 2026010454321,
+        orderCode: 2026010454321+i,
         email: 'email', name: '정XX',
         price: 22000, cntS: 1, cntM: 1, cntL: 1,
         status: 'pick'
@@ -53,7 +53,7 @@ export default {
     for (let i = 16; i <= comCount; i++) {
       records.push({
         riderId: i, partnerId: i, hotelId: i,
-        order_code: 2026010454321+i,
+        orderCode: 2026010454321+i,
         email: 'email', name: '정XX',
         price: 22000, cntS: 1, cntM: 1, cntL: 1,
         status: 'com'
