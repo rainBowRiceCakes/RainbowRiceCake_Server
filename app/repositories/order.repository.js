@@ -285,13 +285,17 @@ async function findByIdOnly(t = null, dlvId) {
 /**
  * 주문 히스토리 조회
  */
-async function findOrderHistoryThreeMonth(t = null, { dateRange, limit, offset }) {
+async function findOrderHistoryThreeMonth(t = null, { dateRange, limit, offset, statusExclude }) {
   const where = {};
 
   if (dateRange) {
     where.createdAt = {
       [Op.between]: [dateRange.start, dateRange.end]
     };
+  }
+  
+  if (statusExclude) {
+    where.status = { [Op.ne]: statusExclude }; // statusExclude 조건 추가
   }
 
   return await Order.findAndCountAll({

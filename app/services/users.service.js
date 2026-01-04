@@ -7,9 +7,9 @@
 import db from "../models/index.js";
 import userRepository from "../repositories/user.repository.js";
 
-async function showIndex({ page, limit}) {
+async function showIndex({ page, limit, search }) {
     const offset = limit * (page - 1);
-    const result = await userRepository.showIndex(null, {limit, offset});
+    const result = await userRepository.showIndex(null, {limit, offset, search});
     return {
       users: result.rows,
       pagination: {

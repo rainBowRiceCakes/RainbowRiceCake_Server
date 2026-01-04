@@ -75,14 +75,14 @@ const address = body('address')
 const lat = body('lat')
   .optional({ checkFalsy: true })
   .trim()
-  .matches(/^(3[3-9])\.\d{1,6}$/)
+  .matches(/^(3[3-9])\.\d+$/)
   .withMessage('위도(lat)는 33~39 사이의 소수값이어야 합니다.')
 ;
 
 const lng = body('lng')
   .optional({ checkFalsy: true })
   .trim()
-  .matches(/^(12[4-9]|13[0-2])\.\d{1,6}$/)
+  .matches(/^(12[4-9]|13[0-2])\.\d+$/)
   .withMessage('경도(lng)는 124~132 사이의 소수값이어야 합니다.')
 ;
 

@@ -36,8 +36,9 @@ async function create(createData) {
  * @param {import("./posts.service.type.js").PostStoreData} data
  * @returns {Promise<import("../models/Post.js").Post>}
  */
-async function show() {
-  return await questionRepository.show(null)
+async function show({ page, limit, status, search }) {
+  const offset = (page - 1) * limit;
+  return await questionRepository.findAndCountAll(null, { limit, offset, status, search })
 }
 
 /**

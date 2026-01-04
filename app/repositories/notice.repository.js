@@ -14,9 +14,11 @@ const { Notice } = db;
  * @param {{limit: number, offset: number}} data 
  * @returns {Promise<Array<import("../models/Notice.js").Notice>>}
  */
-async function show(t = null) {
-  return await Notice.findAll(
+async function show(t = null, { limit, offset }) {
+  return await Notice.findAndCountAll(
     {
+      limit,
+      offset,
       transaction: t,
     })
 }

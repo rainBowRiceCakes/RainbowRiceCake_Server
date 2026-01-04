@@ -4,6 +4,7 @@
  * 251222 v1.0.0 wook init
  */
 
+import { Op } from 'sequelize';
 import db from '../models/index.js';
 const { Hotel } = db;
 
@@ -24,12 +25,29 @@ async function findByPk(t = null, id) {
 /**
  * 호텔 전체정보 조회
  * @param {import("sequelize").Transaction|null} t 
- * @param {{limit: number, offset: number}} data 
+ * @param {{limit: number, offset: number, status: string, search: string}} data 
  * @returns {Promise<Array<import("../models/Hotel.js").Hotel>>}
  */
-async function findAll(t = null) {
-  return await Hotel.findAll(
+async function findAll(t = null, { limit, offset, status, search }) {
+  const where = {};
+  if (status === 'true') {
+    where.status = true;
+  } else if (status === 'false') {
+    where.status = false;
+  }
+
+  if (search) {
+    where[Op.or] = [
+      { krName: { [Op.like]: `%${search}%` } },
+      { enName: { [Op.like]: `%${search}%` } },
+    ];
+  }
+
+  return await Hotel.findAndCountAll(
     {
+      where,
+      limit,
+      offset,
       transaction: t,
     })
 }

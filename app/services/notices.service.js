@@ -8,8 +8,9 @@ import myError from '../errors/customs/my.error.js';
 import { BAD_REQUEST_ERROR } from "../../configs/responseCode.config.js";
 import noticeRepository from "../repositories/notice.repository.js"
 
-async function show() {
-  return await noticeRepository.show(null)
+async function show({ page, limit }) {
+  const offset = (page - 1) * limit;
+  return await noticeRepository.show(null, { limit, offset })
 }
 
 /**

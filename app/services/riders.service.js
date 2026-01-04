@@ -22,8 +22,9 @@ async function riderFindByPk(id) {
 /**
  * Rider테이블의 정보 + 유저이름 모두 가져오는 처리
  */
-async function riderShow() {
-  return await riderRepository.riderShow(null);
+async function riderShow({ page, limit, status, search }) {
+  const offset = (page - 1) * limit;
+  return await riderRepository.riderShow(null, { limit, offset, status, search });
 }
 
 /**

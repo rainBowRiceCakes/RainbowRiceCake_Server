@@ -52,10 +52,24 @@ async function store(req, res, next) {
  */
 async function qnaShow(req, res, next) {
   try {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 9;
+    const status = req.query.status; // status는 'false' 문자열로 넘어올 수 있음
+    const search = req.query.search;
 
-    const result = await questionsService.show();
+    const result = await questionsService.show({ page, limit, status, search });
 
-    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
+    const totalPages = Math.ceil(result.count / limit);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, {
+      qnas: result.rows,
+      pagination: {
+        page,
+        limit,
+        total: result.count,
+        totalPages,
+      }
+    }));
   } catch (error) {
     return next(error)
   }

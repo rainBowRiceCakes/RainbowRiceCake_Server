@@ -37,7 +37,23 @@ async function riderFindByPk(req, res, next) {
  */
 async function riderShow(req, res, next) {
   try {
-    const result = await ridersService.riderShow();
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 9;
+    const { status, search } = req.query;
+
+    const { count, rows } = await ridersService.riderShow({ page, limit, status, search });
+
+    const totalPages = Math.ceil(count / limit);
+
+    const result = {
+      riders: rows,
+      pagination: {
+        page,
+        limit,
+        total: count,
+        totalPages,
+      }
+    }
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
   } catch (error) {

@@ -47,9 +47,10 @@ async function createPartner(createData) {
  * 어드민이 모든 파트너 리스트 조회
  * @param {object} queryParams - 필터 등의 쿼리 파라미터
  */
-async function listPartners() {
+async function listPartners({ page, limit, status, search }) {
+  const offset = (page - 1) * limit;
   // 비즈니스 로직: 쿼리 파라미터 처리
-  return await partnerRepository.findAll(null);
+  return await partnerRepository.findAndCountAll(null, { limit, offset, status, search });
 }
 
 /**

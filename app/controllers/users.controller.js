@@ -19,7 +19,8 @@ async function showIndex(req, res, next) {
   try {
     const data = {
       page: parseInt(req.query.page) || 1,
-      limit: parseInt(req.query.limit) || 9
+      limit: parseInt(req.query.limit) || 9,
+      search: req.query.search
     }
 
     const result = await usersService.showIndex(data);

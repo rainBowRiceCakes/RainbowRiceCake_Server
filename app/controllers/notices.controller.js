@@ -17,8 +17,22 @@ import { createBaseResponse } from "../utils/createBaseResponse.util.js";
  */
 async function noticeShow(req, res, next) {
   try {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 5;
 
-    const result = await noticesService.show();
+    const { count, rows } = await noticesService.show({ page, limit });
+
+    const totalPages = Math.ceil(count / limit);
+
+    const result = {
+      notices: rows,
+      pagination: {
+        page,
+        limit,
+        total: count,
+        totalPages,
+      }
+    }
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
   } catch (error) {

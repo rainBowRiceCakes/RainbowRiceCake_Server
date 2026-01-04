@@ -79,7 +79,8 @@ async function orderIndex(req, res, next) {
     const data = {
       from: req.query.from,
       page: parseInt(req.query.page) || 1,
-      limit: parseInt(req.query.limit) || 9
+      limit: parseInt(req.query.limit) || 9,
+      statusExclude: req.query.statusExclude // statusExclude 추가
     }
     
     const result = await ordersService.getOrdersListAdmin(data)

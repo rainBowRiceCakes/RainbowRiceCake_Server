@@ -23,7 +23,6 @@ const adminRouter = express.Router();
 // *미완성*
 // 상세 들어가서 수정(*id값도 함께 받아와야 함)
 // -------------어드민 userpage--------------------------
-adminRouter.get('/userindex', authMiddleware, adminsController.orderIndex)
 adminRouter.delete('/user/:id', authMiddleware, adminsController.userDelete)
 
 

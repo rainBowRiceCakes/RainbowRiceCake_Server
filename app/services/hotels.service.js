@@ -10,8 +10,9 @@ async function findByPk(id) {
   return await hotelRepository.findByPk(null, id)
 }
 
-async function show() {
-  return await hotelRepository.findAll(null)
+async function show({ page, limit, status, search }) {
+  const offset = (page - 1) * limit;
+  return await hotelRepository.findAll(null, { limit, offset, status, search })
 }
 
 async function create(data) {

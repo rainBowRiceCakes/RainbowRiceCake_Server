@@ -360,7 +360,7 @@ async function getDeliveryStatus(dlvId) {
  * Admin에서 사용 할 order history 주문 히스토리 LIST 3개월치 조회
  * @param {Object} filter - 미들웨어에서 설정한 필터
 */
-async function getOrdersListAdmin({ from, page, limit }) {
+async function getOrdersListAdmin({ from, page, limit, statusExclude }) {
   return await db.sequelize.transaction(async t => {
     const offset = limit * (page - 1);
 
@@ -379,7 +379,8 @@ async function getOrdersListAdmin({ from, page, limit }) {
     const result = await orderRepository.findOrderHistoryThreeMonth(t, {
       dateRange,
       limit,
-      offset
+      offset,
+      statusExclude // statusExclude 전달
     });
 
     // 응답 데이터 구성

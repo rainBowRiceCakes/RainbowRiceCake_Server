@@ -5,6 +5,7 @@
  * 251226 v1.1.0 BSONG update 유저-정보 등록 / 파트너-myinfo 가져오고 수정하기 / 어드민-개개인의 파트너들의 리스트와 정보를 가져오기 기능 추가.
  */
 
+import { Op } from 'sequelize';
 import db from '../models/index.js';
 const { Partner, User } = db;
 
@@ -64,12 +65,31 @@ async function update(t = null, partnerId, updateData) {
  * @param {object} options - 조회 옵션 (limit, offset, where 등)
  * @returns {Promise<{rows: Array<import("../models/Partner.js").Partner>, count: number}>}
  */
-async function findAll(t = null) {
-  return await Partner.findAll(
+async function findAndCountAll(t = null, { limit, offset, status, search }) {
+  const where = {};
+  if (status) {
+    where.status = status;
+  }
+
+  if (search) {
+    where[Op.or] = [
+      { krName: { [Op.like]: `%${search}%` } },
+      { enName: { [Op.like]: `%${search}%` } },
+    ];
+  }
+  
+  return await Partner.findAndCountAll(
     {
+      where,
+      limit,
+      offset,
       transaction: t
     }
   );
+}
+
+async function findAll(t = null) {
+  return await Partner.findAll({ transaction: t })
 }
 
 /**
@@ -103,6 +123,7 @@ export default {
   create,
   findByUserId,
   update,
+  findAndCountAll,
   findAll,
   findByPk,
   partnerDelete,

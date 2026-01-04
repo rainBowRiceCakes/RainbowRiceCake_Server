@@ -44,7 +44,23 @@ async function store(req, res, next) {
  */
 async function index(req, res, next) {
   try {
-    const result = await partnersService.listPartners();
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 9;
+    const { status, search } = req.query;
+
+    const { count, rows } = await partnersService.listPartners({ page, limit, status, search });
+
+    const totalPages = Math.ceil(count / limit);
+
+    const result = {
+      partners: rows,
+      pagination: {
+        page,
+        limit,
+        total: count,
+        totalPages,
+      }
+    }
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {

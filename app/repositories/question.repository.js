@@ -4,6 +4,7 @@
  * 251223 v1.0.0 BSONG init
  */
 
+import { Op } from 'sequelize';
 import db from '../models/index.js';
 const { Question, User } = db;
 
@@ -21,29 +22,65 @@ async function qnaDelete(t = null, id) {
   return await Question.destroy({where: {id: id}}, {transaction: t})
 }
 
-async function show(t = null) {
-  return await Question.findAll(
+/**
+ * QnA 전체 목록 조회 (페이징, 필터, 검색 지원)
+ * @param {import("sequelize").Transaction|null} t
+ * @param {{limit: number, offset: number, status: string, search: string}} options
+ * @returns {Promise<{rows: Array<import("../models/Question.js").Question>, count: number}>}
+ */
+async function findAndCountAll(t = null, { limit, offset, status, search }) {
+  const where = {};
+  if (status !== undefined) {
+    // status는 문자열 'true' 또는 'false'로 넘어오므로 boolean으로 변환
+    where.status = (status === 'true'); 
+  }
+
+  const include = [
     {
-      include: [
-        {
-          attributes: ['name'],
-          model: User,
-          as: 'question_user',
-        }
-      ],
+      attributes: ['name'],
+      model: User,
+      as: 'question_user',
+      required: false, // LEFT JOIN (검색 시에도 회원이 없을 수 있으므로)
+    }
+  ];
+
+  if (search) {
+    where[Op.or] = [
+      { title: { [Op.like]: `%${search}%` } },
+      // User 이름으로 검색 (include 안의 where)
+      { '$question_user.name$': { [Op.like]: `%${search}%` } }
+    ];
+  }
+
+  return await Question.findAndCountAll(
+    {
+      where,
+      include,
+      limit,
+      offset,
+      order: [['createdAt', 'DESC']], // 최신순 정렬
       transaction: t,
     }
   )
 }
 
 async function findByPk(t = null, id) {
-  return await Question.findByPk(id, {transaction: t})
+  return await Question.findByPk(id, {
+    include: [
+      {
+        attributes: ['name'],
+        model: User,
+        as: 'question_user',
+      }
+    ],
+    transaction: t
+  })
 }
 
 export default {
   create,
   qnaDelete,
-  show,
+  findAndCountAll,
   findByPk,
 };
 

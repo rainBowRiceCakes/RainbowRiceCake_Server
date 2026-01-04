@@ -4,6 +4,7 @@
  * 251222 v1.0.0 jun 초기 생성
  */
 
+import { Op } from 'sequelize';
 import db from '../models/index.js';
 
 const { User } = db;
@@ -131,11 +132,19 @@ async function updateRole(t = null, id, role) {
   * @param {import("sequelize").Transaction} t 
   * @returns 
   */
-async function showIndex(t = null, limit, offset) {
+async function showIndex(t = null, { limit, offset, search }) {
+  const where = {};
+  if (search) {
+    where.name = { [Op.like]: `%${search}%` };
+  }
+
   return await User.findAndCountAll(
-    limit,
-    offset,
-    {transaction:  t}
+    {
+      where,
+      limit,
+      offset,
+      transaction: t
+    }
   )}
 
  /**

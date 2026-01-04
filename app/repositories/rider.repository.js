@@ -4,6 +4,7 @@
  * 251223 v1.0.0 wook init
  */
 
+import { Op } from 'sequelize';
 import db from '../models/index.js';
 const { Rider, User } = db;
 
@@ -72,20 +73,35 @@ async function findByPk(t = null, id) {
 /**
  * 기사 전체정보 조회
  * @param {import("sequelize").Transaction|null} t
- * @param {{limit: number, offset: number}} data
+ * @param {{limit: number, offset: number, status: string, search: string}} data
  * @returns {Promise<Array<import("../models/Rider.js").Rider>>}
  */
-async function riderShow(t = null) {
-  return await Rider.findAll(
+async function riderShow(t = null, { limit, offset, status, search }) {
+  const where = {};
+  if (status) {
+    where.status = status;
+  }
 
+  const include = [
     {
-      include: [
-        {
-          attributes: ['name'],
-          model: User,
-          as: 'rider_user',
-        }
-      ],
+      attributes: ['name'],
+      model: User,
+      as: 'rider_user',
+    }
+  ];
+
+  if (search) {
+    include[0].where = {
+      name: { [Op.like]: `%${search}%` }
+    };
+  }
+
+  return await Rider.findAndCountAll(
+    {
+      where,
+      include,
+      limit,
+      offset,
       transaction: t,
     })
 }
