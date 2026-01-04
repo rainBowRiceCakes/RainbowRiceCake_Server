@@ -25,6 +25,7 @@ import fs from 'fs';
 import settlementRouter from './routes/settlement.router.js';
 import { initInvoiceScheduler } from './app/schedulers/invoice.schedule.js';
 import invoiceRouter from './routes/invoice.router.js';
+import { initSettlementScheduler } from './app/schedulers/settlementScheduler.js';
 
 const app = express();
 app.use(express.json()); // JSON 요청 파싱 처리
@@ -82,6 +83,7 @@ app.use(errorHandler);
 // 해당 Port로 express 실행
 // ---------------------
 initInvoiceScheduler();
+initSettlementScheduler();
 const PORT = Number(process.env.APP_PORT) || 3000;
 
 app.listen(PORT, () => {

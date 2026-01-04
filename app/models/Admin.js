@@ -115,7 +115,6 @@ const Admin = {
     return define;
   },
   associate: (db) => {
-    db.Admin.hasMany(db.Settlement, { targetKey: 'id', foreignKey: 'adminId', as: 'admin_settle'}),
     db.Admin.hasMany(db.Notice, { targetKey: 'id', foreignKey: 'adminId', as: 'admin_notice'});
   },
 }

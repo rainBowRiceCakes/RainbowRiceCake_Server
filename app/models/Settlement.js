@@ -20,12 +20,6 @@ const attributes = {
     autoIncrement: true,
     comment: '정산 PK',
   },
-  adminId: {
-    field: 'admin_id',
-    type: DataTypes.BIGINT.UNSIGNED,
-    allowNull: false,
-    comment: '관리자 PK'
-  },
   riderId: {
     field: 'rider_id',
     type: DataTypes.BIGINT.UNSIGNED,
@@ -110,8 +104,7 @@ const Settlement = {
   },
   associate: (db) => {
     db.Settlement.belongsTo(db.Order, { targetKey: 'id', foreignKey: 'stmId', as: 'settlement_order'}),
-    db.Settlement.belongsTo(db.Rider, { targetKey: 'id', foreignKey: 'riderId', as: 'settlement_rider'}),
-    db.Settlement.belongsTo(db.Admin, { targetKey: 'id', foreignKey: 'adminId', as: 'settlement_admin'});
+    db.Settlement.belongsTo(db.Rider, { targetKey: 'id', foreignKey: 'riderId', as: 'settlement_rider'});
   },
 }
 

@@ -19,12 +19,6 @@ const attributes = {
     autoIncrement: true,
     comment: '정산 PK',
   },
-  adminId: {
-    field: 'admin_id',
-    type: DataTypes.BIGINT.UNSIGNED,
-    allowNull: false,
-    comment: '관리자 PK'
-  },
   riderId: {
     field: 'rider_id',
     type: DataTypes.BIGINT.UNSIGNED,

@@ -77,7 +77,7 @@ const attributes = {
     field: 'status',
     type: DataTypes.STRING(10),
     allowNull: false,
-    comment: '배송상태(req, match, pick, com)',
+    comment: '배송상태(req, mat, pick, com)',
     defaultValue: 'req',
   },
   orderCode: {
