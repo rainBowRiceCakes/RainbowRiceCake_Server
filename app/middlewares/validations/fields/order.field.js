@@ -149,6 +149,11 @@ export const cntL = body('cntL')
   .withMessage('대형 짐 개수는 0~999 사이여야 합니다.')
   .toInt();
 
+export const orderCode = body('orderCode')
+  .trim()
+  .notEmpty()
+  .withMessage('주문코드는 필수입니다.')
+
 export default {
   // Query
   page,

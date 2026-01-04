@@ -81,6 +81,13 @@ const attributes = {
     comment: '배송상태(req, match, pick, com)',
     defaultValue: 'req',
   },
+  orderCode: {
+    field: 'order_code',
+    type: DataTypes.STRING(30),
+    allowNull: false,
+    unique: true,
+    comment: '주문코드(YYYYMMDD-난수)',
+  },
   createdAt: {
       field: 'created_at',
       type: DataTypes.DATE,

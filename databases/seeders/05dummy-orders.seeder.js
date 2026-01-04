@@ -14,88 +14,51 @@ export default {
 
   async up(queryInterface, Sequelize) {
     //레코드 정보
-    const records = [
-      // ===== req =====
-      {
-        riderId: null, partnerId: 1, hotelId: 1,
-        email: 'email', name: '정XX',
-        price: 5000, cntS: 1,
-        status: 'req'
-      },
-      {
-        riderId: null, partnerId: 2, hotelId: 2,
-        email: 'email', name: '정XX',
-        price: 8000, cntM: 1,
-        status: 'req'
-      },
-      {
-        riderId: null, partnerId: 2, hotelId: 1,
-        email: 'email', name: '정XX',
-        price: 12000, cntL: 1,
-        status: 'req'
-      },
+    const records = []
 
-      // ===== mat =====
-      {
-        riderId: 1, partnerId: 1, hotelId: 2,
-        driverId: 1,
+    const reqCount = 5
+    const matchCount = 10
+    const pickCount = 15
+    const comCount = 20
+    for (let i = 1; i <= reqCount; i++) {
+      records.push({
+        riderId: null, partnerId: i, hotelId: i,
+        order_code: 2026010454321+i,
         email: 'email', name: '정XX',
-        price: 9000, cntS: 1,
-        status: 'mat'
-      },
-      {
-        riderId: 1, partnerId: 2, hotelId: 1,
-        email: 'email', name: '정XX',
-        price: 14000, cntM: 2,
-        status: 'mat'
-      },
-      {
-        riderId: 1, partnerId: 2, hotelId: 2,
-        driverId: 1,
-        email: 'email', name: '정XX',
-        price: 16000, cntS: 1, cntM: 1,
-        status: 'mat'
-      },
+        price: 22000, cntS: 1, cntM: 1, cntL: 1,
+        status: 'req'
+      });
+    }
 
-      // ===== pick =====
-      {
-        riderId: 1, partnerId: 1, hotelId: 1,
-        driverId: 2,
+    for (let i = 6; i <= matchCount; i++) {
+      records.push({
+        riderId: i, partnerId: i, hotelId: i,
+        order_code: 2026010454321+i,
         email: 'email', name: '정XX',
-        price: 18000, cntL: 2,
+        price: 22000, cntS: 1, cntM: 1, cntL: 1,
+        status: 'mat'
+      });
+    }
+
+    for (let i = 11; i <= pickCount; i++) {
+      records.push({
+        riderId: i, partnerId: i, hotelId: i,
+        order_code: 2026010454321,
+        email: 'email', name: '정XX',
+        price: 22000, cntS: 1, cntM: 1, cntL: 1,
         status: 'pick'
-      },
-      {
-        riderId: 2, partnerId: 2, hotelId: 2,
-        driverId: 1,
-        email: 'email', name: '정XX',
-        price: 13000, cntS: 1, cntM: 1,
-        status: 'pick'
-      },
+      });
+    }
 
-      // ===== com =====
-      {
-        riderId: 2, partnerId: 2, hotelId: 2,
-        driverId: 2,
-        email: 'email', name: '정XX',
-        price: 20000, cntL: 2,
-        status: 'com'
-      },
-      {
-        riderId: 1, partnerId: 1, hotelId: 1,
-        driverId: 1,
-        email: 'email', name: '정XX',
-        price: 15000, cntM: 2,
-        status: 'com'
-      },
-      {
-        riderId: 2, partnerId: 1, hotelId: 1,
-        driverId: 1,
+    for (let i = 16; i <= comCount; i++) {
+      records.push({
+        riderId: i, partnerId: i, hotelId: i,
+        order_code: 2026010454321+i,
         email: 'email', name: '정XX',
         price: 22000, cntS: 1, cntM: 1, cntL: 1,
         status: 'com'
-      }
-    ];
+      });
+    }
 
     // 데이터 생성 : queryInterface.bulkInsert(tableName, records, options)
     // await queryInterface.bulkInsert(tableName, records, {});

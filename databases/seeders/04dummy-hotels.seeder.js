@@ -14,28 +14,24 @@ export default {
 
   async up (queryInterface, Sequelize) {
     //레코드 정보
-    const records = [
-      {
+    const partnerCount = 30;
+
+    const records = [];
+
+    for (let i = 1; i <= partnerCount; i++) {
+      records.push({
         krName: 'OO호텔',
         enName: 'OOHotel',
-        manager: '김 지배인',
-        phone: '000-1111-1111',
+        manager: '지배인',
+        phone: '000-3333-5555',
         status: true,
         address: '여긴 어딜까요',
-        lat: '56.7890',
-        lng: '32.1098'
-      },
-      {
-        krName: 'OO호텔',
-        enName: 'OOHotel',
-        manager: '양 지배인',
-        phone: '000-3333-5555',
-        status: false,
-        address: '여긴 어딜까요',
-        lat: '78.9012',
-        lng: '54.3210'
-      },
-    ];
+        lat: '34.9012',
+        lng: '124.3210'
+      });
+    }
+     
+
 
     // 데이터 생성 : queryInterface.bulkInsert(tableName, records, options)
     // await queryInterface.bulkInsert(tableName, records, {});

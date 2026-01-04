@@ -14,10 +14,14 @@ export default {
 
   async up (queryInterface, Sequelize) {
     //레코드 정보
-    const records = [
-      {
-        userId: 4,
-        businessNum: 'img_path',
+    const partnerCount = 90;
+
+    const records = [];
+
+    for (let i = 71; i <= partnerCount; i++) {
+      records.push({
+        userId: `${i}`,
+        businessNum: `businessNum${i}`,
         krName: 'OO은행',
         enName: 'OOBank',
         manager: '김XX',
@@ -25,23 +29,10 @@ export default {
         status: 'RES',
         logoImg: '로고 이미지경로',
         address: '여긴 어딜까요',
-        lat: '12.3456',
-        lng: '98.7654'
-      },
-      {
-        userId: 5,
-        businessNum: 'img_path',
-        krName: 'OO은행',
-        enName: 'OOBank',
-        manager: '박XX',
-        phone: '000-2222-3333',
-        status: 'REQ',
-        logoImg: '로고 이미지경로',
-        address: '여긴 어딜까요',
-        lat: '34.5678',
-        lng: '76.5432'
-      },
-    ];
+        lat: '33.3456',
+        lng: '124.7654'
+      });
+    }
 
     // 데이터 생성 : queryInterface.bulkInsert(tableName, records, options)
     // await queryInterface.bulkInsert(tableName, records, {});
