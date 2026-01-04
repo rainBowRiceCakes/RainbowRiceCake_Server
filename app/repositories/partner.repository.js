@@ -112,11 +112,11 @@ async function findByPk(t = null, partnerId) {
 }
 
 async function partnerDelete(t = null, id) {
-  return await Partner.destroy({where: {id: id}}, {transaction: t})
+  return await Partner.destroy({ where: { id: id } }, { transaction: t })
 }
 
 async function partnerDeleteUser(t = null, id) {
-  return await Partner.destroy({where: {userId: id}}, {transaction: t})
+  return await Partner.destroy({ where: { userId: id } }, { transaction: t })
 }
 
 export default {

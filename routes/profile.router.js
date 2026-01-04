@@ -27,7 +27,7 @@ profileRouter.put('/',
     #swagger.summary = '내 프로필 수정'
     #swagger.description = '파트너/기사가 자신의 프로필 정보를 수정합니다.' */
   authMiddleware,
-  riderUpdateValidator,
+  // riderUpdateValidator, // 파트너도 수정할 수 있게 하기. 
   validationHandler,
   profilesController.updateMyProfile
 );

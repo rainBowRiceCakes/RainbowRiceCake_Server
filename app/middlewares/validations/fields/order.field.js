@@ -69,10 +69,30 @@ export const email = body('email')
   .withMessage('올바른 이메일 형식이 아닙니다.')
   .normalizeEmail();
 
+export const firstName = body('firstName')
+  .trim()
+  .notEmpty()
+  .withMessage('First Name is required')
+  .bail()
+  .isLength({ min: 1, max: 25 })
+  .withMessage('First name must be under 25 characters')
+  .matches(/^[가-힣A-Za-z\s]+$/)
+  .withMessage('First name may only include Korean or English characters.');
+
+export const lastName = body('lastName')
+  .trim()
+  .notEmpty()
+  .withMessage('Last Name is required')
+  .bail()
+  .isLength({ min: 1, max: 25 })
+  .withMessage('Last name must be under 25 characters')
+  .matches(/^[가-힣A-Za-z\s]+$/)
+  .withMessage('Last name may only include Korean or English characters.');
+
 export const name = body('name')
   .trim()
   .notEmpty()
-  .withMessage('이름은 필수입니다.')
+  .withMessage('이름은 필수입니다. Name is required')
   .bail()
   .matches(/^[가-힣A-Za-z\s]{2,50}$/)
   .withMessage('이름은 2~50자의 한글,영문자만 허용됩니다.');
@@ -103,6 +123,10 @@ export const price = body('price')
   .isInt({ min: 0 })
   .withMessage('배송 요금은 0 이상의 숫자여야 합니다.')
   .toInt();
+
+export const plans = body('plans')
+  .isArray({ min: 1 })
+  .withMessage('최소 하나 이상의 플랜을 선택하세요.');
 
 export const cntS = body('cntS')  // 👈 camelCase로 통일
   .optional()
@@ -139,10 +163,13 @@ export default {
 
   // Body
   email,
+  firstName,
+  lastName,
   name,
   hotelId,
   partnerId,
   price,
+  plans,
   cntS,
   cntM,
   cntL,

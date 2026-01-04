@@ -10,7 +10,6 @@ import OrdersService from '../services/orders.service.js';
 import { createBaseResponse } from '../utils/createBaseResponse.util.js';
 import myError from '../errors/customs/my.error.js';
 import { BAD_REQUEST_ERROR } from '../../configs/responseCode.config.js';
-import ROLE from '../middlewares/auth/configs/role.enum.js';
 
 // --- 1. ORDER WORKFLOW FOR PARNERS (파트너와 관련된 당일 내 이뤄지는 주문) ---
 /**
@@ -22,12 +21,11 @@ import ROLE from '../middlewares/auth/configs/role.enum.js';
  */
 async function store(req, res, next) {
   try {
-    const createData = {
-      ...req.body,
-      partnerId: req.user.id
-    }
+    const userId = req.user.id; // "현재 로그인한 유저의 ID"임을 명시
+    const orderData = req.body;
 
-    const result = await OrdersService.createNewOrder(createData);
+    // 서비스에게 "이 유저가 주문하려는데, 이 유저에 해당하는 파트너 찾아서 주문해줘"라고 요청
+    const result = await OrdersService.createNewOrder({ userId, orderData });
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {
@@ -160,6 +158,7 @@ async function index(req, res, next) {
     const result = await OrdersService.getOrdersList({
       userId,
       role,
+      email: req.user.email,
       date,
       status,
       page,
@@ -175,6 +174,26 @@ async function index(req, res, next) {
   }
 }
 
+export const getHourlyStats = async (req, res) => {
+  try {
+    // req.user가 있는지 먼저 체크
+    if (!req || !req.user) {
+      return res.status(401).json({
+        code: "E01",
+        msg: "인증 정보가 없습니다. 다시 로그인해주세요."
+      });
+    }
+
+    const { userId, role } = req.user;
+    const stats = await ordersService.getHourlyOrderStats({ userId, role });
+
+    res.status(200).json(stats);
+  } catch (error) {
+    console.error('[getHourlyStats Error]:', error);
+    res.status(500).json({ code: "E99", msg: "서버 오류가 발생했습니다." });
+  }
+};
+
 export default {
   store,
   matchOrder,
@@ -182,6 +201,7 @@ export default {
   uploadCompletePhoto,
   show,
   index,
+  getHourlyStats
 };
 
 // RESTful API Controller Method Naming Conventions

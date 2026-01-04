@@ -6,9 +6,11 @@ import order from '../../fields/order.field.js';
  */
 const store = [
   order.email,
-  order.name,
+  order.firstName,
+  order.lastName,
   order.hotelId,
   order.price,
+  order.plans,
   order.cntS,
   order.cntM,
   order.cntL,

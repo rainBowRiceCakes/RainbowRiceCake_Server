@@ -20,6 +20,7 @@ import {
 import dayjs from 'dayjs';
 import { Op } from 'sequelize';
 import ROLE from '../middlewares/auth/configs/role.enum.js';
+import partnerRepository from '../repositories/partner.repository.js';
 
 // --- 1. ORDER WORKFLOW FOR PARNERS (파트너와 관련된 당일 내 이뤄지는 주문) ---
 /**
@@ -27,46 +28,62 @@ import ROLE from '../middlewares/auth/configs/role.enum.js';
  * @param {*} data
  * @returns
 */
-async function createNewOrder(createData) {
+async function createNewOrder({ userId, orderData }) {
   return await db.sequelize.transaction(async t => {
-    // 1. 파트너 존재 및 승인 상태 확인 (없어짐)
+    const { firstName, lastName, email, hotelId, plans, price } = orderData;
 
-    // 2. 호텔 존재 확인
-    const hotel = await hotelRepository.findByPk(t, createData.hotelId);
-    if (!hotel) {
-      throw myError('호텔 정보를 찾을 수 없습니다.', NOT_FOUND_ERROR);
+    // 1. [핵심 수정] User ID로 실제 Partner PK 조회
+    // 컨트롤러에서 넘긴 partnerId가 User 테이블의 ID이므로, 
+    // orders 테이블의 FK인 partners.id를 찾아야 합니다.
+    const partner = await partnerRepository.findByUserId(t, userId);
+    if (!partner) {
+      throw myError('파트너 정보를 찾을 수 없습니다.', NOT_FOUND_ERROR);
     }
 
+    const fullName = `${firstName} ${lastName}`.trim();
+
+    // 2. plans 배열 가공 (CamelCase 스키마 기준)
+    const cntS = plans.find(p => p.id === 'basic')?.quantity || 0;
+    const cntM = plans.find(p => p.id === 'standard')?.quantity || 0;
+    const cntL = plans.find(p => p.id === 'premium')?.quantity || 0;
+
     // 3. 주문 데이터 검증
-    const totalCount = (createData.cntS || 0) + (createData.cntM || 0) + (createData.cntL || 0);
+    const totalCount = cntS + cntM + cntL;
     if (totalCount === 0) {
       throw myError('최소 1개 이상의 상품을 주문해야 합니다.', BAD_REQUEST_ERROR);
     }
 
-    if (createData.price <= 0) {
-      throw myError('주문 금액은 0보다 커야 합니다.', BAD_REQUEST_ERROR);
+    const calculatedPrice = plans.reduce((sum, p) => sum + (p.price * p.quantity), 0);
+    if (price !== calculatedPrice) {
+      throw myError('결제 금액 정보가 일치하지 않습니다.', BAD_REQUEST_ERROR);
     }
 
-    // 4. 주문 생성
-    const newOrder = {
-      partnerId: createData.partnerId,
-      email: createData.email,
-      name: createData.name,
-      hotelId: createData.hotelId,
-      price: createData.price,
-      cntS: createData.cntS || 0,
-      cntM: createData.cntM || 0,
-      cntL: createData.cntL || 0,
+    // 4. 주문 객체 생성 (실제 Partner PK인 partner.id 사용)
+    const newOrderData = {
+      partnerId: partner.id, // userId(12) 대신 조회된 partner.id를 주입
+      email,
+      name: fullName,
+      hotelId,
+      price: calculatedPrice,
+      cntS,
+      cntM,
+      cntL,
       status: 'req',
     };
 
-    const order = await orderRepository.create(t, newOrder);
+    const order = await orderRepository.create(t, newOrderData);
 
-    // 5. 조인된 데이터와 함께 반환
-    return await orderRepository.findByPkWithDetails(t, order.id);
+    // 5. 생성된 데이터를 상세 정보와 함께 반환
+    const result = await orderRepository.findByPkWithDetails(t, order.id);
+
+    if (!result) {
+      // 간혹 생성 직후 조회가 안되는 경우를 대비해 생성된 데이터라도 반환
+      return order;
+    }
+
+    return result;
   });
 }
-
 // --- 2. ORDER WORKFLOW FOR RIDERS (라이더와 관련된 당일 내 이뤄지는 주문) ---
 /**
  * Match Rider to Order (주문 매칭 - rider 가 수락)
@@ -414,7 +431,7 @@ export const getOrdersList = async ({ userId, role, status, date, page, limit })
   const statusArray = status
     ? (Array.isArray(status) ? status : [status])
     : [];
-    
+
   // ------------------------------------------ 2026.01.02 sara 추가(관리자, 일반 유저 추가)
   // 역할별 필터링 (관리자/라이더/파트너/일반유저 구분)
   if (role === ROLE.ADM) {
@@ -439,8 +456,18 @@ export const getOrdersList = async ({ userId, role, status, date, page, limit })
       where.riderId = rider.id;
     }
   } else if (role === ROLE.PTN) {
-    // 파트너: '본인 매장의 주문'만 조회
-    where.partnerId = userId;
+    // 💡 파트너(상점): 본인 가게에 들어온 주문만 조회
+    // 1. 유저 ID로 파트너/상점 정보를 먼저 가져옵니다.
+    const partner = await partnerRepository.findByUserId(null, userId);
+
+    if (!partner) {
+      console.warn(`[OrdersService] 유저 ID(${userId})에 해당하는 파트너 정보가 없습니다.`);
+      return { rows: [], count: 0 };
+    }
+
+    // 2. 해당 파트너의 ID(또는 shopId)로 주문을 필터링합니다.
+    where.partnerId = partner.id;
+    // 만약 DB 구조가 shopId 기준이라면 where.shopId = partner.shopId; 로 변경하세요.
   } else if (role === ROLE.COM) {
     // 일반 유저: '본인이 주문한 내역'만 조회
     where.email = user.email;
@@ -464,7 +491,7 @@ export const getOrdersList = async ({ userId, role, status, date, page, limit })
 
   // 페이지네이션 설정
   const pageNum = parseInt(page) || 1;
-  const limitNum = parseInt(limit) || 5;  // 기본값 5개
+  const limitNum = parseInt(limit) || 9;
   const offset = (pageNum - 1) * limitNum;
 
   // Repository 호출
@@ -492,6 +519,48 @@ export const getOrdersList = async ({ userId, role, status, date, page, limit })
 
 };
 
+// ------------------------------------------ 2026.01.04 추가
+export const getHourlyOrderStats = async ({ userId, role }) => {
+  const where = {};
+
+  if (role === ROLE.PTN) {
+    const partner = await partnerRepository.findByUserId(null, userId);
+    if (partner) where.partnerId = partner.id;
+  } else if (role === ROLE.COM) {
+    where.userId = userId;
+  }
+
+  // 2. '오늘' 데이터로 고정
+  where.createdAt = {
+    [Op.between]: [
+      dayjs().startOf('day').toDate(),
+      dayjs().endOf('day').toDate()
+    ]
+  };
+
+  // 3. 전체 데이터를 가져와서 시간대별로 가공
+  // (DB에서 직접 Group By를 쓰는 게 좋지만, 기존 repository 활용을 위해 가공 로직 사용)
+  const result = await orderRepository.findOrdersList(null, {
+    where,
+    attributes: ['createdAt'] // 시간만 있으면 됨
+  });
+
+  // 0~23시까지 기본 객체 생성 (데이터 없는 시간도 0으로 표시하기 위함)
+  const hourlyCounts = Array.from({ length: 24 }, (_, i) => ({
+    hour: `${i}시`,
+    count: 0
+  }));
+
+  // 데이터 매핑
+  result.rows.forEach(order => {
+    const hour = dayjs(order.createdAt).hour();
+    hourlyCounts[hour].count += 1;
+  });
+
+  return hourlyCounts;
+};
+
+
 export default {
   createNewOrder,
   matchOrder,
@@ -502,4 +571,5 @@ export default {
   getDeliveryStatus,
   getOrdersList,
   getOrderDetail,
+  getHourlyOrderStats
 };

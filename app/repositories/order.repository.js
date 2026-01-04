@@ -380,7 +380,7 @@ async function findOrdersList(t = null, { where, limit, offset }) {
       }
     ],
     attributes: [
-      'id', 'status', 'price', 'cntS', 'cntM', 'cntL', 'createdAt', 'updatedAt'
+      'id', 'status', 'name', 'price', 'cntS', 'cntM', 'cntL', 'createdAt', 'updatedAt'
     ]
   });
 }

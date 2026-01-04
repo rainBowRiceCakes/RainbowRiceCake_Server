@@ -10,7 +10,7 @@
 
 import express from 'express';
 import authMiddleware from '../app/middlewares/auth/auth.middleware.js';
-import orderMiddleware from '../app/middlewares/order/order.middleware.js';
+// import orderMiddleware from '../app/middlewares/order/order.middleware.js';
 import orderValidator from '../app/middlewares/validations/validators/orders/order.validator.js';
 import validationHandler from '../app/middlewares/validations/validationHandler.js';
 import multerMiddleware from '../app/middlewares/multer/multer.middleware.js';
@@ -27,7 +27,7 @@ orderRouter.post('/',
   #swagger.summary = '파트너용 주문 등록'
   #swagger.description = '파트너가 주문을 등록합니다.' */
   authMiddleware,
-  orderMiddleware.requirePartnerRole,
+  // orderMiddleware.requirePartnerRole,
   orderValidator.store,
   validationHandler,
   ordersController.store
@@ -77,6 +77,15 @@ orderRouter.post('/:orderId/complete-photo',
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // --- 3. ORDERS HISTORY FOR PARTNERS and RIDERS ---
 // ------------------------------------------ 2026.01.01 추가
+// ------------------------------차트
+orderRouter.get('/stats/hourly',
+  /* #swagger.tags = ['Orders']
+  #swagger.summary = '파트너용 주문 시간대별 통계 조회'
+  #swagger.description = '파트너가 주문 시간대별 통계를 조회합니다.' */
+  authMiddleware,
+  ordersController.getHourlyStats
+);
+
 orderRouter.get('/',
   /* #swagger.tags = ['Orders']
   #swagger.summary = '라이더와 파트너용 주문 목록 조회'
