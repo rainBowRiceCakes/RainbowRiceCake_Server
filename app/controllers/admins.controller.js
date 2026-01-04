@@ -330,6 +330,28 @@ async function qnaUpdate(req, res, next) {
   }
 }
 
+/**
+ * 대시보드 통계 데이터 조회 (최근 배송 건수 등)
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function dashboardStats(req, res, next) {
+  try {
+    // Service에서 일별 통계 및 빈 날짜 채우기 로직 수행
+    const chartData = await adminsService.getRecentDeliveryStats();
+
+    return res.status(SUCCESS.status).send(
+      createBaseResponse(SUCCESS, {
+        recentDeliveryChart: chartData,
+      })
+    );
+  } catch (error) {
+    return next(error);
+  }
+}
+
 
 export default {
   riderUpdate,
@@ -349,4 +371,5 @@ export default {
   userDelete,
   qnaDelete,
   qnaUpdate,
+  dashboardStats,
 }

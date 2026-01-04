@@ -13,6 +13,7 @@ import partnerRepository from "../repositories/partner.repository.js";
 import questionRepository from "../repositories/question.repository.js";
 import riderRepository from "../repositories/rider.repository.js";
 import userRepository from "../repositories/user.repository.js";
+import { format, subDays } from 'date-fns';
 
 /**
  * admin이 rider테이블에 강제로 정보 등록하는 처리
@@ -305,6 +306,35 @@ async function qnaUpdate(data) {
   })
 }
 
+/**
+ * 최근 배송 통계 (일별 건수 집계 + 0건 채우기)
+ */
+async function getRecentDeliveryStats() {
+  const daysToCheck = 10;
+  // Repository에서 일별 카운트 가져옴 (쿼리 결과: [{date: '2024-01-01', count: 5}, ...])
+  const dbData = await orderRepository.getDailyOrderCounts(daysToCheck);
+  
+  const dataMap = {};
+  dbData.forEach(item => {
+    dataMap[item.date] = item.count;
+  });
+
+  const labels = [];
+  const counts = [];
+  
+  // 오늘부터 과거 daysToCheck일까지 역순 or 정순 루프
+  for (let i = daysToCheck - 1; i >= 0; i--) {
+    const d = subDays(new Date(), i);
+    const dateStr = format(d, 'yyyy-MM-dd');
+    const labelStr = format(d, 'M/d');
+
+    labels.push(labelStr);
+    counts.push(parseInt(dataMap[dateStr] || 0)); // 데이터 없으면 0
+  }
+
+  return { labels, counts };
+}
+
 export default {
   riderUpdate,
   riderDelete,
@@ -321,4 +351,5 @@ export default {
   partnerCreate,
   qnaDelete,
   qnaUpdate,
+  getRecentDeliveryStats,
 }

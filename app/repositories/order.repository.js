@@ -390,6 +390,25 @@ async function findOrdersList(t = null, { where, limit, offset }) {
   });
 }
 
+// 대시보드 통계용: 최근 N일간 일별 주문 건수 조회
+async function getDailyOrderCounts(days = 10) {
+  return await Order.findAll({
+    attributes: [
+      // fn 대신 literal로 SQL 조각을 직접 넣음
+      [db.sequelize.literal("DATE_FORMAT(created_at, '%Y-%m-%d')"), 'date'],
+      [db.sequelize.literal("COUNT(id)"), 'count']
+    ],
+    where: {
+      created_at: {
+        [Op.gte]: db.sequelize.literal(`DATE_SUB(NOW(), INTERVAL ${days} DAY)`)
+      }
+    },
+    group: [db.sequelize.literal("DATE_FORMAT(created_at, '%Y-%m-%d')")],
+    order: [[db.sequelize.literal('date'), 'ASC']],
+    raw: true
+  });
+}
+
 export default {
   create,
   existsByPk,
@@ -405,7 +424,8 @@ export default {
   getStatusStats,
   findOrderHistoryThreeMonth,
   orderDelete,
-  findOrdersList
+  findOrdersList,
+  getDailyOrderCounts
 };
 
 // Repository (DB 중심)	HTTP Method

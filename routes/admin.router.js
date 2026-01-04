@@ -20,6 +20,10 @@ const adminRouter = express.Router();
 
 // 전체적으로 validation에서 걸리므로(lat, lng처리 없음) 고려하여 만들 것
 
+// -------------어드민 dashboard--------------------------
+// 대시보드 통계 차트 (최근 배송 건수 등)
+adminRouter.get('/dashboard/stats', authMiddleware, adminsController.dashboardStats);
+
 // *미완성*
 // 상세 들어가서 수정(*id값도 함께 받아와야 함)
 // -------------어드민 userpage--------------------------
