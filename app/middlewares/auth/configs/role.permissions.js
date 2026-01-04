@@ -35,13 +35,12 @@ const ROLE_PERMISSIONS = {
     { path: /^\/api\/orders\/[0-9]+$/, roles: [DLV, ADM] },
     { path: /^\/api\/riders$/, roles: [COM, ADM] },
     { path: /^\/api\/partners$/, roles: [COM, ADM] },
-    { path: /^\/api\/questions$/, roles: [COM, DLV, PTN, ADM] },
     { path: /^\/api\/users$/, roles: [COM, ADM] },
     { path: /^\/api\/users\/rider\/form$/, roles: [COM, ADM] },
     { path: /^\/api\/users\/partner\/form$/, roles: [COM, ADM] },
     { path: /^\/api\/orders\/[0-9]+\/pickup-photo$/, roles: [DLV] },
     { path: /^\/api\/orders\/[0-9]+\/complete-photo$/, roles: [DLV] },
-    { path: /^\/api\/questions$/, roles: [DLV, PTN, ADM, COM] }, // issue reports 나 질문하기, 신고하기 전용
+    { path: /^\/api\/questions$/, roles: [COM, DLV, PTN, ADM] }, // issue reports 나 질문하기, 신고하기 전용
   ],
   PUT: [
     { path: /^\/api\/admins\/order$/, roles: [ADM] },
@@ -51,7 +50,7 @@ const ROLE_PERMISSIONS = {
     { path: /^\/api\/orders$/, roles: [DLV, ADM] },
     { path: /^\/api\/riders$/, roles: [COM, DLV, ADM] },
     { path: /^\/api\/partners$/, roles: [COM, PTN, ADM] },
-    { path: /^\/api\/profiles$/, roles: [PTN, DLV, ADM] },
+    { path: /^\/api\/profiles$/, roles: [COM, PTN, DLV, ADM] },
   ],
   DELETE: [
     { path: /^\/api\/admins\/order\/[0-9]+$/, roles: [ADM] },

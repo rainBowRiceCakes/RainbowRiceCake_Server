@@ -470,7 +470,15 @@ export const getOrdersList = async ({ userId, role, status, date, page, limit })
     // 만약 DB 구조가 shopId 기준이라면 where.shopId = partner.shopId; 로 변경하세요.
   } else if (role === ROLE.COM) {
     // 일반 유저: '본인이 주문한 내역'만 조회
-    where.email = user.email;
+    // 1. 전달받은 userId(숫자 PK)를 사용하여 유저 정보를 조회합니다.
+    const user = await db.User.findByPk(userId);
+
+  if (!user) {
+    console.warn(`[OrdersService] 유저 ID(${userId})에 해당하는 정보를 찾을 수 없습니다.`);
+    return { data: [], pagination: { totalItems: 0, totalPages: 0, currentPage: page, itemsPerPage: limit } };
+  }
+  // 2. 조회된 유저의 이메일을 사용하여 주문을 필터링합니다.
+  where.email = user.email; 
   }
 
   // 2. 상태 필터 (DB 쿼리용)

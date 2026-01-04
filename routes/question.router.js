@@ -26,4 +26,14 @@ questionRouter.post('/',
   validationHandler,
   questionsController.store);
 
+// ---2. question 조회 처리 --- sara 추가(260104) 
+questionRouter.get('/',
+  /* #swagger.tags = ['Questions']  
+  #swagger.summary = '질문 목록 조회'
+  #swagger.description = '질문 목록을 조회합니다.' */
+  authMiddleware,
+  storeValidator,
+  validationHandler,
+  questionsController.index);
+
 export default questionRouter;

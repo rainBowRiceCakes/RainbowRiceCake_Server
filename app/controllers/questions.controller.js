@@ -44,6 +44,27 @@ async function store(req, res, next) {
 }
 
 /**
+ * question 목록 조회 처리  
+ * @param {import("express").Request} req - Request 객체
+ * @param {import("express").Response} res - Response 객체
+ * @param {import("express").NextFunction} next - NextFuction 객체
+ * @returns
+*/
+async function index(req, res, next) {
+  try {
+    // authMiddleware를 통해 들어온 유저 정보 추출
+    const { id: userId, role: userRole } = req.user; 
+
+    // 서비스 호출 시 유저 정보 전달
+    const result = await questionsService.getList({ userId, userRole });
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+/**
  * qna테이블의 정보 모두 가져오는 처리
  * @param {import("express").Request} req - 리퀘스트 객체
  * @param {import("express").Response} res - 레스폰스 객체
@@ -95,6 +116,7 @@ async function qnaShowDetail(req, res, next) {
 
 export default {
   store,
+  index, // sara 추가(260104)
   qnaShow,
   qnaShowDetail,
 };
