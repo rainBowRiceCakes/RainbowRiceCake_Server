@@ -32,6 +32,18 @@ const attributes = {
     allowNull: false,
     comment: '기사 PK'
   },
+  year: {
+    field: 'year',
+    type: DataTypes.BIGINT,
+    allowNull: false,
+    comment: '정산 연도'
+  },
+  month: {
+    field: 'month',
+    type: DataTypes.BIGINT,
+    allowNull: false,
+    comment: '정산 월'
+  },
   totalAmount: {
     field: 'total_amount',
     type: DataTypes.BIGINT,

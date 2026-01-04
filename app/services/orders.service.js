@@ -377,27 +377,77 @@ async function getDeliveryStatus(dlvId) {
  * Admin에서 사용 할 order history 주문 히스토리 LIST 3개월치 조회
  * @param {Object} filter - 미들웨어에서 설정한 필터
 */
-async function getOrdersListAdmin({ from, page, limit, statusExclude }) {
+async function getOrdersListAdmin({ from, page, limit, statusExclude, orderCode, deliveryStatus, paymentStatus, startDate, endDate }) {
   return await db.sequelize.transaction(async t => {
     const offset = limit * (page - 1);
 
     // 오늘 기준 3개월 전 ~ 오늘
-    const dateRange = (from)
-      ? {
-        start: dayjs(from).startOf('day').toDate(),
-        end: dayjs().endOf('day').toDate()
-      }
-      : {
-        start: dayjs().subtract(3, 'month').startOf('day').toDate(),
-        end: dayjs().endOf('day').toDate()
-      };
+    // 날짜 필터가 있는 경우 dateRange를 해당 필터로 재정의합니다.
+    const dateRange = {};
+    if (startDate && endDate) {
+      dateRange.start = dayjs(startDate).startOf('day').toDate();
+      dateRange.end = dayjs(endDate).endOf('day').toDate();
+    } else if (from) { // from은 3개월치 시작일 지정용
+      dateRange.start = dayjs(from).startOf('day').toDate();
+      dateRange.end = dayjs().endOf('day').toDate();
+    } else { // 기본값: 오늘로부터 3개월 전
+      dateRange.start = dayjs().subtract(3, 'month').startOf('day').toDate();
+      dateRange.end = dayjs().endOf('day').toDate();
+    }
 
+    const where = {};
+
+    // orderCode 필터
+    if (orderCode) {
+      where.orderCode = { [Op.like]: `%${orderCode}%` }; // 부분 일치 검색
+    }
+
+    // deliveryStatus 필터
+    if (deliveryStatus) {
+      where.status = deliveryStatus;
+    }
+
+    // paymentStatus 필터 (현재 DB 스키마에 paymentStatus 필드가 명확하지 않으므로, status와 연계)
+    if (paymentStatus) {
+      // paymentStatus 필드가 별도로 있다면 해당 필드를 사용
+      // if (paymentStatus === 'completed') {
+      //   where.paymentStatus = 'completed';
+      // } else if (paymentStatus === 'pending') {
+      //   where.paymentStatus = 'pending';
+      // }
+      // 현재는 status 필터에 포함하여 처리
+      if (paymentStatus === 'completed') {
+        // 'completed' 결제는 'com', 'pick', 'mat' 상태 주문에 해당한다고 가정
+        where.status = { [Op.in]: ['com', 'pick', 'mat'] };
+      } else if (paymentStatus === 'pending') {
+        // 'pending' 결제는 'req' 상태 주문에 해당한다고 가정
+        where.status = 'req';
+      }
+      // 'failed' 등 다른 상태는 필요에 따라 추가
+    }
+
+    // statusExclude 필터 (기존 로직 유지, 다른 status 필터와 충돌 방지)
+    if (statusExclude && !where.status) { // status가 아직 설정되지 않았을 때만 적용
+      where.status = { [Op.notIn]: [statusExclude] };
+    } else if (statusExclude && where.status && where.status[Op.in]) {
+      // 이미 Op.in으로 status가 설정된 경우, statusExclude를 제외
+      where.status[Op.in] = where.status[Op.in].filter(s => s !== statusExclude);
+    } else if (statusExclude && where.status === statusExclude) {
+      // 단일 status가 statusExclude와 같은 경우, 필터링 하지 않도록 함 (결과 없음)
+      // 또는 빈 배열을 반환하도록 할 수 있음
+      return {
+        orders: [],
+        pagination: { page, limit, total: 0, totalPages: 0 },
+        filters: { from, orderCode, deliveryStatus, paymentStatus, startDate, endDate },
+      };
+    }
+    
     // Repository를 통한 조회
     const result = await orderRepository.findOrderHistoryThreeMonth(t, {
       dateRange,
       limit,
       offset,
-      statusExclude // statusExclude 전달
+      where, // 새로운 where 객체 전달
     });
 
     // 응답 데이터 구성
@@ -409,7 +459,7 @@ async function getOrdersListAdmin({ from, page, limit, statusExclude }) {
         total: result.count,
         totalPages: Math.ceil(result.count / limit),
       },
-      filters: { from },
+      filters: { from, orderCode, deliveryStatus, paymentStatus, startDate, endDate },
     };
   });
 }
