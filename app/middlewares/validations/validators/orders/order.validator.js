@@ -71,6 +71,16 @@ const force = [
   order.cntL
 ];
 
+const adminStore = [
+  order.email,
+  order.name,
+  order.hotelId,
+  order.price,
+  order.cntS,
+  order.cntM,
+  order.cntL,
+]
+
 export default {
   store,
   match,
@@ -79,4 +89,5 @@ export default {
   index,
   show,
   force,
+  adminStore,
 };

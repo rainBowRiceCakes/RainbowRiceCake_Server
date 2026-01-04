@@ -124,7 +124,7 @@ async function orderUpdate(req, res, next) {
 async function orderCreate(req, res, next) {
   try {
     const data = req.body
-    await ordersService.createNewOrder(data);
+    await adminsService.createNewOrder(data);
     
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS))
   } catch (error) {

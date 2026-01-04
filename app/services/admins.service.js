@@ -173,6 +173,17 @@ async function getOrderDetail(id) {
  * @param {import("express").NextFunction} next - next 객체
  * @return {import("express").Response}
  */
+async function createNewOrder(data) {
+  return await adminRepository.orderCreate(null, data);
+}
+
+/**
+ * admin이 order테이블에 강제로 정보 등록하는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
 async function orderUpdate(data) {
   await db.sequelize.transaction(async t => {
     // partnerPK로 레코드 하나 가져오기
@@ -342,6 +353,7 @@ export default {
   partnerUpdate,
   hotelUpdate,
   getOrderDetail,
+  createNewOrder,
   orderUpdate,
   noticeUpdate,
   noticeDelete,

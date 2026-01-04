@@ -5,7 +5,7 @@
  */
 
 import db from '../models/index.js';
-const { Admin } = db;
+const { Admin, Order } = db;
 
 /**
  * Admin의 Rider정보 업데이트
@@ -47,6 +47,21 @@ async function hotelUpdate(t = null, result) {
       transaction: t
     }
   )
+}
+
+/**
+ * Admin의 Hotel정보 업데이트
+ * @param {import("sequelize").Transaction|null} t 
+ * @param {{limit: number, offset: number}} data 
+ * @returns {Promise<Array<import("../models/Hotel.js").Hotel>>}
+ */
+async function orderCreate(t = null, data) {
+  return await Order.create(
+    data,
+    {
+      transaction: t
+    }
+  ) 
 }
 
 /**
@@ -122,6 +137,7 @@ export default {
   riderUpdate,
   partnerUpdate,
   hotelUpdate,
+  orderCreate,
   orderUpdate,
   save,
   logout,
