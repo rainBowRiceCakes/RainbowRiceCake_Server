@@ -10,7 +10,6 @@ import questionRepository from '../repositories/question.repository.js';
 import db from '../models/index.js';
 import userRepository from '../repositories/user.repository.js';
 import ROLE from '../middlewares/auth/configs/role.enum.js'; // ROLE 상수 임포트
-import ROLE from '../middlewares/auth/configs/role.enum.js'; // ROLE 상수 임포트
 
 // --- 1. ISSUE REPORT WORKFLOW (riders, partners, users) ---
 /**
@@ -43,26 +42,6 @@ async function create(createData) {
 async function show({ page, limit, status, search }) {
   const offset = (page - 1) * limit;
   return await questionRepository.findAndCountAll(null, { limit, offset, status, search })
-}
-
-/**
- * 문의 목록 조회 (유저별/관리자별 권한 필터링 추가)
- * 260104 sara 추가
- * @param {Object} params
- * @param {number} params.userId - 유저 PK
- * @param {string} params.userRole - 유저 역할 (COM, DLV, PTN, ADM)
- * @returns {Promise<Array>}
- */
-async function getList({ userId, userRole }) {
-  const where = {};
-  
-  // 관리자(ADM)가 아닌 경우 본인의 글(userId)만 필터링합니다.
-  if (userRole !== ROLE.ADM) {
-    where.userId = userId; // 본인 글만 조회
-  }
-
-  // 필터 조건을 Repository의 findAllWithUser 함수로 넘깁니다.
-  return await questionRepository.findAllWithUser(null, where);
 }
 
 /**
@@ -104,7 +83,6 @@ async function showDetail(id) {
 export default {
   create,
   show,
-  getList, // sara 추가(260104)
   getList, // sara 추가(260104)
   showDetail,
 };

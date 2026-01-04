@@ -47,50 +47,6 @@ async function findAllWithUser(t = null, where = {}) {
 }
 
 /**
- * 문의 목록 조회 (필터링 및 작성자 이름 조인)
- * sara 260104 추가
- * @param {import("sequelize").Transaction|null} t - 트랜잭션 객체
- * @param {Object} where - 필터 조건 (userId 등)
- * @returns {Promise<Array>}
- */
-async function findAllWithUser(t = null, where = {}) {
-  return await Question.findAll({
-    where, // 서비스에서 넘겨준 필터(본인 ID 혹은 전체) 적용
-    include: [
-      {
-        model: User,
-        as: 'question_user', // 모델 정의 시 설정한 alias
-        attributes: ['name'], // 이름만 가져와서 최적화
-      }
-    ],
-    order: [['createdAt', 'DESC']], // 최신순 정렬
-    transaction: t,
-  });
-}
-
-/**
- * 문의 목록 조회 (필터링 및 작성자 이름 조인)
- * sara 260104 추가
- * @param {import("sequelize").Transaction|null} t - 트랜잭션 객체
- * @param {Object} where - 필터 조건 (userId 등)
- * @returns {Promise<Array>}
- */
-async function findAllWithUser(t = null, where = {}) {
-  return await Question.findAll({
-    where, // 서비스에서 넘겨준 필터(본인 ID 혹은 전체) 적용
-    include: [
-      {
-        model: User,
-        as: 'question_user', // 모델 정의 시 설정한 alias
-        attributes: ['name'], // 이름만 가져와서 최적화
-      }
-    ],
-    order: [['createdAt', 'DESC']], // 최신순 정렬
-    transaction: t,
-  });
-}
-
-/**
  * QnA 전체 목록 조회 (페이징, 필터, 검색 지원)
  * @param {import("sequelize").Transaction|null} t
  * @param {{limit: number, offset: number, status: string, search: string}} options
