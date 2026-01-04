@@ -15,6 +15,7 @@ const ROLE_PERMISSIONS = {
     // /api/posts/:id 를 검증하는 정규식
     // ex) { path: /^\/api\/posts\/[0-9]+$/, roles: [NORMAL, SUPER] },
     { path: /^\/api\/profiles$/, roles: [COM, PTN, DLV, ADM] },
+    { path: /^\/api\/profiles$/, roles: [COM, PTN, DLV, ADM] },
     { path: /^\/api\/notices$/, roles: [PTN, DLV, ADM] },
     { path: /^\/api\/orders$/, roles: [COM, PTN, DLV, ADM] },
     { path: /^\/api\/orders\/[0-9]+$/, roles: [COM, PTN, DLV, ADM] },
@@ -40,6 +41,7 @@ const ROLE_PERMISSIONS = {
     { path: /^\/api\/users\/partner\/form$/, roles: [COM, ADM] },
     { path: /^\/api\/orders\/[0-9]+\/pickup-photo$/, roles: [DLV] },
     { path: /^\/api\/orders\/[0-9]+\/complete-photo$/, roles: [DLV] },
+    { path: /^\/api\/questions$/, roles: [COM, DLV, PTN, ADM] }, // issue reports 나 질문하기, 신고하기 전용
     { path: /^\/api\/questions$/, roles: [COM, DLV, PTN, ADM] }, // issue reports 나 질문하기, 신고하기 전용
   ],
   PUT: [
