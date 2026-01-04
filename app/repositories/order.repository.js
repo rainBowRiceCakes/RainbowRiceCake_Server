@@ -333,7 +333,7 @@ async function findOrderHistoryThreeMonth(t = null, { dateRange, limit, offset, 
       }
     ],
     attributes: [
-      'id', 'status', 'price', 'cntS', 'cntM', 'cntL', 'createdAt'
+      'id', 'orderCode', 'status', 'price', 'cntS', 'cntM', 'cntL', 'createdAt'
     ]
   });
 }

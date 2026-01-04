@@ -24,7 +24,7 @@ export default {
       records.push({
         riderId: null, partnerId: i, hotelId: i,
         orderCode: 2026010454321+i,
-        email: 'email', name: '정XX',
+        email: 'email@email.com', name: '정XX',
         price: 22000, cntS: 1, cntM: 1, cntL: 1,
         status: 'req'
       });
@@ -34,7 +34,7 @@ export default {
       records.push({
         riderId: i, partnerId: i, hotelId: i,
         orderCode: 2026010454321+i,
-        email: 'email', name: '정XX',
+        email: 'email@email.com', name: '정XX',
         price: 22000, cntS: 1, cntM: 1, cntL: 1,
         status: 'mat'
       });
@@ -44,7 +44,7 @@ export default {
       records.push({
         riderId: i, partnerId: i, hotelId: i,
         orderCode: 2026010454321+i,
-        email: 'email', name: '정XX',
+        email: 'email@email.com', name: '정XX',
         price: 22000, cntS: 1, cntM: 1, cntL: 1,
         status: 'pick'
       });
@@ -54,7 +54,7 @@ export default {
       records.push({
         riderId: i, partnerId: i, hotelId: i,
         orderCode: 2026010454321+i,
-        email: 'email', name: '정XX',
+        email: 'email@email.com', name: '정XX',
         price: 22000, cntS: 1, cntM: 1, cntL: 1,
         status: 'com'
       });
