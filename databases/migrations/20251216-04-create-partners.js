@@ -76,13 +76,13 @@ const attributes = {
   },
   lat: {
     field: 'lat',
-    type: DataTypes.BIGINT,
+    type: DataTypes.DOUBLE,
     allowNull: false,
     comment: '위도'
   },
   lng: {
     field: 'lng',
-    type: DataTypes.BIGINT,
+    type: DataTypes.DOUBLE,
     allowNull: false,
     comment: '경도'
   },
