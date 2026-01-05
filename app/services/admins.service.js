@@ -13,7 +13,7 @@ import partnerRepository from "../repositories/partner.repository.js";
 import questionRepository from "../repositories/question.repository.js";
 import riderRepository from "../repositories/rider.repository.js";
 import userRepository from "../repositories/user.repository.js";
-import { format, subDays } from 'date-fns';
+import { startOfDay, endOfDay, subDays, format } from 'date-fns';
 
 /**
  * admin이 rider테이블에 강제로 정보 등록하는 처리
@@ -318,32 +318,49 @@ async function qnaUpdate(data) {
 }
 
 /**
- * 최근 배송 통계 (일별 건수 집계 + 0건 채우기)
+ * admin 대시보드 데이터 통합 조회(차트 + 요약)
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
  */
-async function getRecentDeliveryStats() {
-  const daysToCheck = 10;
-  // Repository에서 일별 카운트 가져옴 (쿼리 결과: [{date: '2024-01-01', count: 5}, ...])
-  const dbData = await orderRepository.getDailyOrderCounts(daysToCheck);
-  
-  const dataMap = {};
-  dbData.forEach(item => {
-    dataMap[item.date] = item.count;
-  });
+async function getDashboardStats() {
+  const today = new Date();
 
+  // 오늘 날짜 범위 계산 (00:00:00 ~ 23:59:59)
+  const dateRange = {
+    start: startOfDay(today),
+    end: endOfDay(today)
+  };
+
+  // [Chart] 최근 n일 통계 가져오기
+  const chartData = await orderRepository.getDailyOrderCounts(7);
+
+  // [데이터 가공] 빈 날짜 채우기 + 배열 분리 작업
   const labels = [];
   const counts = [];
-  
-  // 오늘부터 과거 daysToCheck일까지 역순 or 정순 루프
-  for (let i = daysToCheck - 1; i >= 0; i--) {
-    const d = subDays(new Date(), i);
-    const dateStr = format(d, 'yyyy-MM-dd');
-    const labelStr = format(d, 'M/d');
 
-    labels.push(labelStr);
-    counts.push(parseInt(dataMap[dateStr] || 0)); // 데이터 없으면 0
+  // 최근 10일 날짜 생성 (예: 2025-12-27 ~ 2026-01-05)
+  for (let i = 6; i >= 0; i--) {
+    const targetDate = subDays(today, i);
+    const dateString = format(targetDate, 'yyyy-MM-dd');
+    
+    // DB 데이터에서 해당 날짜가 있는지 찾기
+    const found = chartData.find(item => item.date === dateString);
+    
+    // 결과 배열에 넣기
+    labels.push(dateString);       // X축 라벨
+    counts.push(found ? found.count : 0); // 데이터가 없으면 0으로 채움
   }
 
-  return { labels, counts };
+  // [Summary] 오늘의 요약 데이터 가져오기 (신규 함수)
+  const summaryData = await orderRepository.getDashboardSummary(null, dateRange);
+
+  // 데이터 병합 후 리턴
+  return {
+    recentDeliveryChart: { labels, counts }, // 차트 데이터
+    summary: summaryData            // 상단 요약 데이터
+  };
 }
 
 export default {
@@ -363,5 +380,5 @@ export default {
   partnerCreate,
   qnaDelete,
   qnaUpdate,
-  getRecentDeliveryStats,
+  getDashboardStats,
 }

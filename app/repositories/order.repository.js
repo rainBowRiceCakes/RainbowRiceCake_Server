@@ -391,10 +391,9 @@ async function findOrdersList(t = null, { where, limit, offset }) {
 }
 
 // 대시보드 통계용: 최근 N일간 일별 주문 건수 조회
-async function getDailyOrderCounts(days = 10) {
+async function getDailyOrderCounts(days = 7) {
   return await Order.findAll({
     attributes: [
-      // fn 대신 literal로 SQL 조각을 직접 넣음
       [db.sequelize.literal("DATE_FORMAT(created_at, '%Y-%m-%d')"), 'date'],
       [db.sequelize.literal("COUNT(id)"), 'count']
     ],
@@ -407,6 +406,36 @@ async function getDailyOrderCounts(days = 10) {
     order: [[db.sequelize.literal('date'), 'ASC']],
     raw: true
   });
+}
+
+// [대시보드 요약] 3가지 핵심 지표 카운트
+async function getDashboardSummary(t = null, { start, end }) {
+  // 오늘의 배송 요청: 생성일(createdAt)이 오늘인 것
+  const todayRequests = await Order.count({
+    where: {
+      created_at: { [Op.between]: [start, end] }
+    },
+    transaction: t
+  });
+
+  // 진행 중 배송: 현재 상태가 'pick'인 것 전체 (날짜 무관)
+  const inProgress = await Order.count({
+    where: {
+      status: 'pick'
+    },
+    transaction: t
+  });
+
+  // 오늘의 완료 배송: 상태가 'com'이고 완료일(updatedAt)이 오늘인 것
+  const todayCompleted = await Order.count({
+    where: {
+      status: 'com',
+      updated_at: { [Op.between]: [start, end] }
+    },
+    transaction: t
+  });
+
+  return { todayRequests, inProgress, todayCompleted };
 }
 
 export default {
@@ -425,7 +454,8 @@ export default {
   findOrderHistoryThreeMonth,
   orderDelete,
   findOrdersList,
-  getDailyOrderCounts
+  getDailyOrderCounts,
+  getDashboardSummary
 };
 
 // Repository (DB 중심)	HTTP Method
