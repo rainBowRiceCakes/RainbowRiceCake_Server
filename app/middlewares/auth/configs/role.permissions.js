@@ -48,8 +48,8 @@ const ROLE_PERMISSIONS = {
   ],
   POST: [
     // auth
-    { path: /^\/api\/auth\/logout$/, roles: [ADM] },
-    { path: /^\/api\/auth\/user\/logout$/, roles: [COM, DLV, PTN] },
+    { path: /^\/api\/auth\/logout$/, roles: [COM, DLV, PTN, ADM] },
+    { path: /^\/api\/auth\/user\/logout$/, roles: [COM, DLV, PTN, ADM] },
     // admins
     { path: /^\/api\/admins\/partner$/, roles: [ADM] },
     { path: /^\/api\/admins\/order$/, roles: [ADM] },
