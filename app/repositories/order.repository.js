@@ -453,6 +453,40 @@ async function getDashboardSummary(t = null, { start, end }) {
   return { todayRequests, inProgress, todayCompleted };
 }
 
+// [긴급 주문 현황]
+async function findUrgentOrders(t = null) {
+  // 1시간 전 시간 계산
+  const oneHourAgo = new Date();
+  oneHourAgo.setHours(oneHourAgo.getHours() - 1);
+
+  return await Order.findAll({
+    where: {
+      status: 'req',
+      createdAt: {
+        [Op.lt]: oneHourAgo // less than (<) 1시간 전
+      }
+    },
+    limit: 5,
+    order: [['createdAt', 'ASC']], // 가장 오래된(급한) 주문부터 표시
+    transaction: t,
+    include: [
+      {
+        model: Partner,
+        as: 'order_partner',
+        attributes: ['krName']
+      },
+      {
+        model: Hotel,
+        as: 'order_hotel',
+        attributes: ['krName']
+      },
+    ],
+    attributes: [
+      'id', 'orderCode', 'status', 'createdAt',
+    ]
+  });
+}
+
 export default {
   create,
   existsByPk,
@@ -469,9 +503,10 @@ export default {
   findOrderHistoryThreeMonth,
   orderDelete,
   findOrdersList,
-  getDailyOrderCounts,
   countCompletedByMonth,
-  getDashboardSummary
+  getDailyOrderCounts,
+  getDashboardSummary,
+  findUrgentOrders,
 };
 
 // Repository (DB 중심)	HTTP Method

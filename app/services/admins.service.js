@@ -13,7 +13,7 @@ import partnerRepository from "../repositories/partner.repository.js";
 import questionRepository from "../repositories/question.repository.js";
 import riderRepository from "../repositories/rider.repository.js";
 import userRepository from "../repositories/user.repository.js";
-import { startOfDay, endOfDay, subDays, format } from 'date-fns';
+import { startOfDay, endOfDay, subDays, format, differenceInMinutes } from 'date-fns';
 
 /**
  * admin이 rider테이블에 강제로 정보 등록하는 처리
@@ -318,12 +318,13 @@ async function qnaUpdate(data) {
 }
 
 /**
- * admin 대시보드 데이터 통합 조회(차트 + 요약)
+ * admin 대시보드 데이터 통합 조회(차트 + 요약 + 긴급 주문 현황)
  * @param {import("express").Request} req - 리퀘스트 객체
  * @param {import("express").Response} res - 레스폰스 객체
  * @param {import("express").NextFunction} next - next 객체
  * @return {import("express").Response}
  */
+// -----------------------[Chart]-----------------------
 async function getDashboardStats() {
   const today = new Date();
 
@@ -333,7 +334,7 @@ async function getDashboardStats() {
     end: endOfDay(today)
   };
 
-  // [Chart] 최근 n일 통계 가져오기
+  // 최근 n일 통계 가져오기
   const chartData = await orderRepository.getDailyOrderCounts(7);
 
   // [데이터 가공] 빈 날짜 채우기 + 배열 분리 작업
@@ -353,13 +354,45 @@ async function getDashboardStats() {
     counts.push(found ? found.count : 0); // 데이터가 없으면 0으로 채움
   }
 
-  // [Summary] 오늘의 요약 데이터 가져오기 (신규 함수)
+  // -----------------------[Summary]-----------------------
+  // [Summary] 오늘의 요약 데이터 가져오기
   const summaryData = await orderRepository.getDashboardSummary(null, dateRange);
+
+  // -----------------------[Urgent]-----------------------
+  // 긴급 주문 데이터 가져오기 (Repo 호출)
+  const urgentOrdersRaw = await orderRepository.findUrgentOrders();
+
+  // [가공] 프론트엔드에 보여줄 형태로 변환 (지연 시간 계산)
+  const now = new Date();
+
+  const urgentOrders = urgentOrdersRaw.map(order => {
+    // 지연 시간 계산 (분 단위)
+    const orderDate = order.createdAt ? new Date(order.createdAt) : new Date();
+    const diffMinutes = differenceInMinutes(now, orderDate);
+    const hours = Math.floor(diffMinutes / 60);
+    const mins = diffMinutes % 60;
+
+    return {
+      id: order.id,
+      // 주문번호 매핑
+      orderCode: order.orderCode || 0,
+      
+      // 출발, 도착지
+      partnerName: order.order_partner?.krName || '업체미정',
+      hotelName: order.order_hotel?.krName || '호텔미정',
+
+      // 상태값 매핑
+      status: order.status || 'req',
+      // 지연 시간 포맷팅 (예: "02:15" 또는 "2시간 15분")
+      delayTime: `${hours}시간 ${mins}분` 
+    };
+  });
 
   // 데이터 병합 후 리턴
   return {
     recentDeliveryChart: { labels, counts }, // 차트 데이터
-    summary: summaryData            // 상단 요약 데이터
+    summary: summaryData,                    // 상단 요약 데이터
+    urgentOrders: urgentOrders               // 긴급 주문 현황 추가
   };
 }
 
