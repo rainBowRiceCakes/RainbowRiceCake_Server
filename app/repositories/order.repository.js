@@ -287,14 +287,14 @@ async function findByIdOnly(t = null, dlvId) {
  */
 async function findOrderHistoryThreeMonth(t = null, { dateRange, limit, offset, where = {} }) {
   // 깊은 복사를 사용하여 where 객체를 변경하지 않고 새로운 객체 생성
-  const conditions = { ...where }; 
+  const conditions = { ...where };
 
   if (dateRange && dateRange.start && dateRange.end) {
     conditions.createdAt = {
       [Op.between]: [dateRange.start, dateRange.end]
     };
   }
-  
+
   // statusExclude는 이제 service 단에서 where 객체로 통합되어 넘어오므로, 
   // 여기서 별도로 처리하지 않고 그대로 conditions에 포함된 것을 사용합니다.
   // 만약 service 단에서 statusExclude가 where.status에 Op.ne로 명시되지 않고 
@@ -385,7 +385,7 @@ async function findOrdersList(t = null, { where, limit, offset }) {
       }
     ],
     attributes: [
-      'id', 'status', 'name', 'price', 'cntS', 'cntM', 'cntL', 'createdAt', 'updatedAt'
+      'id', 'orderCode', 'status', 'name', 'price', 'cntS', 'cntM', 'cntL', 'createdAt', 'updatedAt'
     ]
   });
 }

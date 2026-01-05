@@ -6,7 +6,7 @@
 */
 
 import { SUCCESS } from '../../configs/responseCode.config.js';
-import OrdersService from '../services/orders.service.js';
+import ordersService from '../services/orders.service.js';
 import { createBaseResponse } from '../utils/createBaseResponse.util.js';
 import myError from '../errors/customs/my.error.js';
 import { BAD_REQUEST_ERROR } from '../../configs/responseCode.config.js';
@@ -25,7 +25,7 @@ async function store(req, res, next) {
     const orderData = req.body;
 
     // 서비스에게 "이 유저가 주문하려는데, 이 유저에 해당하는 파트너 찾아서 주문해줘"라고 요청
-    const result = await OrdersService.createNewOrder({ userId, orderData });
+    const result = await ordersService.createNewOrder({ userId, orderData });
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {
@@ -46,7 +46,7 @@ async function matchOrder(req, res, next) {
     const orderId = req.params.orderId;
     const riderId = req.user.id;
 
-    const result = await OrdersService.matchOrder({ orderId, riderId });
+    const result = await ordersService.matchOrder({ orderId, riderId });
     console.log('🔥 matchOrder:', req.params.orderId, req.user.id);
 
 
@@ -75,7 +75,7 @@ async function uploadPickupPhoto(req, res, next) {
     const riderId = req.user.id;
     const photoPath = req.file.filename;
 
-    const result = await OrdersService.uploadPickupPhoto({
+    const result = await ordersService.uploadPickupPhoto({
       orderId,
       riderId,
       photoPath
@@ -104,7 +104,7 @@ async function uploadCompletePhoto(req, res, next) {
     const riderId = req.user.id;
     const photoPath = req.file.filename;
 
-    const result = await OrdersService.uploadCompletePhoto({
+    const result = await ordersService.uploadCompletePhoto({
       orderId,
       riderId,
       photoPath
@@ -128,11 +128,12 @@ async function show(req, res, next) {
     const orderId = req.params.orderId;
     const userId = req.user.id;
     const userRole = req.user.role;
-
-    const result = await OrdersService.getOrderDetail({
+    const email = req.user.email;
+    const result = await ordersService.getOrderDetail({
       orderId,
       userId,
-      userRole
+      userRole,
+      email
     });
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
@@ -155,7 +156,7 @@ async function index(req, res, next) {
 
     const { status, date, page, limit, riderId } = req.query;
 
-    const result = await OrdersService.getOrdersList({
+    const result = await ordersService.getOrdersList({
       userId,
       role,
       email: req.user.email,
@@ -184,7 +185,7 @@ export const getHourlyStats = async (req, res) => {
       });
     }
 
-    const { userId, role } = req.user;
+    const { id: userId, role } = req.user;
     const stats = await ordersService.getHourlyOrderStats({ userId, role });
 
     res.status(200).json(stats);

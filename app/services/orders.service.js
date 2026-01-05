@@ -441,7 +441,7 @@ async function getOrdersListAdmin({ from, page, limit, statusExclude, orderCode,
         filters: { from, orderCode, deliveryStatus, paymentStatus, startDate, endDate },
       };
     }
-    
+
     // Repository를 통한 조회
     const result = await orderRepository.findOrderHistoryThreeMonth(t, {
       dateRange,
@@ -523,12 +523,12 @@ export const getOrdersList = async ({ userId, role, status, date, page, limit })
     // 1. 전달받은 userId(숫자 PK)를 사용하여 유저 정보를 조회합니다.
     const user = await db.User.findByPk(userId);
 
-  if (!user) {
-    console.warn(`[OrdersService] 유저 ID(${userId})에 해당하는 정보를 찾을 수 없습니다.`);
-    return { data: [], pagination: { totalItems: 0, totalPages: 0, currentPage: page, itemsPerPage: limit } };
-  }
-  // 2. 조회된 유저의 이메일을 사용하여 주문을 필터링합니다.
-  where.email = user.email; 
+    if (!user) {
+      console.warn(`[OrdersService] 유저 ID(${userId})에 해당하는 정보를 찾을 수 없습니다.`);
+      return { data: [], pagination: { totalItems: 0, totalPages: 0, currentPage: page, itemsPerPage: limit } };
+    }
+    // 2. 조회된 유저의 이메일을 사용하여 주문을 필터링합니다.
+    where.email = user.email;
   }
 
   // 2. 상태 필터 (DB 쿼리용)
@@ -581,43 +581,44 @@ export const getOrdersList = async ({ userId, role, status, date, page, limit })
 export const getHourlyOrderStats = async ({ userId, role }) => {
   const where = {};
 
-  if (role === ROLE.PTN) {
-    const partner = await partnerRepository.findByUserId(null, userId);
-    if (partner) where.partnerId = partner.id;
-  } else if (role === ROLE.COM) {
-    where.userId = userId;
+  try {
+    if (role === 'PTN') { // ROLE.PTN 대신 임시로 문자열 비교나 로그 확인
+      const partner = await partnerRepository.findByUserId(null, userId);
+      if (partner) where.partnerId = partner.id;
+    }
+
+    // 여기서 Op가 에러 날 가능성이 높음!
+    where.createdAt = {
+      [Op.between]: [
+        dayjs().startOf('day').toDate(),
+        dayjs().endOf('day').toDate()
+      ]
+    };
+    const result = await orderRepository.findOrdersList(null, {
+      where,
+      attributes: ['createdAt']
+    });
+
+    // 1. 시간대별 기본 객체 생성
+    const hourlyCounts = Array.from({ length: 24 }, (_, i) => ({
+      hour: `${i}시`,
+      count: 0
+    }));
+
+    // 2. 데이터 매핑 (result.rows 혹은 result가 배열인지 확인 필요)
+    const rows = result.rows || result;
+    rows.forEach(order => {
+      const hour = dayjs(order.createdAt).hour();
+      hourlyCounts[hour].count += 1;
+    });
+
+    // ⭐⭐⭐ 이 줄이 반드시 있어야 합니다! ⭐⭐⭐
+    return hourlyCounts;
+  } catch (err) {
+    console.error('서비스 내부 진짜 에러:', err); // 이게 서버 터미널에 찍힙니다.
+    throw err; // 컨트롤러의 catch로 던짐
   }
-
-  // 2. '오늘' 데이터로 고정
-  where.createdAt = {
-    [Op.between]: [
-      dayjs().startOf('day').toDate(),
-      dayjs().endOf('day').toDate()
-    ]
-  };
-
-  // 3. 전체 데이터를 가져와서 시간대별로 가공
-  // (DB에서 직접 Group By를 쓰는 게 좋지만, 기존 repository 활용을 위해 가공 로직 사용)
-  const result = await orderRepository.findOrdersList(null, {
-    where,
-    attributes: ['createdAt'] // 시간만 있으면 됨
-  });
-
-  // 0~23시까지 기본 객체 생성 (데이터 없는 시간도 0으로 표시하기 위함)
-  const hourlyCounts = Array.from({ length: 24 }, (_, i) => ({
-    hour: `${i}시`,
-    count: 0
-  }));
-
-  // 데이터 매핑
-  result.rows.forEach(order => {
-    const hour = dayjs(order.createdAt).hour();
-    hourlyCounts[hour].count += 1;
-  });
-
-  return hourlyCounts;
 };
-
 
 export default {
   createNewOrder,

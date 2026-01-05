@@ -42,6 +42,9 @@ const ROLE_PERMISSIONS = {
     // users
     { path: /^\/api\/users\/show$/, roles: [ADM] },
     { path: /^\/api\/users\/show\/[0-9]+$/, roles: [ADM] },
+    { path: /^\/api\/orders\/[0-9]+\/match$/, roles: [DLV, ADM] },
+    { path: /^\/api\/partners$/, roles: [COM, ADM] },
+    { path: /^\/api\/orders\/stats\/hourly$/, roles: [PTN, ADM] },
   ],
   POST: [
     // auth

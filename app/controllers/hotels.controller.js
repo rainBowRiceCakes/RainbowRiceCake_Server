@@ -36,8 +36,10 @@ async function hotelFindByPK(req, res, next) {
  */
 async function hotelShow(req, res, next) {
   try {
+    console.log(req.query);
     const page = parseInt(req.query.page, 10) || 1;
     const limit = parseInt(req.query.limit, 10) || 9;
+
     const { status, search } = req.query;
 
     const { count, rows } = await hotelsService.show({ page, limit, status, search });
