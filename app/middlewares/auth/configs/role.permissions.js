@@ -2,65 +2,104 @@
  * @file app/middlewares/auth/configs/role.permissions.js
  * @description 요청 별 접근 권한 설정
  * 251222 v1.0.0 wook init
+ * 260105 v2.0.0 Gemini-CLI auto-generates
  */
-// role.permissions에 추가하지 않고, 인증절차를 거쳐 사용하려고 하면, ID가 undifined라고 나온다.
 
 import ROLE from "./role.enum.js";
-const { ADM, COM, DLV, PTN } = ROLE
+const { ADM, COM, DLV, PTN } = ROLE;
 
 // 인증 및 인가가 필요한 요청만 정의
 const ROLE_PERMISSIONS = {
   GET: [
-    // { path: 정규식, roles: [권한 확인] }
-    // /api/posts/:id 를 검증하는 정규식
-    // ex) { path: /^\/api\/posts\/[0-9]+$/, roles: [NORMAL, SUPER] },
-    { path: /^\/api\/profiles$/, roles: [COM, PTN, DLV, ADM] },
-    { path: /^\/api\/profiles$/, roles: [COM, PTN, DLV, ADM] },
+    // admins
+    { path: /^\/api\/admins\/dashboard\/stats$/, roles: [ADM] },
+    { path: /^\/api\/admins\/orderindex$/, roles: [ADM] },
+    { path: /^\/api\/admins\/notice$/, roles: [ADM] },
+    { path: /^\/api\/admins\/notice\/[0-9]+$/, roles: [ADM] },
+    { path: /^\/api\/admins\/qna$/, roles: [ADM] },
+    { path: /^\/api\/admins\/qna\/[0-9]+$/, roles: [ADM] },
+    // hotels
+    { path: /^\/api\/hotels$/, roles: [ADM, PTN, DLV] }, // 파트너도 볼 수 있도록 추가
+    { path: /^\/api\/hotels\/[0-9]+$/, roles: [ADM, PTN, DLV] }, // 파트너도 볼 수 있도록 추가
+    // notices
     { path: /^\/api\/notices$/, roles: [PTN, DLV, ADM] },
+    // orders
     { path: /^\/api\/orders$/, roles: [COM, PTN, DLV, ADM] },
     { path: /^\/api\/orders\/[0-9]+$/, roles: [COM, PTN, DLV, ADM] },
-    { path: /^\/api\/orders\/[0-9]+\/match$/, roles: [DLV, ADM] },
-    { path: /^\/api\/partners$/, roles: [COM, ADM] },
+    { path: /^\/api\/orders\/stats\/hourly$/, roles: [PTN, ADM] },
+    // partners
+    { path: /^\/api\/partners$/, roles: [ADM] },
+    { path: /^\/api\/partners\/[0-9]+$/, roles: [ADM] },
+    // profiles
+    { path: /^\/api\/profiles$/, roles: [COM, PTN, DLV, ADM] },
+    // questions
+    { path: /^\/api\/questions$/, roles: [ADM] },
+    // riders
+    { path: /^\/api\/riders$/, roles: [ADM] },
+    { path: /^\/api\/riders\/[0-9]+$/, roles: [ADM] },
+    // settlements
+    { path: /^\/api\/settlements$/, roles: [DLV, PTN, ADM] },
+    // users
+    { path: /^\/api\/users\/show$/, roles: [ADM] },
+    { path: /^\/api\/users\/show\/[0-9]+$/, roles: [ADM] },
   ],
   POST: [
-    // ex) { path: /^\/api\/auth\/logout$/, roles: [NORMAL, SUPER] },
-    { path: /^\/api\/auth\/logout$/, roles: [COM, DLV, PTN, ADM] },
-    { path: /^\/api\/auth\/reissue$/, roles: [COM, DLV, PTN, ADM] },
-    { path: /^\/api\/auth\/user\/logout$/, roles: [COM, DLV, PTN, ADM] },
-    { path: /^\/api\/admins\/hotel$/, roles: [ADM] },
+    // auth
+    { path: /^\/api\/auth\/logout$/, roles: [ADM] },
+    { path: /^\/api\/auth\/user\/logout$/, roles: [COM, DLV, PTN] },
+    // admins
     { path: /^\/api\/admins\/partner$/, roles: [ADM] },
-    { path: /^\/api\/admins\/rider$/, roles: [ADM] },
-    { path: /^\/api\/admins\/notice$/, roles: [ADM] },
+    { path: /^\/api\/admins\/order$/, roles: [ADM] },
+    { path: /^\/api\/admins\/hotel$/, roles: [ADM] },
+    // files
+    { path: /^\/api\/files\/licenses$/, roles: [COM, DLV] },
+    { path: /^\/api\/files\/logos$/, roles: [COM, PTN] },
+    { path: /^\/api\/files\/attachments$/, roles: [COM, DLV, PTN, ADM] },
+    // hotels
+    { path: /^\/api\/hotels$/, roles: [ADM] },
+    // invoices
+    { path: /^\/api\/invoices\/send$/, roles: [ADM] },
+    // notices
     { path: /^\/api\/notices$/, roles: [ADM] },
+    // orders
     { path: /^\/api\/orders$/, roles: [PTN, ADM] },
     { path: /^\/api\/orders\/[0-9]+$/, roles: [DLV, ADM] },
-    { path: /^\/api\/riders$/, roles: [COM, ADM] },
-    { path: /^\/api\/partners$/, roles: [COM, ADM] },
-    { path: /^\/api\/users$/, roles: [COM, ADM] },
-    { path: /^\/api\/users\/rider\/form$/, roles: [COM, ADM] },
-    { path: /^\/api\/users\/partner\/form$/, roles: [COM, ADM] },
     { path: /^\/api\/orders\/[0-9]+\/pickup-photo$/, roles: [DLV] },
     { path: /^\/api\/orders\/[0-9]+\/complete-photo$/, roles: [DLV] },
-    { path: /^\/api\/questions$/, roles: [COM, DLV, PTN, ADM] }, // issue reports 나 질문하기, 신고하기 전용
-    { path: /^\/api\/questions$/, roles: [COM, DLV, PTN, ADM] }, // issue reports 나 질문하기, 신고하기 전용
+    // partners
+    { path: /^\/api\/partners$/, roles: [COM] },
+    // questions
+    { path: /^\/api\/questions$/, roles: [COM, DLV, PTN, ADM] },
+    // riders
+    { path: /^\/api\/riders$/, roles: [COM, ADM] },
+    // users
+    { path: /^\/api\/users\/rider\/form$/, roles: [COM] },
+    { path: /^\/api\/users\/partner\/form$/, roles: [COM] },
+    { path: /^\/api\/users\/store$/, roles: [ADM] },
   ],
   PUT: [
-    { path: /^\/api\/admins\/order$/, roles: [ADM] },
+    // admins
     { path: /^\/api\/admins\/rider$/, roles: [ADM] },
     { path: /^\/api\/admins\/partner$/, roles: [ADM] },
+    { path: /^\/api\/admins\/order$/, roles: [ADM] },
     { path: /^\/api\/admins\/notice$/, roles: [ADM] },
-    { path: /^\/api\/orders$/, roles: [DLV, ADM] },
-    { path: /^\/api\/riders$/, roles: [COM, DLV, ADM] },
-    { path: /^\/api\/partners$/, roles: [COM, PTN, ADM] },
+    { path: /^\/api\/admins\/qna$/, roles: [ADM] },
+    // profiles
     { path: /^\/api\/profiles$/, roles: [COM, PTN, DLV, ADM] },
+    // users
+    { path: /^\/api\/users\/update$/, roles: [ADM] },
   ],
   DELETE: [
-    { path: /^\/api\/admins\/order\/[0-9]+$/, roles: [ADM] },
+    // admins
+    { path: /^\/api\/admins\/user\/[0-9]+$/, roles: [ADM] },
     { path: /^\/api\/admins\/rider\/[0-9]+$/, roles: [ADM] },
     { path: /^\/api\/admins\/partner\/[0-9]+$/, roles: [ADM] },
+    { path: /^\/api\/admins\/order\/[0-9]+$/, roles: [ADM] },
+    { path: /^\/api\/admins\/hotel\/[0-9]+$/, roles: [ADM] },
     { path: /^\/api\/admins\/notice\/[0-9]+$/, roles: [ADM] },
-  ]
-}
+    { path: /^\/api\/admins\/qna\/[0-9]+$/, roles: [ADM] },
+  ],
+};
 Object.freeze(ROLE_PERMISSIONS);
 
 export default ROLE_PERMISSIONS;

@@ -24,7 +24,6 @@ const adminRouter = express.Router();
 // 대시보드 통계 차트 (최근 배송 건수 등)
 adminRouter.get('/dashboard/stats', authMiddleware, adminsController.dashboardStats);
 
-// *미완성*
 // 상세 들어가서 수정(*id값도 함께 받아와야 함)
 // -------------어드민 userpage--------------------------
 adminRouter.delete('/user/:id', authMiddleware, adminsController.userDelete)
