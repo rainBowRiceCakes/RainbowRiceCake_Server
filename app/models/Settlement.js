@@ -103,7 +103,6 @@ const Settlement = {
     return define;
   },
   associate: (db) => {
-    db.Settlement.belongsTo(db.Order, { targetKey: 'id', foreignKey: 'stmId', as: 'settlement_order'}),
     db.Settlement.belongsTo(db.Rider, { targetKey: 'id', foreignKey: 'riderId', as: 'settlement_rider'});
   },
 }

@@ -408,6 +408,21 @@ async function getDailyOrderCounts(days = 7) {
   });
 }
 
+// 대시보드 통계용: 특정 월의 완료된 주문 건수
+async function countCompletedByMonth({ year, month }) {
+  // 월의 시작일과 종료일 계산
+  const startDate = new Date(year, month - 1, 1);
+  const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+  return await Order.count({
+    where: {
+      // status: 'com',
+      createdAt: {
+        [Op.between]: [startDate, endDate]
+      }
+    }
+  });
+}
+
 // [대시보드 요약] 3가지 핵심 지표 카운트
 async function getDashboardSummary(t = null, { start, end }) {
   // 오늘의 배송 요청: 생성일(createdAt)이 오늘인 것
@@ -455,6 +470,7 @@ export default {
   orderDelete,
   findOrdersList,
   getDailyOrderCounts,
+  countCompletedByMonth,
   getDashboardSummary
 };
 

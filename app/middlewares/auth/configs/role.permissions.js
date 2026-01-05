@@ -52,8 +52,8 @@ const ROLE_PERMISSIONS = {
     { path: /^\/api\/admins\/order$/, roles: [ADM] },
     { path: /^\/api\/admins\/hotel$/, roles: [ADM] },
     // files
-    { path: /^\/api\/files\/licenses$/, roles: [COM, DLV] },
-    { path: /^\/api\/files\/logos$/, roles: [COM, PTN] },
+    { path: /^\/api\/files\/licenses$/, roles: [COM, DLV, ADM] },
+    { path: /^\/api\/files\/logos$/, roles: [COM, PTN, ADM] },
     { path: /^\/api\/files\/attachments$/, roles: [COM, DLV, PTN, ADM] },
     // hotels
     { path: /^\/api\/hotels$/, roles: [ADM] },

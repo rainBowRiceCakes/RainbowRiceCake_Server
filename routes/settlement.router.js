@@ -10,6 +10,8 @@ import settlementsController from '../app/controllers/settlements.controller.js'
 
 const settlementRouter = express.Router();
 
-settlementRouter.get('/', authMiddleware, settlementsController.monthTotalAmount)
+settlementRouter.get('/', authMiddleware, settlementsController.settlementShow)
+settlementRouter.get('/statistics', authMiddleware, settlementsController.getStatistics);
+settlementRouter.get('/month-total', authMiddleware, settlementsController.monthTotalAmount)
 
 export default settlementRouter;
