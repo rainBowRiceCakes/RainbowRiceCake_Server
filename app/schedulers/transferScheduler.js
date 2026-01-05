@@ -68,7 +68,7 @@ export const initTransferScheduler = () => {
 
         if (result.success) {
           await item.update({ 
-            status: 'RES',
+            status: 'COM',
             memo: '지급 완료'
           }, { transaction: t });
           console.log(`   -> [성공]`);
