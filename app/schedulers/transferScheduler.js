@@ -13,8 +13,8 @@ import { BANK_CODES } from "../utils/toss/bankCodes.js";
 const { Settlement, Rider, sequelize, User } = db;
 
 export const initTransferScheduler = () => {
-  // 테스트용: 30초마다 실행 (배포 시 '0 0 10 10 * *' 등으로 변경)
-  const rule = '*/30 * * * * *'; 
+  const rule = '* 10 10 * * *'; // (매월 10일 오전10시)
+//   const rule = '*/30 * * * * *'; (테스트용 30초마다 실행)
 
   scheduleJob(rule, async function() {
     console.log('[Transfer Scheduler] 송금 프로세스 시작...');
