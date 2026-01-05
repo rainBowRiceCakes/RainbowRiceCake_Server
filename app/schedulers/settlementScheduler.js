@@ -1,3 +1,8 @@
+/**
+ * @file app/schedulers/settlementScheduler.js
+ * @description 매월 자동 정산 테이블 정리 스케줄러
+ */
+
 import { Op } from "sequelize";
 import db from "../models/index.js";
 import { scheduleJob } from "node-schedule";

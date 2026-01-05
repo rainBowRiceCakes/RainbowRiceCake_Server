@@ -26,6 +26,7 @@ import settlementRouter from './routes/settlement.router.js';
 import { initInvoiceScheduler } from './app/schedulers/invoice.schedule.js';
 import invoiceRouter from './routes/invoice.router.js';
 import { initSettlementScheduler } from './app/schedulers/settlementScheduler.js';
+import { initTransferScheduler } from './app/schedulers/transferScheduler.js';
 
 const app = express();
 app.use(express.json()); // JSON 요청 파싱 처리
@@ -84,6 +85,7 @@ app.use(errorHandler);
 // ---------------------
 initInvoiceScheduler();
 initSettlementScheduler();
+initTransferScheduler();   // ★ 송금 기능 실행
 const PORT = Number(process.env.APP_PORT) || 3000;
 
 app.listen(PORT, () => {
