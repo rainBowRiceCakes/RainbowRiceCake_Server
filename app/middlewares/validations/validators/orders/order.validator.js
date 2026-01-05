@@ -11,23 +11,20 @@ const store = [
   order.hotelId,
   order.price,
   order.plans,
-  order.cntS,
-  order.cntM,
-  order.cntL,
 ];
 
 /**
- * 주문 매칭 (POST /orders/:orderId/match) 라이더가 하는 일
+ * 주문 매칭 (POST /orders/:orderCode/match) 라이더가 하는 일
  */
 const match = [
-  order.orderId,
+  order.orderCode,
 ];
 
 /**
- * 사진 업로드 (POST /orders/:orderId/pickup-photo, /orders/:orderId/complete-photo)
+ * 사진 업로드 (POST /orders/:orderCode/pickup-photo, /orders/:orderCode/complete-photo)
  */
 const uploadPhoto = [
-  order.orderId,
+  order.orderCode,
 ];
 
 
@@ -51,10 +48,10 @@ const index = [
 ];
 
 /**
- * 주문 상세 조회 (GET /orders/:orderId)
+ * 주문 상세 조회 (GET /orders/:orderCode)
  */
 const show = [
-  order.orderId,
+  order.orderCode,
 ];
 
 /**

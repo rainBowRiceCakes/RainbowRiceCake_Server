@@ -30,7 +30,7 @@ import partnerRepository from '../repositories/partner.repository.js';
 */
 async function createNewOrder({ userId, orderData }) {
   return await db.sequelize.transaction(async t => {
-    const { firstName, lastName, email, hotelId, plans, price } = orderData;
+    const { firstName, lastName, email, hotelId, plans = [], price } = orderData;
 
     // 1. [핵심 수정] User ID로 실제 Partner PK 조회
     // 컨트롤러에서 넘긴 partnerId가 User 테이블의 ID이므로, 
@@ -43,17 +43,23 @@ async function createNewOrder({ userId, orderData }) {
     const fullName = `${firstName} ${lastName}`.trim();
 
     // 2. plans 배열 가공 (CamelCase 스키마 기준)
-    const cntS = plans.find(p => p.id === 'basic')?.quantity || 0;
-    const cntM = plans.find(p => p.id === 'standard')?.quantity || 0;
-    const cntL = plans.find(p => p.id === 'premium')?.quantity || 0;
+    const safePlans = plans || [];
+    const cntS = safePlans.find(p => p.id === 'basic')?.quantity || 0;
+    const cntM = safePlans.find(p => p.id === 'standard')?.quantity || 0;
+    const cntL = safePlans.find(p => p.id === 'premium')?.quantity || 0;
 
     // 3. 주문 데이터 검증
-    const totalCount = cntS + cntM + cntL;
-    if (totalCount === 0) {
-      throw myError('최소 1개 이상의 상품을 주문해야 합니다.', BAD_REQUEST_ERROR);
+    if (cntS + cntM + cntL !== 1) {
+      throw myError('한 번에 하나의 플랜만 주문 가능합니다.', BAD_REQUEST_ERROR);
     }
 
-    const calculatedPrice = plans.reduce((sum, p) => sum + (p.price * p.quantity), 0);
+    const SERVER_PRICES = { basic: 5000, standard: 8000, premium: 10000 };
+
+    const calculatedPrice = safePlans.reduce((sum, p) => {
+      const unitPrice = SERVER_PRICES[p.id] || 0;
+      return sum + (unitPrice * p.quantity);
+    }, 0);
+
     if (price !== calculatedPrice) {
       throw myError('결제 금액 정보가 일치하지 않습니다.', BAD_REQUEST_ERROR);
     }
@@ -258,7 +264,7 @@ async function getTodayOrders({ filter, tab, page }) {
     // 탭별 상태 매핑
     const statusMap = {
       waiting: ['req'],
-      inprogress: ['match'],
+      inprogress: ['mat'],
       completed: ['com'],
     };
 
@@ -288,39 +294,52 @@ async function getTodayOrders({ filter, tab, page }) {
   });
 }
 
+// ------------------------------------------ 2026.01.05 추가
 /**
  * Get details of order history 상세 조회 (Detail)
 */
-async function getOrderDetail({ orderId, userId, userRole }) {
-  return await db.sequelize.transaction(async t => {
-    // 1. 주문 조회
-    const order = await orderRepository.findByPkWithDetails(t, orderId);
+async function getOrderDetail({ orderCode, userId, userRole }) {
+  // 1. 데이터 조회 (트랜잭션은 선택사항, 여기서는 제외)
+  const order = await orderRepository.findByOrderCodeWithDetails(null, orderCode);
 
-    if (!order) {
-      throw myError('주문을 찾을 수 없습니다.', NOT_FOUND_ERROR);
+  if (!order) {
+    throw myError('주문을 찾을 수 없습니다.', NOT_FOUND_ERROR);
+  }
+
+  // 2. 권한 검증 (비즈니스 로직의 핵심)
+  const orderData = order.get({ plain: true }); // Sequelize 객체를 순수 JSON으로 변환
+
+  if (userRole === ROLE.PTN) {
+    // 파트너: 주문에 등록된 파트너의 userId와 접속자 ID가 일치하는지
+    if (orderData.order_partner?.userId !== userId) {
+      throw myError('해당 주문에 대한 접근 권한이 없습니다.', FORBIDDEN);
     }
+  } else if (userRole === ROLE.DLV) {
+    // 라이더: 주문에 배정된 라이더의 userId와 일치하는지 (Rider 모델 내 userId 필드 가정)
+    if (orderData.order_rider?.userId !== userId) {
+      throw myError('배정된 라이더만 조회 가능합니다.', FORBIDDEN);
+    }
+  } else if (userRole === ROLE.COM) {
+    // 일반 유저: 주문 생성자가 본인인지
+    if (orderData.userId !== userId) {
+      throw myError('본인의 주문만 조회 가능합니다.', FORBIDDEN);
+    }
+  }
 
-    // 3. 이미지 조회
-    const images = await imageRepository.findAllByOrderId(t, orderId);
+  // 3. 이미지 조회 및 응답 데이터 가공
+  const images = await imageRepository.findAllByOrderId(null, orderData.id);
 
-    // 4. 응답 데이터 구성 (비즈니스 로직)
-    const pickupImage = images.find(img => img.type === 'PICK');
-    const completeImage = images.find(img => img.type === 'COM');
-
-    return {
-      ...order.toJSON(),
-      images: {
-        pickup: pickupImage || null,
-        complete: completeImage || null,
-      },
-      timeline: {
-        created: order.createdAt,
-        matched: order.matchedAt,
-        picked: order.pickedAt,
-        completed: order.completedAt,
-      },
-    };
-  });
+  return {
+    ...orderData,
+    images: {
+      // pickup: images.find(img => img.type === 'PICK')?.url || null,
+      complete: images.find(img => img.type === 'COM')?.url || null,
+    },
+    timeline: {
+      created: orderData.createdAt,
+      completed: orderData.status === 'com' ? orderData.updatedAt : null,
+    }
+  };
 }
 
 /**

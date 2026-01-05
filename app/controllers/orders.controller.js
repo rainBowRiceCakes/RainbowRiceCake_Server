@@ -125,12 +125,12 @@ async function uploadCompletePhoto(req, res, next) {
  */
 async function show(req, res, next) {
   try {
-    const orderId = req.params.orderId;
+    const orderCode = req.params.orderCode;
     const userId = req.user.id;
     const userRole = req.user.role;
     const email = req.user.email;
     const result = await ordersService.getOrderDetail({
-      orderId,
+      orderCode,
       userId,
       userRole,
       email

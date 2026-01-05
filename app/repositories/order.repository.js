@@ -39,8 +39,9 @@ async function findByPk(t = null, id) {
 /**
  * 상세 조회 (조인 포함)
  */
-async function findByPkWithDetails(t = null, id) {
-  return await Order.findByPk(id, {
+async function findByOrderCodeWithDetails(t = null, orderCode) {
+  return await Order.findOne({
+    where: { orderCode: orderCode },
     transaction: t,
     include: [
       {
@@ -491,7 +492,7 @@ export default {
   create,
   existsByPk,
   findByPk,
-  findByPkWithDetails,
+  findByOrderCodeWithDetails,
   findByIdOnly,
   countInProgressByRider,
   updateToMatched,

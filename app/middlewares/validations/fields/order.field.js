@@ -133,8 +133,8 @@ export const price = body('price')
   .toInt();
 
 export const plans = body('plans')
-  .isArray({ min: 1 })
-  .withMessage('최소 하나 이상의 플랜을 선택하세요.');
+  .isArray({ min: 1, max: 1 }) // 정확히 1개만 허용
+  .withMessage('배송 플랜은 반드시 하나만 선택해야 합니다.')
 
 export const cntS = body('cntS')  // 👈 camelCase로 통일
   .optional()
