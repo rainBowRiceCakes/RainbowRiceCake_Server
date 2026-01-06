@@ -2,6 +2,7 @@
  * @file app/models/Rider.js
  * @description rider model
  * 251217 v1.0.0 wook 초기 생성
+ * 260107 sara update BIGINT에서 수정
  */
 
 import { DataTypes } from 'sequelize';
@@ -78,13 +79,13 @@ const attributes = {
   },
   lat: {
     field: 'lat',
-    type: DataTypes.BIGINT,
+    type: DataTypes.DECIMAL(10, 8), // 260107 sara update BIGINT에서 수정
     allowNull: true,
     comment: '위도'
   },
   lng: {
     field: 'lng',
-    type: DataTypes.BIGINT,
+    type: DataTypes.DECIMAL(11, 8), // 260107 sara update BIGINT에서 수정
     allowNull: true,
     comment: '경도'
   },

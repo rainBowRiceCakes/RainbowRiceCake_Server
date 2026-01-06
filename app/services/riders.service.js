@@ -3,6 +3,7 @@
  * @description riders Service
  * 251223 wook init
  * 251229 BSONG update
+ * 260107 sara update - create lat,lng on DB
  */
 
 import myError from "../errors/customs/my.error.js";
@@ -60,6 +61,8 @@ async function riderFormCreate(createData) {
       bank: createData.bank,
       bankNum: createData.bankNum,
       licenseImg: createData.licenseImg,
+      lat: createData.lat, // 260107 sara init
+      lng: createData.lng, // 260107 sara init
     };
 
     // Repository 통해 DB에 저장
