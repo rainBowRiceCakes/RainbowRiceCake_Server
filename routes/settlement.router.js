@@ -10,8 +10,14 @@ import settlementsController from '../app/controllers/settlements.controller.js'
 
 const settlementRouter = express.Router();
 
-settlementRouter.get('/', authMiddleware, settlementsController.settlementShow)
+settlementRouter.get('/', authMiddleware, settlementsController.settlementShow);
 settlementRouter.get('/statistics', authMiddleware, settlementsController.getStatistics);
-settlementRouter.get('/month-total', authMiddleware, settlementsController.monthTotalAmount)
+settlementRouter.get('/month-total', authMiddleware, settlementsController.monthTotalAmount);
+settlementRouter.get('/three-months-total', authMiddleware, settlementsController.getLastThreeMonthsTotalAmount);
+
+// 정산 상세 내역 조회
+settlementRouter.get('/:id', authMiddleware, settlementsController.getSettlementDetail);
+// 정산 재시도
+settlementRouter.post('/:id/retry', authMiddleware, settlementsController.retrySettlement);
 
 export default settlementRouter;

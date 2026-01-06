@@ -75,8 +75,68 @@ async function getStatistics(req, res, next) {
     }
 }
 
+/**
+ * 최근 3개월 매출 합계 조회
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function getLastThreeMonthsTotalAmount(req, res, next) {
+    try {
+        const result = await settlementsService.lastThreeMonthsTotalAmount();
+        return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+    } catch (error) {
+        return next(error);
+    }
+}
+
+/**
+ * 특정 정산내역 상세 조회
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function getSettlementDetail(req, res, next) {
+  try {
+    const { id } = req.params;
+    const result = await settlementsService.getSettlementDetail({ id });
+    if (!result) {
+      return res.status(404).send(createBaseResponse({ code: 'NOT_FOUND', message: '정산 내역을 찾을 수 없습니다.' }, null));
+    }
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+/**
+ * 거부된 정산내역 재시도
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function retrySettlement(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { bankAccount, bankCode, memo } = req.body; // 모달에서 전달받을 수정된 정보 및 메모
+    
+    // 서비스 계층으로 재시도 로직 위임
+    const result = await settlementsService.retrySettlement({ id, bankAccount, bankCode, memo });
+    
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  } catch (error) {
+    return next(error);
+  }
+}
+
 export default {
   monthTotalAmount,
   settlementShow,
   getStatistics,
+  getLastThreeMonthsTotalAmount,
+  getSettlementDetail, // 새로 추가
+  retrySettlement, // 새로 추가
 }

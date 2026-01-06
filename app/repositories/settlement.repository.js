@@ -42,7 +42,7 @@ async function findAllSettlements({ page, limit, status, search }) {
         ],
         offset,
         limit,
-        order: [['createdAt', 'DESC']],
+        order: [['id', 'DESC']],
         distinct: true,
     });
 }
@@ -91,9 +91,7 @@ async function countActiveRidersByMonth({ year, month }) {
  */
 async function countFailedOrPendingByMonth({ year, month }) {
     const where = {
-        status: {
-            [Op.ne]: 'COM' // 'COM'이 아닌 상태
-        }
+        status: 'REJ'
     };
     if (year) where.year = year;
     if (month) where.month = month;
@@ -101,9 +99,50 @@ async function countFailedOrPendingByMonth({ year, month }) {
     return await Settlement.count({ where });
 }
 
+/**
+ * ID로 정산 내역 및 라이더 상세 정보 조회
+ * @param {object} { id }
+ * @returns {Promise<Settlement>}
+ */
+async function findByIdWithRiderDetails({ id }) {
+    return await Settlement.findOne({
+        where: { id },
+        include: [
+            {
+                model: Rider,
+                as: 'settlement_rider',
+                attributes: ['id', 'bank', 'bankNum', 'address', 'phone'], // Rider 모델의 필요한 정보 포함
+                include: [{
+                    model: User,
+                    as: 'rider_user',
+                    attributes: ['id', 'name', 'email'] // User 모델의 필요한 정보 포함
+                }]
+            }
+        ]
+    });
+}
+
+/**
+ * 정산 내역의 상태 업데이트
+ * @param {object} { id, status }
+ * @param {import("sequelize").Transaction} transaction
+ * @returns {Promise<[number, Settlement[]]>}
+ */
+async function updateStatus({ id, status }, transaction = null) {
+    return await Settlement.update(
+        { status },
+        {
+            where: { id },
+            transaction,
+        }
+    );
+}
+
 export default {
   findAllSettlements,
   monthTotalAmount,
   countActiveRidersByMonth,
   countFailedOrPendingByMonth,
+  findByIdWithRiderDetails, // 새로 추가
+  updateStatus, // 새로 추가
 }

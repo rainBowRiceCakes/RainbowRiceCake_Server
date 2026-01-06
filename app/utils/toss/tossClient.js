@@ -12,8 +12,8 @@ dotenv.config();
 
 const SECRET_KEY = process.env.TOSS_SECRET_KEY; 
 
-// 토스 인증 헤더 생성
-const basicAuth = Buffer.from(`${SECRET_KEY}:`).toString('base64');
+// // 실서비스용 토스 인증 헤더 생성
+// const basicAuth = Buffer.from(`${SECRET_KEY}:`).toString('base64');
 
 export const transferMoney = async ({ bankCode, accountNumber, amount, orderId }) => {
     if (process.env.TRANSFER_MODE === 'MOCK') {
