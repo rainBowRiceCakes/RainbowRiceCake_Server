@@ -27,6 +27,7 @@ import { initInvoiceScheduler } from './app/schedulers/invoice.schedule.js';
 import invoiceRouter from './routes/invoice.router.js';
 import { initSettlementScheduler } from './app/schedulers/settlementScheduler.js';
 import { initTransferScheduler } from './app/schedulers/transferScheduler.js';
+import pathUtil from './app/utils/path/path.util.js';
 
 const app = express();
 app.use(express.json()); // JSON 요청 파싱 처리
@@ -60,6 +61,8 @@ app.use('/api/invoices', invoiceRouter);
 // ---------------------
 // 사진 프론트에 보여주는 처리
 app.use('/storage', express.static('storage'));
+app.use(process.env.ACCESS_FILE_QUESTION_IMAGE_PATH, express.static(pathUtil.getQuestionsImagePath()));
+app.use(process.env.ACCESS_FILE_RIDER_LICENSE_IMAGE_PATH, express.static(pathUtil.getLicensesImagePath()));
 // ---------------------
 // 404 처리
 // ---------------------
