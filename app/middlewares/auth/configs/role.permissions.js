@@ -33,7 +33,7 @@ const ROLE_PERMISSIONS = {
     // profiles
     { path: /^\/api\/profiles$/, roles: [COM, PTN, DLV, ADM] },
     // questions
-    { path: /^\/api\/questions$/, roles: [ADM] },
+    { path: /^\/api\/questions$/, roles: [COM, DLV, PTN, ADM] },
     // riders
     { path: /^\/api\/riders$/, roles: [ADM] },
     { path: /^\/api\/riders\/[0-9]+$/, roles: [ADM] },
@@ -44,7 +44,7 @@ const ROLE_PERMISSIONS = {
     { path: /^\/api\/users\/show\/[0-9]+$/, roles: [ADM] },
     { path: /^\/api\/orders\/[0-9]+\/match$/, roles: [DLV, ADM] },
     { path: /^\/api\/partners$/, roles: [COM, ADM] },
-    { path: /^\/api\/orders\/stats\/hourly$/, roles: [PTN, ADM] },
+    { path: /^\/api\/orders\/stats\/hourly$/, roles: [COM] },
   ],
   POST: [
     // auth
@@ -70,7 +70,7 @@ const ROLE_PERMISSIONS = {
     { path: /^\/api\/orders\/[0-9]+\/pickup-photo$/, roles: [DLV] },
     { path: /^\/api\/orders\/[0-9]+\/complete-photo$/, roles: [DLV] },
     // partners
-    { path: /^\/api\/partners$/, roles: [COM] },
+    { path: /^\/api\/partners$/, roles: [COM, ADM] },
     // questions
     { path: /^\/api\/questions$/, roles: [COM, DLV, PTN, ADM] },
     // riders
