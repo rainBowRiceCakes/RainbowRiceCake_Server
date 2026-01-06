@@ -149,6 +149,21 @@ async function riderDeleteUser(t = null, id) {
     });
 }
 
+/**
+ * 픽업 시간 업데이트
+ */
+async function updatePickupAt(t = null, riderId) {
+  return await Rider.update(
+    {
+      pickupAt: new Date()
+    },
+    {
+      where: { id: riderId },
+      transaction: t
+    }
+  );
+}
+
 export default {
   findByUserId,
   update,
@@ -157,4 +172,5 @@ export default {
   create,
   riderDelete,
   riderDeleteUser,
+  updatePickupAt,
 };

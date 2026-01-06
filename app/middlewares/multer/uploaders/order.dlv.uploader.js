@@ -51,7 +51,7 @@ export default function (photoType) {
           // 화이트리스트 확장자 체크
           const allowedExts = ['jpg', 'jpeg', 'png', 'gif'];
           if (!allowedExts.includes(ext)) {
-            return callback(myError("허용되지 않은 파일 확장자", BAD_FILE_ERROR));
+            return callback(myError("허용되지 않은 파일 확장자입니다! 다시 업로드 해주세요. ", BAD_FILE_ERROR));
           }
 
           const timestamp = dayjs().format("YYYYMMDD_HHmmss");

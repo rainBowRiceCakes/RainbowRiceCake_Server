@@ -135,18 +135,18 @@ async function matchOrder({ orderCode, userId }) {
  */
 async function uploadPickupPhoto({ orderCode, photoPath }) {
   return await db.sequelize.transaction(async t => {
-    // 1. 주문 조회
+    // 1. 주문 조회 (Rider 정보가 포함되어 있음)
     const order = await orderRepository.findByOrderCode(t, orderCode);
     if (!order) {
       throw myError('주문을 찾을 수 없습니다.', NOT_FOUND_ERROR);
     }
 
-    // 3. 주문 상태 확인 - "픽업 사진을 업로드할 수 있는 상태인가?"
+    // 3. 주문 상태 확인
     if (order.status !== 'mat') {
       throw myError('픽업 사진은 매칭 후에만 업로드할 수 있습니다.', BAD_REQUEST_ERROR);
     }
 
-    // 4. 중복 확인 - "이미 픽업 사진이 있는가?"
+    // 4. 중복 확인
     const hasPickupImage = await imageRepository.existsByOrderAndType(t, order.id, 'PICK');
     if (hasPickupImage) {
       throw myError('이미 픽업 사진이 등록되었습니다.', CONFLICT_ERROR);
@@ -162,11 +162,14 @@ async function uploadPickupPhoto({ orderCode, photoPath }) {
     // 6. 주문 상태 업데이트 (match → pick)
     await orderRepository.updateToPicked(t, order.id);
 
-    // 7. 업데이트된 주문 조회
-    const updatedOrder = await orderRepository.findByOrderCodeWithDetails(t, orderCode);
+    // 7. 라이더의 픽업 시각 업데이트 추가
+    // order.order_rider가 존재하는지 확인 후 업데이트를 수행합니다.
+    if (order.order_rider && order.order_rider.id) {
+      await riderRepository.updatePickupAt(t, order.order_rider.id);
+    }
 
-    // 8. 알림 전송 (선택)
-    // await notificationService.sendOrderPicked(updatedOrder);
+    // 8. 업데이트된 주문 조회 (최신 pickupAt 정보를 포함하기 위해 다시 조회)
+    const updatedOrder = await orderRepository.findByOrderCodeWithDetails(t, orderCode);
 
     return {
       order: updatedOrder,
@@ -174,7 +177,6 @@ async function uploadPickupPhoto({ orderCode, photoPath }) {
     };
   });
 }
-
 /**
  * Upload complete photo
  * 완료 사진 업로드 + 주문 상태 변경 (pick → com)
@@ -287,8 +289,8 @@ async function getOrderDetail({ orderCode }) {
     const images = await imageRepository.findAllByOrderId(t, order.id);
 
     // 4. 응답 데이터 구성 (비즈니스 로직)
-    const pickupImage = images.find(img => img.type === 'PICK');
-    const completeImage = images.find(img => img.type === 'COM');
+    const pickupImage = images.find(img => img.type === 'pick');
+    const completeImage = images.find(img => img.type === 'com');
 
     return {
       order,
@@ -298,8 +300,8 @@ async function getOrderDetail({ orderCode }) {
       },
       timeline: {
         created: order.createdAt,
-        matched: order.matchedAt,
-        picked: order.pickedAt,
+        // matched: order.matchedAt,
+        picked: order.order_rider.pickupAt,
         completed: order.completedAt,
       },
     };

@@ -521,31 +521,31 @@ async function findUrgentOrders(t = null) {
 
 // ------------------------------------------ 2026.01.06 추가
 async function findByOrderCode(t = null, orderCode) {
-  console.log(`[OrderRepository][findByOrderCode] Searching for orderCode: "${orderCode}"`);
   const order = await Order.findOne({
     where: { orderCode },
     include: [
       {
         model: Partner,
         as: 'order_partner',
-        attributes: ['id', 'krName', 'address'],
+        attributes: ['id', 'phone', 'krName', 'address', 'lat', 'lng'],
         required: false
       },
       {
         model: Hotel,
         as: 'order_hotel',
-        attributes: ['id', 'krName', 'address'],
+        attributes: ['id', 'phone', 'krName', 'address', 'lat', 'lng'],
         required: false
       },
       {
         model: Rider,
         as: 'order_rider',
+        attributes: ['id', 'phone', 'pickupAt'],
         required: false,
         include: [
           {
             model: User,
             as: 'rider_user',
-            attributes: ['name'],
+            attributes: ['name', 'id', 'email'],
             required: false
           }
         ]
@@ -553,7 +553,6 @@ async function findByOrderCode(t = null, orderCode) {
     ],
     transaction: t,
   });
-  console.log(`[OrderRepository][findByOrderCode] Result for orderCode "${orderCode}":`, order ? "Found" : "Not Found");
   return order;
 }
 
