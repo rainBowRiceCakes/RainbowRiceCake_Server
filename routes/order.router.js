@@ -36,7 +36,7 @@ orderRouter.post('/',
 // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 // --- 2. ORDER WORKFLOW FOR RIDERS (기사와 관련된 당일 내 이뤄지는 주문) ---
 // 이 섹션은 라이더가 주문을 매칭하고, 픽업/완료 사진을 업로드하는 워크플로우를 처리합니다.
-orderRouter.post('/:orderId',
+orderRouter.put('/:orderCode',
   /* #swagger.tags = ['Orders']
   #swagger.summary = '라이더용 주문 수락'
   #swagger.description = '라이더가 주문을 수락합니다.' */
@@ -48,7 +48,7 @@ orderRouter.post('/:orderId',
   ordersController.matchOrder
 );
 
-orderRouter.post('/:orderId/pickup-photo',
+orderRouter.post('/:orderCode/pickup-photo',
   /* #swagger.tags = ['Orders']
   #swagger.summary = '라이더용 주문 픽업 사진 업로드'
   #swagger.description = '라이더가 주문 픽업 사진을 업로드합니다.' */
@@ -61,7 +61,7 @@ orderRouter.post('/:orderId/pickup-photo',
   ordersController.uploadPickupPhoto     // 7. 비즈니스 로직
 )
 
-orderRouter.post('/:orderId/complete-photo',
+orderRouter.post('/:orderCode/complete-photo',
   /* #swagger.tags = ['Orders']
   #swagger.summary = '라이더용 주문 완료 사진 업로드'
   #swagger.description = '라이더가 주문 완료 사진을 업로드합니다.' */
@@ -69,7 +69,7 @@ orderRouter.post('/:orderId/complete-photo',
   // orderMiddleware.checkOrderExists,
   // orderMiddleware.requireRiderRole,
   orderDlvUploader('com'),               // 👈 여기가 맞음!
-  orderValidator.uploadPhoto,
+  // orderValidator.uploadPhoto,
   validationHandler,
   ordersController.uploadCompletePhoto
 );

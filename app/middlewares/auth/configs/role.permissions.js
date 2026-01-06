@@ -67,8 +67,8 @@ const ROLE_PERMISSIONS = {
     // orders
     { path: /^\/api\/orders$/, roles: [PTN, ADM] },
     { path: /^\/api\/orders\/[0-9]+$/, roles: [DLV, ADM] },
-    { path: /^\/api\/orders\/[0-9]+\/pickup-photo$/, roles: [DLV] },
-    { path: /^\/api\/orders\/[0-9]+\/complete-photo$/, roles: [DLV] },
+    { path: /^\/api\/orders\/[0-9]+\/pickup-photo$/, roles: [DLV, ADM] },
+    { path: /^\/api\/orders\/[0-9]+\/complete-photo$/, roles: [DLV, ADM] },
     // partners
     { path: /^\/api\/partners$/, roles: [COM, ADM] },
     // questions
@@ -81,6 +81,8 @@ const ROLE_PERMISSIONS = {
     { path: /^\/api\/users\/store$/, roles: [ADM] },
   ],
   PUT: [
+    // orders
+    { path: /^\/api\/orders\/[a-zA-Z0-9-]+$/, roles: [DLV, ADM] },
     // admins
     { path: /^\/api\/admins\/rider$/, roles: [ADM] },
     { path: /^\/api\/admins\/partner$/, roles: [ADM] },

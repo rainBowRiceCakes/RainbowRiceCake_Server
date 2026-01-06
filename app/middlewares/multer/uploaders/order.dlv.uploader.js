@@ -40,10 +40,10 @@ export default function (photoType) {
 
         filename(req, file, callback) {
           // URL 파라미터에서 orderId 가져오기
-          const orderId = req.params.orderId;
+          const orderCode = req.params.orderCode;
 
-          if (!orderId) {
-            return callback(new Error("orderId 누락"));
+          if (!orderCode || orderCode === 'undefined') {
+            return callback(myError("orderCode 누락", BAD_FILE_ERROR));
           }
 
           const ext = file.originalname.split(".").pop().toLowerCase();
@@ -51,7 +51,7 @@ export default function (photoType) {
           // 화이트리스트 확장자 체크
           const allowedExts = ['jpg', 'jpeg', 'png', 'gif'];
           if (!allowedExts.includes(ext)) {
-            return callback(new Error("허용되지 않은 파일 확장자"));
+            return callback(myError("허용되지 않은 파일 확장자", BAD_FILE_ERROR));
           }
 
           const timestamp = dayjs().format("YYYYMMDD_HHmmss");
@@ -59,7 +59,7 @@ export default function (photoType) {
 
           // photoType은 미들웨어 생성 시 고정된 값 사용
           // 사진파일 이름끝에 status + orderId 를 모두 등록해야 후처리가 용이할거같아요!
-          const filename = `order_${orderId}_${photoType}_${timestamp}_${uuid}.${ext}`;
+          const filename = `order_${orderCode}_${photoType}_${timestamp}_${uuid}.${ext}`;
 
           callback(null, filename);
         },

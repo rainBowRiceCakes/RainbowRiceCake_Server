@@ -7,7 +7,7 @@
 
 import { Op } from 'sequelize';
 import db from '../models/index.js';
-const { Order, Partner, Hotel, Rider, sequelize, User } = db;
+const { Order, Partner, Hotel, Rider, sequelize, User, Image } = db;
 
 /**
  * 주문 생성
@@ -96,7 +96,7 @@ async function countInProgressByRider(t = null, riderId) {
 async function updateToMatched(t = null, orderId, riderId) {
   return await Order.update(
     {
-      riderId,
+      riderId: riderId,
       status: 'mat',
       updatedAt: new Date()
     },
@@ -174,7 +174,7 @@ async function findTodayOrdersByTab(t = null, { filter, statuses, today, limit, 
       }
     ],
     attributes: [
-      'id', 'status', 'price', 'cntS', 'cntM', 'cntL',
+      'id', 'orderCode', 'status', 'price', 'cntS', 'cntM', 'cntL',
       'createdAt', 'matchedAt', 'pickedAt', 'completedAt'
     ]
   });
@@ -231,7 +231,7 @@ async function findOrderHistory(t = null, { filter, status, dateRange, limit, of
       }
     ],
     attributes: [
-      'id', 'status', 'price', 'cntS', 'cntM', 'cntL', 'createdAt'
+      'id', 'orderCode', 'status', 'price', 'cntS', 'cntM', 'cntL', 'createdAt'
     ]
   });
 }
@@ -519,10 +519,24 @@ async function findUrgentOrders(t = null) {
 //   });
 // }
 
+// ------------------------------------------ 2026.01.06 추가
 async function findByOrderCode(t = null, orderCode) {
-  return await Order.findOne({
+  console.log(`[OrderRepository][findByOrderCode] Searching for orderCode: "${orderCode}"`);
+  const order = await Order.findOne({
     where: { orderCode },
     include: [
+      {
+        model: Partner,
+        as: 'order_partner',
+        attributes: ['id', 'krName', 'address'],
+        required: false
+      },
+      {
+        model: Hotel,
+        as: 'order_hotel',
+        attributes: ['id', 'krName', 'address'],
+        required: false
+      },
       {
         model: Rider,
         as: 'order_rider',
@@ -539,6 +553,8 @@ async function findByOrderCode(t = null, orderCode) {
     ],
     transaction: t,
   });
+  console.log(`[OrderRepository][findByOrderCode] Result for orderCode "${orderCode}":`, order ? "Found" : "Not Found");
+  return order;
 }
 
 export default {

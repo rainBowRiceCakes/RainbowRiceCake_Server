@@ -43,12 +43,11 @@ async function store(req, res, next) {
 */
 async function matchOrder(req, res, next) {
   try {
-    const orderId = req.params.orderId;
-    const riderId = req.user.id;
+    const { orderCode } = req.params;
+    const userId = req.user.id; // 변수명을 명확히 userId로
 
-    const result = await ordersService.matchOrder({ orderId, riderId });
-    console.log('🔥 matchOrder:', req.params.orderId, req.user.id);
-
+    // 키 이름을 서비스와 맞춤
+    const result = await ordersService.matchOrder({ orderCode, userId });
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {
@@ -71,13 +70,11 @@ async function uploadPickupPhoto(req, res, next) {
       throw myError('사진 파일이 필요합니다.', BAD_REQUEST_ERROR);
     }
 
-    const orderId = req.params.orderId;
-    const riderId = req.user.id;
+    const orderCode = req.params.orderCode;
     const photoPath = req.file.filename;
 
     const result = await ordersService.uploadPickupPhoto({
-      orderId,
-      riderId,
+      orderCode,
       photoPath
     });
 
@@ -100,13 +97,11 @@ async function uploadCompletePhoto(req, res, next) {
       throw myError('사진 파일이 필요합니다.', BAD_REQUEST_ERROR);
     }
 
-    const orderId = req.params.orderId;
-    const riderId = req.user.id;
+    const orderCode = req.params.orderCode;
     const photoPath = req.file.filename;
 
     const result = await ordersService.uploadCompletePhoto({
-      orderId,
-      riderId,
+      orderCode,
       photoPath
     });
 
@@ -127,7 +122,7 @@ async function show(req, res, next) {
   try {
     const orderCode = req.params.orderCode;
 
-    const result = await ordersService.getOrderDetail({orderCode});
+    const result = await ordersService.getOrderDetail({ orderCode });
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {

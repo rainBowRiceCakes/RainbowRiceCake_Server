@@ -94,69 +94,51 @@ async function createNewOrder({ userId, orderData }) {
 /**
  * Match Rider to Order (주문 매칭 - rider 가 수락)
  * @param {object} data
- * @param {number} data.orderId
- * @param {number} data.riderId
+ * @param {number} data.orderCode
+ * @param {number} data.userId
  * @returns {Promise<any>}
  */
-async function matchOrder({ orderId, riderId }) {
-  return await db.sequelize.transaction(async t => {
-    // 1. 주문 조회
-    const order = await orderRepository.findByPk(t, orderId);
+// matchOrder 서비스 (최종 완성형)
+async function matchOrder({ orderCode, userId }) {
+  // 1단계: 트랜잭션 안에서 데이터 "변경"만 확실히!
+  await db.sequelize.transaction(async t => {
+    const order = await orderRepository.findByOrderCode(t, orderCode);
     if (!order) {
       throw myError('주문을 찾을 수 없습니다.', NOT_FOUND_ERROR);
     }
 
-    // 2. 주문 상태 확인 - "수락 가능한가?"
-    if (order.status !== 'req') {
-      throw myError('이미 처리된 주문입니다.', BAD_REQUEST_ERROR);
-    }
-
-    // 3. 이미 다른 라이더가 수락했는지 확인
-    if (order.riderId) {
-      throw myError('이미 다른 라이더가 수락한 주문입니다.', CONFLICT_ERROR);
-    }
-
-    // 4. 라이더 존재 확인
-    const rider = await riderRepository.findByUserId(t, riderId);
+    const rider = await riderRepository.findByUserId(t, userId);
     if (!rider) {
       throw myError('라이더 정보를 찾을 수 없습니다.', NOT_FOUND_ERROR);
     }
-
-    // // 5. 라이더 활성 상태 확인
-    // if (rider.status !== 'active') {
-    //   throw myError('현재 배달 가능한 상태가 아닙니다.', FORBIDDEN_ERROR);
-    // }
-
-    // // 6. 라이더의 진행중인 주문 개수 확인 (예: 최대 3개)
-    // const inProgressCount = await orderRepository.getInProgressCountByRider(t, riderId);
-    // if (inProgressCount >= 3) {
-    //   throw myError('진행 중인 주문이 너무 많습니다. (최대 3개)', BAD_REQUEST_ERROR);
-    // }
-
-    // 5. 주문 업데이트 (Repository가 처리)
-    await orderRepository.updateToMatched(t, orderId, rider.id);
-
-    // 6. 업데이트된 주문 조회
-    return await orderRepository.findByPkWithDetails(t, orderId);
+    await orderRepository.updateToMatched(t, order.id, rider.id);
   });
+
+  // 2단계: COMMIT 후 "상세 정보" 포함해서 새로 조회
+  return await orderRepository.findByOrderCodeWithDetails(null, orderCode);
 }
+
+// // 5. 라이더 활성 상태 확인
+// if (rider.status !== 'active') {
+//   throw myError('현재 배달 가능한 상태가 아닙니다.', FORBIDDEN_ERROR);
+// }
+
+// // 6. 라이더의 진행중인 주문 개수 확인 (예: 최대 3개)
+// const inProgressCount = await orderRepository.getInProgressCountByRider(t, riderId);
+// if (inProgressCount >= 3) {
+//   throw myError('진행 중인 주문이 너무 많습니다. (최대 3개)', BAD_REQUEST_ERROR);
+// }
 
 /**
  * Upload pickup photo
  * 픽업 사진 업로드 + 주문 상태 변경 (match → pick)
  */
-async function uploadPickupPhoto({ orderId, riderId, photoPath }) {
+async function uploadPickupPhoto({ orderCode, photoPath }) {
   return await db.sequelize.transaction(async t => {
     // 1. 주문 조회
-    const order = await orderRepository.findByPk(t, orderId);
+    const order = await orderRepository.findByOrderCode(t, orderCode);
     if (!order) {
       throw myError('주문을 찾을 수 없습니다.', NOT_FOUND_ERROR);
-    }
-
-    // 2. 권한 확인 - "이 라이더가 이 주문의 담당자인가?"
-    const rider = await riderRepository.findByUserId(t, riderId); // 12로 라이더(3) 조회
-    if (!rider || order.riderId !== rider.id) {
-      throw myError('이 주문을 처리할 권한이 없습니다.', FORBIDDEN_ERROR);
     }
 
     // 3. 주문 상태 확인 - "픽업 사진을 업로드할 수 있는 상태인가?"
@@ -165,23 +147,23 @@ async function uploadPickupPhoto({ orderId, riderId, photoPath }) {
     }
 
     // 4. 중복 확인 - "이미 픽업 사진이 있는가?"
-    const hasPickupImage = await imageRepository.existsByOrderAndType(t, orderId, 'PICK');
+    const hasPickupImage = await imageRepository.existsByOrderAndType(t, order.id, 'PICK');
     if (hasPickupImage) {
       throw myError('이미 픽업 사진이 등록되었습니다.', CONFLICT_ERROR);
     }
 
     // 5. 이미지 저장
     const image = await imageRepository.create(t, {
-      dlvId: orderId,
+      dlvId: order.id,
       img: photoPath,
-      type: 'PICK',
+      type: 'pick',
     });
 
     // 6. 주문 상태 업데이트 (match → pick)
-    await orderRepository.updateToPicked(t, orderId);
+    await orderRepository.updateToPicked(t, order.id);
 
     // 7. 업데이트된 주문 조회
-    const updatedOrder = await orderRepository.findByPkWithDetails(t, orderId);
+    const updatedOrder = await orderRepository.findByOrderCodeWithDetails(t, orderCode);
 
     // 8. 알림 전송 (선택)
     // await notificationService.sendOrderPicked(updatedOrder);
@@ -197,18 +179,12 @@ async function uploadPickupPhoto({ orderId, riderId, photoPath }) {
  * Upload complete photo
  * 완료 사진 업로드 + 주문 상태 변경 (pick → com)
  */
-async function uploadCompletePhoto({ orderId, riderId, photoPath }) {
+async function uploadCompletePhoto({ orderCode, photoPath }) {
   return await db.sequelize.transaction(async t => {
     // 1. 주문 조회
-    const order = await orderRepository.findByPk(t, orderId);
+    const order = await orderRepository.findByOrderCode(t, orderCode);
     if (!order) {
       throw myError('주문을 찾을 수 없습니다.', NOT_FOUND_ERROR);
-    }
-
-    // 2. 권한 확인 - "이 라이더가 이 주문의 담당자인가?"
-    const rider = await riderRepository.findByUserId(t, riderId); // 12로 라이더(3) 조회
-    if (!rider || order.riderId !== rider.id) {
-      throw myError('이 주문을 처리할 권한이 없습니다.', FORBIDDEN_ERROR);
     }
 
     // 3. 주문 상태 확인 - "완료 사진을 업로드할 수 있는 상태인가?"
@@ -217,23 +193,23 @@ async function uploadCompletePhoto({ orderId, riderId, photoPath }) {
     }
 
     // 4. 이미 완료 사진이 있는지 확인
-    const hasCompleteImage = await imageRepository.existsByOrderAndType(t, orderId, 'COM');
+    const hasCompleteImage = await imageRepository.existsByOrderAndType(t, order.id, 'COM');
     if (hasCompleteImage) {
       throw myError('이미 완료 사진이 등록되었습니다.', CONFLICT_ERROR);
     }
 
     // 5. 이미지 저장
     const image = await imageRepository.create(t, {
-      dlvId: orderId,
+      dlvId: order.id,
       img: photoPath,
-      type: 'COM',
+      type: 'com',
     });
 
     // 6. 주문 완료 처리 (pick → com)
-    await orderRepository.updateToCompleted(t, orderId);
+    await orderRepository.updateToCompleted(t, order.id);
 
     // 7. 업데이트된 주문 조회
-    const updatedOrder = await orderRepository.findByPkWithDetails(t, orderId);
+    const updatedOrder = await orderRepository.findByOrderCodeWithDetails(t, orderCode);
 
     // 8. 정산 처리 (선택)
     // await settlementService.processOrderSettlement(updatedOrder);
@@ -303,9 +279,9 @@ async function getOrderDetail({ orderCode }) {
     // 1. 주문 조회
     const order = await orderRepository.findByOrderCode(t, orderCode);
 
-  if (!order) {
-    throw myError('주문을 찾을 수 없습니다.', NOT_FOUND_ERROR);
-  }
+    if (!order) {
+      throw myError('주문을 찾을 수 없습니다.', NOT_FOUND_ERROR);
+    }
 
     // 3. 이미지 조회
     const images = await imageRepository.findAllByOrderId(t, order.id);
@@ -568,36 +544,9 @@ export const getOrdersList = async ({ userId, role, status, date, page, limit })
       order: [['createdAt', 'DESC']]
     });
 
-    const formattedOrders = result.rows.map(order => {
-      const pickImg = order.order_image.find(img => img.type === 'PICK')?.img || null;
-      const comImg = order.order_image.find(img => img.type === 'COM')?.img || null;
-
-      let sml = 'S';
-      if (order.cntL > 0) sml = 'L';
-      else if (order.cntM > 0) sml = 'M';
-
-
-      return {
-        id: order.id,
-        order_code: order.orderCode,
-        status: order.status,
-        partner_name: order.order_partner?.krName,
-        hotel_name: order.order_hotel?.krName,
-        price: order.price,
-        name: order.name,
-        sml,
-        images: {
-          pick_img: pickImg,
-          arr_img: comImg,
-        },
-        createdAt: order.createdAt,
-        updatedAt: order.updatedAt,
-      }
-    })
-
     // 💡 프론트엔드에서 요구하는 pagination 정보를 함께 리턴합니다.
     return {
-      data: formattedOrders, // 실제 주문 목록 배열
+      data: result.rows, // 실제 주문 목록 배열
       pagination: {
         totalItems: result.count, // 전체 개수 (예: 5개)
         totalPages: Math.ceil(result.count / limitNum), // 전체 페이지 수 (예: 5/5 = 1)
