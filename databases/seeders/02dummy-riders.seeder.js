@@ -24,7 +24,7 @@ export default {
       records.push({
         userId: `${i}`,
         licenseImg: `licenseImage${i}`,
-        bank: 'OO은행',
+        bank: '대구은행',
         bankNum: 1234567899,
         address: '보험용 주소입니다',
         phone: '010-1234-5678',

@@ -22,15 +22,15 @@ export default {
       records.push({
         userId: `${i}`,
         businessNum: `businessNum${i}`,
-        krName: 'OO은행',
-        enName: 'OOBank',
-        manager: '김XX',
+        krName: `올리브영${i}`,
+        enName: `olive young${i}`,
+        manager: `김XX${i}`,
         phone: '000-1111-2222',
         status: 'RES',
         logoImg: '로고 이미지경로',
         address: '여긴 어딜까요',
-        lat: '33.3456',
-        lng: '124.7654'
+        lat: `35.86833${i}`,
+        lng: `128.59452${i}`
       });
     }
 

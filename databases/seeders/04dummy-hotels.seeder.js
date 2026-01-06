@@ -20,14 +20,14 @@ export default {
 
     for (let i = 1; i <= partnerCount; i++) {
       records.push({
-        krName: 'OO호텔',
-        enName: 'OOHotel',
-        manager: '지배인',
+        krName: `OO호텔${i}`,
+        enName: `OOHotel${i}`,
+        manager: `지배인${i}`,
         phone: '000-3333-5555',
         status: true,
         address: '여긴 어딜까요',
-        lat: '34.9012',
-        lng: '124.3210'
+        lat: `35.87033${i}`,
+        lng: `128.61552${i}`
       });
     }
      
