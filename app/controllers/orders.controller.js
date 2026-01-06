@@ -126,15 +126,8 @@ async function uploadCompletePhoto(req, res, next) {
 async function show(req, res, next) {
   try {
     const orderCode = req.params.orderCode;
-    const userId = req.user.id;
-    const userRole = req.user.role;
-    const email = req.user.email;
-    const result = await ordersService.getOrderDetail({
-      orderCode,
-      userId,
-      userRole,
-      email
-    });
+
+    const result = await ordersService.getOrderDetail({orderCode});
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {

@@ -100,12 +100,11 @@ orderRouter.get('/:orderCode',
   /* #swagger.tags = ['Orders']
   #swagger.summary = '로그인한 유저와 라이더와 파트너용 주문 상세 조회'
   #swagger.description = '로그인한 유저와 라이더와 파트너가 주문 상세를 조회합니다.' */
-  authMiddleware,
+  // authMiddleware,
   orderValidator.show,
   validationHandler,
   ordersController.show
 );
-
 
 export default orderRouter;
 

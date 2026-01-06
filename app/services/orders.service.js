@@ -298,48 +298,36 @@ async function getTodayOrders({ filter, tab, page }) {
 /**
  * Get details of order history 상세 조회 (Detail)
 */
-async function getOrderDetail({ orderCode, userId, userRole }) {
-  // 1. 데이터 조회 (트랜잭션은 선택사항, 여기서는 제외)
-  const order = await orderRepository.findByOrderCodeWithDetails(null, orderCode);
+async function getOrderDetail({ orderCode }) {
+  return await db.sequelize.transaction(async t => {
+    // 1. 주문 조회
+    const order = await orderRepository.findByOrderCode(t, orderCode);
 
   if (!order) {
     throw myError('주문을 찾을 수 없습니다.', NOT_FOUND_ERROR);
   }
 
-  // 2. 권한 검증 (비즈니스 로직의 핵심)
-  const orderData = order.get({ plain: true }); // Sequelize 객체를 순수 JSON으로 변환
+    // 3. 이미지 조회
+    const images = await imageRepository.findAllByOrderId(t, order.id);
 
-  if (userRole === ROLE.PTN) {
-    // 파트너: 주문에 등록된 파트너의 userId와 접속자 ID가 일치하는지
-    if (orderData.order_partner?.userId !== userId) {
-      throw myError('해당 주문에 대한 접근 권한이 없습니다.', FORBIDDEN);
-    }
-  } else if (userRole === ROLE.DLV) {
-    // 라이더: 주문에 배정된 라이더의 userId와 일치하는지 (Rider 모델 내 userId 필드 가정)
-    if (orderData.order_rider?.userId !== userId) {
-      throw myError('배정된 라이더만 조회 가능합니다.', FORBIDDEN);
-    }
-  } else if (userRole === ROLE.COM) {
-    // 일반 유저: 주문 생성자가 본인인지
-    if (orderData.userId !== userId) {
-      throw myError('본인의 주문만 조회 가능합니다.', FORBIDDEN);
-    }
-  }
+    // 4. 응답 데이터 구성 (비즈니스 로직)
+    const pickupImage = images.find(img => img.type === 'PICK');
+    const completeImage = images.find(img => img.type === 'COM');
 
-  // 3. 이미지 조회 및 응답 데이터 가공
-  const images = await imageRepository.findAllByOrderId(null, orderData.id);
-
-  return {
-    ...orderData,
-    images: {
-      // pickup: images.find(img => img.type === 'PICK')?.url || null,
-      complete: images.find(img => img.type === 'COM')?.url || null,
-    },
-    timeline: {
-      created: orderData.createdAt,
-      completed: orderData.status === 'com' ? orderData.updatedAt : null,
-    }
-  };
+    return {
+      order,
+      images: {
+        pickup: pickupImage || null,
+        complete: completeImage || null,
+      },
+      timeline: {
+        created: order.createdAt,
+        matched: order.matchedAt,
+        picked: order.pickedAt,
+        completed: order.completedAt,
+      },
+    };
+  });
 }
 
 /**
@@ -579,9 +567,37 @@ export const getOrdersList = async ({ userId, role, status, date, page, limit })
       offset: offset,
       order: [['createdAt', 'DESC']]
     });
+
+    const formattedOrders = result.rows.map(order => {
+      const pickImg = order.order_image.find(img => img.type === 'PICK')?.img || null;
+      const comImg = order.order_image.find(img => img.type === 'COM')?.img || null;
+
+      let sml = 'S';
+      if (order.cntL > 0) sml = 'L';
+      else if (order.cntM > 0) sml = 'M';
+
+
+      return {
+        id: order.id,
+        order_code: order.orderCode,
+        status: order.status,
+        partner_name: order.order_partner?.krName,
+        hotel_name: order.order_hotel?.krName,
+        price: order.price,
+        name: order.name,
+        sml,
+        images: {
+          pick_img: pickImg,
+          arr_img: comImg,
+        },
+        createdAt: order.createdAt,
+        updatedAt: order.updatedAt,
+      }
+    })
+
     // 💡 프론트엔드에서 요구하는 pagination 정보를 함께 리턴합니다.
     return {
-      data: result.rows, // 실제 주문 목록 배열
+      data: formattedOrders, // 실제 주문 목록 배열
       pagination: {
         totalItems: result.count, // 전체 개수 (예: 5개)
         totalPages: Math.ceil(result.count / limitNum), // 전체 페이지 수 (예: 5/5 = 1)

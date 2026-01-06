@@ -7,7 +7,7 @@
 
 import { Op } from 'sequelize';
 import db from '../models/index.js';
-const { Order, Partner, Hotel, Rider, Sequelize, User } = db;
+const { Order, Partner, Hotel, Rider, sequelize, User } = db;
 
 /**
  * 주문 생성
@@ -244,7 +244,7 @@ async function getStatusStats(t = null, filter = {}) {
     where: filter,
     attributes: [
       'status',
-      [Sequelize.fn('COUNT', Sequelize.col('id')), 'count']
+      [sequelize.fn('COUNT', sequelize.col('id')), 'count']
     ],
     group: ['status'],
     transaction: t,
@@ -383,6 +383,12 @@ async function findOrdersList(t = null, { where, limit, offset }) {
             required: false
           }
         ]
+      },
+      {
+        model: Image,
+        as: 'order_image',
+        attributes: ['img', 'type'],
+        required: false
       }
     ],
     attributes: [
@@ -488,6 +494,53 @@ async function findUrgentOrders(t = null) {
   });
 }
 
+// TODO: 서비스 요구사항에 따라 활성화 필요
+// /**
+//  * 이름과 이메일로 주문을 찾고 상태별로 집계합니다.
+//  * @param {import("sequelize").Transaction} t
+//  * @param {object} param
+//  * @param {string} param.name
+//  * @param {string} param.email
+//  * @returns {Promise<Array<{status: string, count: number}>>}
+//  */
+// async function findOrdersByNameAndEmail(t = null, { name, email }) {
+//   return await Order.findAll({
+//     where: {
+//       name,
+//       email,
+//     },
+//     attributes: [
+//       'status',
+//       [sequelize.fn('COUNT', sequelize.col('id')), 'count'],
+//     ],
+//     group: ['status'],
+//     transaction: t,
+//     raw: true,
+//   });
+// }
+
+async function findByOrderCode(t = null, orderCode) {
+  return await Order.findOne({
+    where: { orderCode },
+    include: [
+      {
+        model: Rider,
+        as: 'order_rider',
+        required: false,
+        include: [
+          {
+            model: User,
+            as: 'rider_user',
+            attributes: ['name'],
+            required: false
+          }
+        ]
+      }
+    ],
+    transaction: t,
+  });
+}
+
 export default {
   create,
   existsByPk,
@@ -508,6 +561,8 @@ export default {
   getDailyOrderCounts,
   getDashboardSummary,
   findUrgentOrders,
+  // findOrdersByNameAndEmail, // TODO: 서비스 요구사항에 따라 활성화 필요
+  findByOrderCode,
 };
 
 // Repository (DB 중심)	HTTP Method
