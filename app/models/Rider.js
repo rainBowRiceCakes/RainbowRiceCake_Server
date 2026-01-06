@@ -79,13 +79,13 @@ const attributes = {
   },
   lat: {
     field: 'lat',
-    type: DataTypes.DECIMAL(10, 8), // 260107 sara update BIGINT에서 수정
+    type: DataTypes.DOUBLE, // 260107 sara update BIGINT에서 수정
     allowNull: true,
     comment: '위도'
   },
   lng: {
     field: 'lng',
-    type: DataTypes.DECIMAL(11, 8), // 260107 sara update BIGINT에서 수정
+    type: DataTypes.DOUBLE, // 260107 sara update BIGINT에서 수정
     allowNull: true,
     comment: '경도'
   },
