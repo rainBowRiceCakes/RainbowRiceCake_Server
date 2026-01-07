@@ -69,12 +69,6 @@ const attributes = {
     comment: '상태(REQ, RES, REJ)',
     defaultValue: 'REQ'
   },
-  pickupAt: {
-    field: 'pickup_at',
-    type: DataTypes.DATE,
-    allowNull: true,
-    comment: '픽업 시간'
-  },
   lat: {
     field: 'lat',
     type: DataTypes.BIGINT,

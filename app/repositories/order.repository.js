@@ -563,7 +563,7 @@ async function findByOrderCode(t = null, orderCode) {
       {
         model: Rider,
         as: 'order_rider',
-        attributes: ['id', 'phone', 'pickupAt'],
+        attributes: ['id', 'phone'],
         required: false,
         include: [
           {
@@ -578,6 +578,21 @@ async function findByOrderCode(t = null, orderCode) {
     transaction: t,
   });
   return order;
+}
+
+/**
+ * 픽업 시간 업데이트
+ */
+async function updatePickupAt(t = null, riderId) {
+  return await Rider.update(
+    {
+      pickupAt: new Date()
+    },
+    {
+      where: { id: riderId },
+      transaction: t
+    }
+  );
 }
 
 export default {
@@ -602,6 +617,7 @@ export default {
   findUrgentOrders,
   findOrdersByEmail,
   findByOrderCode,
+  updatePickupAt,
 };
 
 // Repository (DB 중심)	HTTP Method

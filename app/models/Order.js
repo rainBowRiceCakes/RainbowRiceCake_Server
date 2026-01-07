@@ -88,41 +88,54 @@ const attributes = {
     unique: true,
     comment: '주문코드(YYYYMMDD-난수)',
   },
+  pickupAt: {
+    field: 'pickup_at',
+    type: DataTypes.DATE,
+    allowNull: true,
+    comment: '픽업 시간',
+    get() {
+      const val = this.getDataValue('pickupAt');
+      if(!val) {
+          return null;
+      }
+      return dayjs(val).format('YYYY-MM-DD HH:mm:ss');
+    }
+  },
   createdAt: {
-      field: 'created_at',
-      type: DataTypes.DATE,
-      allowNull: true,
-      get() {
+    field: 'created_at',
+    type: DataTypes.DATE,
+    allowNull: true,
+    get() {
       const val = this.getDataValue('createdAt');
       if(!val) {
           return null;
       }
       return dayjs(val).format('YYYY-MM-DD HH:mm:ss');
-      }
+    }
   },
   updatedAt: {
-      field: 'updated_at',
-      type: DataTypes.DATE,
-      allowNull: true,
-      get() {
+    field: 'updated_at',
+    type: DataTypes.DATE,
+    allowNull: true,
+    get() {
       const val = this.getDataValue('updatedAt');
       if(!val) {
           return null;
       }
       return dayjs(val).format('YYYY-MM-DD HH:mm:ss');
-      }
+    }
   },
   deletedAt: {
-      field: 'deleted_at',
-      type: DataTypes.DATE,
-      allowNull: true,
-      get() {
+    field: 'deleted_at',
+    type: DataTypes.DATE,
+    allowNull: true,
+    get() {
       const val = this.getDataValue('deletedAt');
       if(!val) {
           return null;
       }
       return dayjs(val).format('YYYY-MM-DD HH:mm:ss');
-      }
+    }
   }
 };
 

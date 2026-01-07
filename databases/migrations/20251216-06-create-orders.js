@@ -87,6 +87,12 @@ const attributes = {
     unique: true,
     comment: '주문코드(YYYYMMDD-난수)',
   },
+  pickupAt: {
+    field: 'pickup_at',
+    type: DataTypes.DATE,
+    allowNull: true,
+    comment: '픽업 시간'
+  },
   createdAt: {
     field: 'created_at',
     type: DataTypes.DATE,
