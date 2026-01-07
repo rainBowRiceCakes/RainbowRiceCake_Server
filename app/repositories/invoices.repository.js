@@ -6,7 +6,7 @@
 import { Op } from 'sequelize';
 import db from '../models/index.js';
 
-const { Partner, Order } = db;
+const { Partner, Order, PartnerSettlement } = db;
 
 /**
  * 파트너 ID로 상세정보 조회
@@ -32,7 +32,7 @@ async function findInvoiceItems(t = null, partnerId, year, month) {
   const startDate = new Date(year, month - 1, 1);
   const endDate = new Date(year, month, 0, 23, 59, 59);
 
-  return await Order.findAll({
+  return await Order.findAndCountAll({
     where: {
       partnerId: partnerId,
       createdAt: { [Op.between]: [startDate, endDate] },
@@ -43,8 +43,35 @@ async function findInvoiceItems(t = null, partnerId, year, month) {
   });
 }
 
+/**
+ * 해당 기간의 정산(주문) 내역 조회
+ */
+async function findInvoiceStatus(t = null, {partnerId, year, month}) {
+  return await PartnerSettlement.findOne({
+    where: {
+      partnerId,
+      year,
+      month
+    },
+    transaction: t,
+  });
+}
+
+/**
+ * 해당 기간의 정산(주문) 내역 조회
+ */
+async function storeInvoiceStatus(t = null, {partnerId, year, month, totalAmount}) {
+  return await PartnerSettlement.create(
+  { partnerId, year, month, totalAmount },
+  {
+    transaction: t,
+  });
+}
+
 export default {
   findPartnerById,
   findAllPartners, // export 추가
   findInvoiceItems,
+  findInvoiceStatus,
+  storeInvoiceStatus,
 };

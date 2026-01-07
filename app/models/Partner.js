@@ -141,6 +141,7 @@ const Partner = {
   associate: (db) => {
     db.Partner.belongsTo(db.User, { targetKey: 'id', foreignKey: 'userId', as: 'partner_user'});
     db.Partner.hasMany(db.Order, { targetKey: 'id', foreignKey: 'partnerId', as: 'partner_order'});
+    db.Partner.hasMany(db.PartnerSettlement, { targetKey: 'id', foreignKey: 'partnerId', as: 'partner_partnerSettlement'});
   },
 }
 
