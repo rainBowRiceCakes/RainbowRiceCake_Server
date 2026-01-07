@@ -325,8 +325,8 @@ async function getDeliveryStatus(dlvId) {
     // imageRepository는 dlvId를 기준으로 이미지를 찾습니다.
     const images = await imageRepository.findAllByOrderId(t, dlvId);
     // 타입별 사진 분류 (PICK: 픽업, COM: 완료)
-    const pickupImage = images.find(img => img.type === 'PICK');
-    const completeImage = images.find(img => img.type === 'COM');
+    const pickupImage = images.find(img => img.type === 'pick');
+    const completeImage = images.find(img => img.type === 'com');
 
     // 4. 유저에게 보여줄 응답 데이터 구성
     return {

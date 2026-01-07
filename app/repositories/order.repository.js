@@ -532,6 +532,12 @@ async function findOrdersByEmail(t = null, { email }) {
         attributes: [ 'krName', 'enName' ],
         required: false,
       },
+      {
+        model: Image,
+        as: 'order_image',
+        attributes: ['img', 'type'],
+        required: false,
+      },
     ],
     transaction: t,
   })    
