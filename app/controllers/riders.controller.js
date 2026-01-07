@@ -114,16 +114,17 @@ async function riderFormStore(req, res, next) {
   }
 }
 
-// ------------- 라이더 출퇴근 확인 토글 관련 ----------
+// ------------- 라이더 출퇴근 확인 토글 관련 ----------2026.01.07 추가 (송보미)
 async function updateWorkStatus(req, res, next) {
   try {
-    const { riderId, isWorking } = req.body;
+    const userId = req.user.id; // 인증 미들웨어에서 넘어온 유저 PK
+    const { isWorking } = req.body;
 
-    const result = await ridersService.toggleWorkStatus(riderId, isWorking);
+    // 비즈니스 로직은 서비스에서 처리하도록 위임
+    const result = await ridersService.toggleWorkStatus(userId, isWorking);
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
-  }
-  catch (error) {
+  } catch (error) {
     return next(error);
   }
 }

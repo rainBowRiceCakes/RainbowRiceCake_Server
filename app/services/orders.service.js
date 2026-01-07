@@ -162,12 +162,6 @@ async function uploadPickupPhoto({ orderCode, photoPath }) {
     // 6. 주문 상태 업데이트 (match → pick)
     await orderRepository.updateToPicked(t, order.id);
 
-    // 7. 라이더의 픽업 시각 업데이트 추가
-    // order.order_rider가 존재하는지 확인 후 업데이트를 수행합니다.
-    if (order.order_rider && order.order_rider.id) {
-      await orderRepository.updatePickupAt(t, order.order_rider.id);
-    }
-
     // 8. 업데이트된 주문 조회 (최신 pickupAt 정보를 포함하기 위해 다시 조회)
     const updatedOrder = await orderRepository.findByOrderCodeWithDetails(t, orderCode);
 
@@ -177,6 +171,7 @@ async function uploadPickupPhoto({ orderCode, photoPath }) {
     };
   });
 }
+
 /**
  * Upload complete photo
  * 완료 사진 업로드 + 주문 상태 변경 (pick → com)

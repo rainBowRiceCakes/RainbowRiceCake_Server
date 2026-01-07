@@ -115,7 +115,7 @@ async function updateToPicked(t = null, orderId) {
   return await Order.update(
     {
       status: 'pick',
-      updatedAt: new Date()
+      pickupAt: new Date()
     },
     {
       where: { id: orderId },
@@ -505,7 +505,7 @@ async function findUrgentOrders(t = null) {
  */
 async function findOrdersByEmail(t = null, { email }) {
   return await Order.findAll({
-    where: { email },     
+    where: { email },
     include: [
       {
         model: Rider,
@@ -523,13 +523,13 @@ async function findOrdersByEmail(t = null, { email }) {
       {
         model: Hotel,
         as: 'order_hotel',
-        attributes: [ 'krName', 'enName' ],
+        attributes: ['krName', 'enName'],
         required: false,
       },
       {
         model: Partner,
         as: 'order_partner',
-        attributes: [ 'krName', 'enName' ],
+        attributes: ['krName', 'enName'],
         required: false,
       },
       {
@@ -540,8 +540,8 @@ async function findOrdersByEmail(t = null, { email }) {
       },
     ],
     transaction: t,
-  })    
-  }
+  })
+}
 
 // ------------------------------------------ 2026.01.06 추가
 async function findByOrderCode(t = null, orderCode) {
@@ -551,13 +551,13 @@ async function findByOrderCode(t = null, orderCode) {
       {
         model: Partner,
         as: 'order_partner',
-        attributes: ['id', 'phone', 'krName','enName', 'address', 'lat', 'lng'],
+        attributes: ['id', 'phone', 'krName', 'enName', 'address', 'lat', 'lng'],
         required: false
       },
       {
         model: Hotel,
         as: 'order_hotel',
-        attributes: ['id', 'phone', 'krName','enName', 'address', 'lat', 'lng'],
+        attributes: ['id', 'phone', 'krName', 'enName', 'address', 'lat', 'lng'],
         required: false
       },
       {

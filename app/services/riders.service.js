@@ -72,24 +72,28 @@ async function riderFormCreate(createData) {
   });
 }
 
-// ------------- 라이더 출퇴근 확인 토글 관련 ----------
-async function toggleWorkStatus(riderId, isWorking) {
-  // 1. 유효성 검사 (옵션): 예를 들어, 배달 중인 콜이 있는데 퇴근하려 하면 에러를 뱉는 로직 등
-  // if (!isWorking && await hasActiveOrder(riderId)) { throw new Error("배달 중엔 퇴근할 수 없습니다."); }
+// ------------- 라이더 출퇴근 확인 토글 관련 ----------2026.01.07 추가 (송보미)
+async function toggleWorkStatus(userId, isWorking) {
+  // 1. 유저 ID로 해당 라이더 정보 조회 (비즈니스적 연결)
+  const rider = await riderRepository.findByUserId(null, userId);
 
-  // 2. Boolean -> Integer 변환 (DB 저장용)
-  const dbStatus = isWorking ? 1 : 0;
-
-  // 3. Repository 호출
-  const result = await riderRepository.updateWorkStatus(riderId, dbStatus);
-
-  if (result.affectedRows === 0) {
-    throw new Error('해당 라이더를 찾을 수 없거나 변경에 실패했습니다.');
+  if (!rider) {
+    // 에러 객체를 던지면 컨트롤러의 next(error)가 받아서 에러 미들웨어로 보냅니다.
+    const error = new Error("해당 유저와 연결된 기사 정보를 찾을 수 없습니다.");
+    error.status = 404;
+    throw error;
   }
 
-  // 4. 변경된 상태 리턴
-  return { isWorking: !!dbStatus }; // 다시 Boolean으로 내려줌
-};
+  // 2. 라이더의 상태 변경 (실제 업데이트)
+  const [affectedCount] = await riderRepository.updateWorkStatus(null, rider.id, isWorking);
+
+  if (affectedCount === 0) {
+    throw new Error("상태 변경에 실패했거나 변경 사항이 없습니다.");
+  }
+
+  // 3. 최종적으로 UI에서 필요로 하는 데이터 포맷 반환
+  return { isWorking };
+}
 
 export default {
   riderFindByPk,

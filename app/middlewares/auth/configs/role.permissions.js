@@ -95,6 +95,7 @@ const ROLE_PERMISSIONS = {
     { path: /^\/api\/profiles$/, roles: [COM, PTN, DLV, ADM] },
     // users
     { path: /^\/api\/users\/update$/, roles: [ADM] },
+    { path: /^\/api\/riders\/updateWorkStatus$/, roles: [DLV, ADM] },
   ],
   DELETE: [
     // admins

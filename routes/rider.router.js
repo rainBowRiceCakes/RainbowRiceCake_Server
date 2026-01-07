@@ -44,7 +44,7 @@ riderRouter.post('/',
 
 // -----------------------------------------------------------------------------------------------------------
 // Rider 출퇴근 확인 토글
-riderRouter.post('/updateWorkStatus',
+riderRouter.put('/updateWorkStatus',
   /* #swagger.tags = ['Riders']
     #swagger.summary = '라이더 출퇴근 확인 토글'
     #swagger.description = '라이더 출퇴근 확인 토글' */
