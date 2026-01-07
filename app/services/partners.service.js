@@ -9,6 +9,7 @@ import db from "../models/index.js";
 import partnerRepository from "../repositories/partner.repository.js";
 import myError from "../errors/customs/my.error.js";
 import { CONFLICT_ERROR, NOT_FOUND_ERROR, BAD_REQUEST_ERROR } from "../../configs/responseCode.config.js";
+import path from 'path';
 
 // --- 1. ADD PARTNER's INFO WORKFLOW FOR USERS (유저와 관련됨) ---
 /**
@@ -105,9 +106,33 @@ async function partnerFormCreate(createData) {
   });
 }
 
+/**
+ * 승인된 파트너들의 로고 이미지 URL 리스트 생성
+ * @return {Promise<Array<string>>} 로고 이미지 URL 배열
+ */
+async function getPartnerLogos() {
+  // Repository를 통해 승인된 파트너의 로고 파일명만 조회
+  const partners = await partnerRepository.findActivePartnerLogos(); // status: 'RES'
+
+  // 파일명이 null이 아닌 경우만 필터링하고 전체 URL로 변환
+  const logoUrls = partners
+    .map(p => p.logoImg)
+    .filter(logo => logo) // null 체크
+    .map(rawFilename => {
+      // DB에 전체 URL이 들어있어도 파일명만 추출하여 경로 재조립
+      const filename = path.basename(rawFilename);
+      const url = `${process.env.APP_URL}${process.env.ACCESS_FILE_PARTNER_LOGO_IMAGE_PATH}/${filename}`;
+
+      return url;
+    });
+
+  return logoUrls;
+}
+
 export default {
   createPartner,
   listPartners,
   getPartnerById,
   partnerFormCreate,
+  getPartnerLogos,
 };

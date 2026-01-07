@@ -35,5 +35,11 @@ fileRouter.post('/attachments',
   multerMiddleware.questionAttachmentUploader,
   filesController.storeAttachments)
 
+fileRouter.get('/carousel', 
+  /* #swagger.tags = ['Files']
+  #swagger.summary = '메인 페이지 파트너 로고 캐러셀 조회'
+  #swagger.description = '승인된 파트너들의 로고 이미지 URL 목록을 조회합니다.' */
+  filesController.getCarouselImages
+);
 
 export default fileRouter;

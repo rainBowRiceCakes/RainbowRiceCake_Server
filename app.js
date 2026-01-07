@@ -63,6 +63,10 @@ app.use('/api/invoices', invoiceRouter);
 app.use('/storage', express.static('storage'));
 app.use(process.env.ACCESS_FILE_QUESTION_IMAGE_PATH, express.static(pathUtil.getQuestionsImagePath()));
 app.use(process.env.ACCESS_FILE_RIDER_LICENSE_IMAGE_PATH, express.static(pathUtil.getLicensesImagePath()));
+
+// "/files/logos" 로 들어오는 요청은 실제 "storage/images/logos" 폴더의 파일을 보여준다.
+app.use(process.env.ACCESS_FILE_PARTNER_LOGO_IMAGE_PATH, express.static(process.env.FILE_PARTNER_LOGO_IMAGE_PATH));
+
 // ---------------------
 // 404 처리
 // ---------------------

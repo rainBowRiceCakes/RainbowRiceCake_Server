@@ -111,6 +111,22 @@ async function findByPk(t = null, partnerId) {
   });
 }
 
+/**
+ * 승인된(RES) 파트너들의 로고 이미지 파일명 조회
+ * @param {import("sequelize").Transaction|null} t 
+ * @returns {Promise<Array<import("../models/Partner.js").Partner>>}
+ */
+async function findActivePartnerLogos(t = null) {
+  return await Partner.findAll({
+    attributes: ['logoImg'], // 로고 컬럼만 조회하여 최적화
+    where: {
+      status: 'RES' // 승인된 파트너만 조회
+      // status: 'REQ'
+    },
+    transaction: t
+  });
+}
+
 async function partnerDelete(t = null, id) {
   return await Partner.destroy({ where: { id: id } }, { transaction: t })
 }
@@ -119,6 +135,8 @@ async function partnerDeleteUser(t = null, id) {
   return await Partner.destroy({ where: { userId: id } }, { transaction: t })
 }
 
+
+
 export default {
   create,
   findByUserId,
@@ -126,6 +144,7 @@ export default {
   findAndCountAll,
   findAll,
   findByPk,
+  findActivePartnerLogos,
   partnerDelete,
   partnerDeleteUser,
 };
