@@ -42,4 +42,13 @@ riderRouter.post('/',
   validationHandler,
   ridersController.riderCreate)
 
+// -----------------------------------------------------------------------------------------------------------
+// Rider 출퇴근 확인 토글
+riderRouter.post('/updateWorkStatus',
+  /* #swagger.tags = ['Riders']
+    #swagger.summary = '라이더 출퇴근 확인 토글'
+    #swagger.description = '라이더 출퇴근 확인 토글' */
+  authMiddleware,
+  ridersController.updateWorkStatus)
+
 export default riderRouter;

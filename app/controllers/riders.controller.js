@@ -114,10 +114,25 @@ async function riderFormStore(req, res, next) {
   }
 }
 
+// ------------- 라이더 출퇴근 확인 토글 관련 ----------
+async function updateWorkStatus(req, res, next) {
+  try {
+    const { riderId, isWorking } = req.body;
+
+    const result = await ridersService.toggleWorkStatus(riderId, isWorking);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  }
+  catch (error) {
+    return next(error);
+  }
+}
+
 export default {
   riderFindByPk,
   riderShow,
   riderCreate,
   riderStore,
   riderFormStore,
+  updateWorkStatus
 }
