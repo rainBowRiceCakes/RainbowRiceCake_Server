@@ -19,6 +19,10 @@ const userRouter = express.Router();
 userRouter.post('/rider/form', authMiddleware, riderCreateValidator, validationHandler, ridersController.riderFormStore);
 userRouter.post('/partner/form', authMiddleware, partnerCreateValidator, validationHandler, partnersController.partnerFormStore);
 
+// -----------------아래 유저 페이지 사용----------------------
+userRouter.get('/location', authMiddleware,usersController.searchPartners) // 권한 없이 제휴 업체 정보 조회
+userRouter.get('/orders/history', authMiddleware, usersController.getMyPageSummary) // 로그인한 유저의 주문 히스토리 요약 정보 조회
+
 
 // ----------------아래 어드민 페이지 사용----------------------
 userRouter.get('/show', authMiddleware, usersController.showIndex)

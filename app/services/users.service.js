@@ -5,6 +5,8 @@
  */
 
 import db from "../models/index.js";
+import orderRepository from "../repositories/order.repository.js";
+import questionRepository from "../repositories/question.repository.js";
 import userRepository from "../repositories/user.repository.js";
 
 async function showIndex({ page, limit, search }) {
@@ -22,7 +24,7 @@ async function showIndex({ page, limit, search }) {
 }
 
 async function showDetail(id) {
-    return await userRepository.findByPk(null, id);
+    return await userRepository.showDetail(id);
 }
 
 async function store(data) {
@@ -51,9 +53,43 @@ async function userUpdate(data) {
   })
 }
 
+/**
+ * 모든 파트너 (제휴업체) 리스트 정보 조회 (메인페이지의 카카오 지도를 위해서.)
+ * @returns 
+ */
+async function searchPartners() {
+  return await userRepository.searchPartners();
+} 
+
+/**
+ * MyPage 요약 정보 조회
+ * @param {number} userId
+ * @returns {Promise<object>}
+ */
+async function getMyPageSummary(userId) {
+  const user = await userRepository.findByPk(null, userId);
+  if (!user) {
+    // 404 에러를 던지는 것이 더 적절할 수 있습니다.
+    throw new Error('User not found');
+  }
+
+  const [orderSummaryRaw, questionSummaryRaw] = await Promise.all([
+    orderRepository.findOrdersByEmail(null, { email: user.email }),
+    questionRepository.findQuesionsById(null, userId)
+  ]);
+
+  return {
+    userName: user.name,
+    deliveryStatus: orderSummaryRaw,
+    inquiryStatus: questionSummaryRaw,
+  };
+}
+
 export default {
   showIndex,
   showDetail,
   store,
   userUpdate,
+  searchPartners,
+  getMyPageSummary
 }

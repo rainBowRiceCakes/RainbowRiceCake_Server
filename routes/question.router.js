@@ -32,8 +32,6 @@ questionRouter.get('/',
   #swagger.summary = '질문 목록 조회'
   #swagger.description = '질문 목록을 조회합니다.' */
   authMiddleware,
-  storeValidator,
-  validationHandler,
   questionsController.index);
 
 export default questionRouter;

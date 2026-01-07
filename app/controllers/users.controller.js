@@ -86,9 +86,45 @@ async function userUpdate(req, res, next) {
   }
 }
 
+/**
+ * Partner 테이블 정보 모두 가져오는 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function searchPartners(req, res, next) {
+  try {
+   
+    const result = await usersService.searchPartners();
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
+  } catch (error) {
+    return next(error)
+  }
+}
+
+/**
+ * MyPage 요약 정보 조회 처리
+ * @param {import("express").Request} req - 리퀘스트 객체
+ * @param {import("express").Response} res - 레스폰스 객체
+ * @param {import("express").NextFunction} next - next 객체
+ * @return {import("express").Response}
+ */
+async function getMyPageSummary(req, res, next) {
+  try {
+    const userId = req.user.id;
+    const result = await usersService.getMyPageSummary(userId);
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  } catch (error) {
+    return next(error);
+  }
+}
+
 export default {
   showIndex,
   showDetail,
   store,
   userUpdate,
+  searchPartners,
+  getMyPageSummary
 }

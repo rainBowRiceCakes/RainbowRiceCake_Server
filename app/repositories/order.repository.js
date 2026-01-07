@@ -3,6 +3,7 @@
  * @description Order Repository (주문 등록, 주문 목록 조회, 주문 상세 조회)
  * 251223 v1.0.0 BSONG init
  * 251225 v1.1.0 BSONG update - 상태별 주문 목록 및 카운트 조회 기능 추가, 그리고 주문 히스토리 상세 조회 기능 추가
+ * 260106 v1.2.0 sara update - 객체 분해 할당 적용 및 불필요한 주석 제거, findOrdersList attributes 수정
 */
 
 import { Op } from 'sequelize';
@@ -264,7 +265,7 @@ async function findByIdOnly(t = null, dlvId) {
       {
         model: Hotel,
         as: 'order_hotel', // Order.js의 associate 설정 참조
-        attributes: ['id', 'kr_name', 'address'], // 호텔 이름과 주소 포함
+        attributes: ['id', 'kr_name', 'en_name', 'address'], // 호텔 이름과 주소 포함
         required: true
       },
       {
@@ -276,7 +277,7 @@ async function findByIdOnly(t = null, dlvId) {
       {
         model: Partner,
         as: 'order_partner', // Order.js의 associate 설정 참조
-        attributes: ['id', 'kr_name', 'address'], // 호텔 이름과 주소 포함
+        attributes: ['id', 'kr_name', 'en_name', 'address'], // 호텔 이름과 주소 포함
         required: true
       }
     ]
@@ -361,13 +362,13 @@ async function findOrdersList(t = null, { where, limit, offset }) {
       {
         model: Partner,
         as: 'order_partner',
-        attributes: ['id', 'krName', 'address'],
+        attributes: ['id', 'krName', 'enName', 'address'], // enName 추가 from sara
         required: true
       },
       {
         model: Hotel,
         as: 'order_hotel',
-        attributes: ['id', 'krName', 'address'],
+        attributes: ['id', 'krName', 'enName', 'address'], // enName 추가 from sara
         required: true
       },
       {
@@ -494,30 +495,47 @@ async function findUrgentOrders(t = null) {
   });
 }
 
-// TODO: 서비스 요구사항에 따라 활성화 필요
-// /**
-//  * 이름과 이메일로 주문을 찾고 상태별로 집계합니다.
-//  * @param {import("sequelize").Transaction} t
-//  * @param {object} param
-//  * @param {string} param.name
-//  * @param {string} param.email
-//  * @returns {Promise<Array<{status: string, count: number}>>}
-//  */
-// async function findOrdersByNameAndEmail(t = null, { name, email }) {
-//   return await Order.findAll({
-//     where: {
-//       name,
-//       email,
-//     },
-//     attributes: [
-//       'status',
-//       [sequelize.fn('COUNT', sequelize.col('id')), 'count'],
-//     ],
-//     group: ['status'],
-//     transaction: t,
-//     raw: true,
-//   });
-// }
+/**
+ * 이메일로 주문을 모두 찾아옴(서비스에서 배송, 문의를 둘다 가져오는 것 중에 배송을 가져오는 역할을 맏은 친구)
+ * @param {import("sequelize").Transaction} t
+ * @param {object} param
+ * @param {string} param.name
+ * @param {string} param.email
+ * @returns {Promise<Array<{status: string, count: number}>>}
+ */
+async function findOrdersByEmail(t = null, { email }) {
+  return await Order.findAll({
+    where: { email },     
+    include: [
+      {
+        model: Rider,
+        as: 'order_rider',
+        required: false,
+        include: [
+          {
+            model: User,
+            as: 'rider_user',
+            attributes: ['name'],
+            required: false
+          }
+        ]
+      },
+      {
+        model: Hotel,
+        as: 'order_hotel',
+        attributes: [ 'krName', 'enName' ],
+        required: false,
+      },
+      {
+        model: Partner,
+        as: 'order_partner',
+        attributes: [ 'krName', 'enName' ],
+        required: false,
+      },
+    ],
+    transaction: t,
+  })    
+  }
 
 // ------------------------------------------ 2026.01.06 추가
 async function findByOrderCode(t = null, orderCode) {
@@ -527,13 +545,13 @@ async function findByOrderCode(t = null, orderCode) {
       {
         model: Partner,
         as: 'order_partner',
-        attributes: ['id', 'phone', 'krName', 'address', 'lat', 'lng'],
+        attributes: ['id', 'phone', 'krName','enName', 'address', 'lat', 'lng'],
         required: false
       },
       {
         model: Hotel,
         as: 'order_hotel',
-        attributes: ['id', 'phone', 'krName', 'address', 'lat', 'lng'],
+        attributes: ['id', 'phone', 'krName','enName', 'address', 'lat', 'lng'],
         required: false
       },
       {
@@ -549,7 +567,7 @@ async function findByOrderCode(t = null, orderCode) {
             required: false
           }
         ]
-      }
+      },
     ],
     transaction: t,
   });
@@ -576,7 +594,7 @@ export default {
   getDailyOrderCounts,
   getDashboardSummary,
   findUrgentOrders,
-  // findOrdersByNameAndEmail, // TODO: 서비스 요구사항에 따라 활성화 필요
+  findOrdersByEmail,
   findByOrderCode,
 };
 

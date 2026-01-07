@@ -300,9 +300,8 @@ async function getOrderDetail({ orderCode }) {
       },
       timeline: {
         created: order.createdAt,
-        // matched: order.matchedAt,
         picked: order.order_rider.pickupAt,
-        completed: order.completedAt,
+        completed: order.updatedAt,
       },
     };
   });
@@ -606,6 +605,82 @@ export const getHourlyOrderStats = async ({ userId, role }) => {
   }
 };
 
+/**
+ * [2026.01.06 sara 추가] 일반 유저 마이페이지 전용 배송 현황 리스트 조회
+ * @param {Object} params { userId, page, limit }
+ */
+export const getMyOrderList = async ({ userId, page, limit }) => {
+  const pageNum = parseInt(page) || 1;
+  const limitNum = parseInt(limit) || 10;
+  const offset = (pageNum - 1) * limitNum;
+
+  return await db.sequelize.transaction(async (t) => {
+    // 1. 유저 정보 조회 (이메일로 주문을 찾기 위함)
+    const user = await db.User.findByPk(userId, { transaction: t });
+    if (!user) {
+      throw myError('유저 정보를 찾을 수 없습니다.', NOT_FOUND_ERROR);
+    }
+
+    // 2. Repository 호출 (해당 유저의 이메일과 일치하는 주문 조회)
+    // findOrdersList는 이미 order_partner, order_hotel, order_image를 include하고 있다고 가정합니다.
+    const result = await orderRepository.findOrdersList(t, {
+      where: { email: user.email },
+      limit: limitNum,
+      offset: offset,
+      order: [['createdAt', 'DESC']]
+    });
+
+    // 3. 프론트엔드 요구사항에 맞춘 데이터 가공
+    const formattedData = result.rows.map(order => {
+      // 이미지 추출 로직 (getOrderDetail 참조)
+      const pickupImage = order.order_image?.find(img => img.type === 'PICK')?.img;
+      const completeImage = order.order_image?.find(img => img.type === 'COM')?.img;
+
+      // 사이즈 결정 로직 (L > M > S 순 우선순위)
+      let size = 'S';
+      if (order.cntL > 0) size = 'L';
+      else if (order.cntM > 0) size = 'M';
+
+      // [핵심] 프론트엔드 getDeliveryImg 로직 반영
+      // status가 'pick'일 때는 픽업 사진, 'com'일 때는 완료 사진을 우선 노출
+      let displayImg = "/main-loginIcon.png"; // 기본 이미지
+      if (order.status === 'pick' && pickupImage) {
+        displayImg = pickupImage;
+      } else if (order.status === 'com' && completeImage) {
+        displayImg = completeImage;
+      }
+
+      return {
+        orderCode: order.orderCode,
+        status: order.status,
+        partner: {
+          krName: order.order_partner?.krName || null,
+          enName: order.order_partner?.enName || null,
+        },
+        hotel: {
+          krName: order.order_hotel?.krName || null,
+          enName: order.order_hotel?.enName || null,
+        },
+        price: order.price,
+        plans: [], // 현재는 빈 배열, 나중에 추가 예정
+        size: size,
+        img: displayImg, // 가공된 이미지 경로
+        createdAt: order.createdAt
+      };
+    });
+
+    return {
+      data: formattedData,
+      pagination: {
+        totalItems: result.count,
+        totalPages: Math.ceil(result.count / limitNum),
+        currentPage: pageNum,
+        itemsPerPage: limitNum
+      }
+    };
+  });
+};
+
 export default {
   createNewOrder,
   matchOrder,
@@ -616,5 +691,6 @@ export default {
   getDeliveryStatus,
   getOrdersList,
   getOrderDetail,
-  getHourlyOrderStats
+  getHourlyOrderStats,
+  getMyOrderList
 };

@@ -7,7 +7,7 @@
 import { Op } from 'sequelize';
 import db from '../models/index.js';
 
-const { User } = db;
+const { User, Partner } = db;
 
 /**
  * 이메일로 유저 검색
@@ -172,6 +172,26 @@ async function userDelete(t = null, id) {
     });
 }
 
+/**
+ * 모든 파트너 (제휴업체) 리스트 정보 조회 (메인페이지의 카카오 지도를 위해서.)
+ */
+async function searchPartners(t = null) {
+  return await Partner.findAll({
+    transaction: t
+  });
+} 
+
+/**
+ * User 1명 상세 조회 (PK) - sara init for cs service
+ * @param {number} id
+ * @param {import("sequelize").Transaction} t
+ * @returns
+ */
+async function showDetail(id, t = null) {
+  return await User.findByPk(id, { transaction: t });
+}
+
+
 export default {
   findByEmail,
   save,
@@ -182,6 +202,8 @@ export default {
   logout,
   updateRole,
   showIndex,
+  showDetail,
   store,
+  searchPartners,
   userDelete,
 }

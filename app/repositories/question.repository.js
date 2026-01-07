@@ -101,12 +101,26 @@ async function findByPk(t = null, id) {
   })
 }
 
+/**
+ * id로 문의 현황 전부 불러오기 
+ * @param {import("sequelize").Transaction} t
+ * @param {number} userId
+ * @returns {Promise<Array<{status: boolean, count: number}>>}
+ */
+async function findQuesionsById(t = null, userId) {
+  return await Question.findAll({
+    where: { userId },
+    transaction: t,
+  });
+}
+
 export default {
   create,
   qnaDelete,
   findAndCountAll, // 페이징, 필터, 검색 지원
   findAllWithUser, // 필터 및 작성자 이름 조인
   findByPk,
+  findQuesionsById, 
 };
 
 // Repository (DB 중심)	HTTP Method
