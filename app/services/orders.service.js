@@ -8,7 +8,6 @@
 import db from '../models/index.js';
 import orderRepository from "../repositories/order.repository.js";
 import riderRepository from "../repositories/rider.repository.js";
-import hotelRepository from "../repositories/hotel.repository.js";
 import imageRepository from "../repositories/image.repository.js";
 import myError from "../errors/customs/my.error.js";
 import {
@@ -30,7 +29,7 @@ import partnerRepository from '../repositories/partner.repository.js';
 */
 async function createNewOrder({ userId, orderData }) {
   return await db.sequelize.transaction(async t => {
-    const { firstName, lastName, email, hotelId, plans = [], price } = orderData;
+    const { firstName, lastName, email, hotelId, plans = [], price, orderCode } = orderData;
 
     // 1. [핵심 수정] User ID로 실제 Partner PK 조회
     // 컨트롤러에서 넘긴 partnerId가 User 테이블의 ID이므로, 
@@ -75,6 +74,8 @@ async function createNewOrder({ userId, orderData }) {
       cntM,
       cntL,
       status: 'req',
+      orderCode,
+      pickupAt: null
     };
 
     const order = await orderRepository.create(t, newOrderData);
@@ -90,6 +91,7 @@ async function createNewOrder({ userId, orderData }) {
     return result;
   });
 }
+
 // --- 2. ORDER WORKFLOW FOR RIDERS (라이더와 관련된 당일 내 이뤄지는 주문) ---
 /**
  * Match Rider to Order (주문 매칭 - rider 가 수락)
@@ -107,21 +109,29 @@ async function matchOrder({ orderCode, userId }) {
       throw myError('주문을 찾을 수 없습니다.', NOT_FOUND_ERROR);
     }
 
+    // 2. 주문 상태가 대기 중(reg)인지 확인 (다른 기사가 이미 잡았는지 방지)
+    if (order.status !== 'reg') {
+      throw myError('이미 매칭되었거나 취소된 주문입니다.', BAD_REQUEST_ERROR);
+    }
+
     const rider = await riderRepository.findByUserId(t, userId);
     if (!rider) {
       throw myError('라이더 정보를 찾을 수 없습니다.', NOT_FOUND_ERROR);
     }
+
+    // ★ 3. 라이더 활성 상태 확인 (주석 해제 및 검증)
+    // Rider 모델에서 DataTypes.BOOLEAN이므로 true/false로 체크
+    if (!rider.isWorking) {
+      throw myError('현재 퇴근 상태입니다. 출근 처리 후 배달을 수락해주세요.', FORBIDDEN_ERROR);
+    }
+
+    // 모든 검증 통과 후 상태 변경
     await orderRepository.updateToMatched(t, order.id, rider.id);
   });
 
   // 2단계: COMMIT 후 "상세 정보" 포함해서 새로 조회
   return await orderRepository.findByOrderCodeWithDetails(null, orderCode);
 }
-
-// // 5. 라이더 활성 상태 확인
-// if (rider.status !== 'active') {
-//   throw myError('현재 배달 가능한 상태가 아닙니다.', FORBIDDEN_ERROR);
-// }
 
 // // 6. 라이더의 진행중인 주문 개수 확인 (예: 최대 3개)
 // const inProgressCount = await orderRepository.getInProgressCountByRider(t, riderId);

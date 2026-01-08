@@ -38,6 +38,46 @@ async function findByPk(t = null, id) {
 }
 
 /**
+ * 기본 조회 (조인 포함)
+ */
+async function findByPkWithDetails(t = null, id) {
+  return await Order.findByPk(id, {
+    transaction: t,
+    include: [
+      {
+        model: Partner,
+        as: 'order_partner',
+        attributes: [
+          'id', 'userId', 'krName', 'enName',
+          'manager', 'phone', 'address'
+        ]
+      },
+      {
+        model: Hotel,
+        as: 'order_hotel',
+        attributes: [
+          'id', 'krName', 'enName',
+          'manager', 'phone', 'address'
+        ]
+      },
+      {
+        model: Rider,
+        as: 'order_rider',
+        attributes: ['id', 'phone'],
+        required: false,
+        include: [
+          {
+            attributes: ['name'],
+            model: User,
+            as: 'rider_user',
+          }
+        ],
+      }
+    ]
+  });
+}
+
+/**
  * 상세 조회 (조인 포함)
  */
 async function findByOrderCodeWithDetails(t = null, orderCode) {
@@ -599,6 +639,7 @@ export default {
   create,
   existsByPk,
   findByPk,
+  findByPkWithDetails,
   findByOrderCodeWithDetails,
   findByIdOnly,
   countInProgressByRider,

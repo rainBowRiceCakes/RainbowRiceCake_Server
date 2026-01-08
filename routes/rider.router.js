@@ -13,12 +13,26 @@ import validationHandler from '../app/middlewares/validations/validationHandler.
 
 const riderRouter = express.Router();
 
-// --- 1. RIDER WORKFLOW FOR ADMIN (관리자와 관련된 profile 불러오기 & 업데이트) ---
+riderRouter.get('/settlement',
+  /* #swagger.tags = ['Riders']
+    #swagger.summary = '라이더의 정산 내역 조회'
+    #swagger.description = '라이더의 정산 내역을 조회합니다.' */
+  authMiddleware,
+  ridersController.getSettlementByRider);
+
+riderRouter.get('/settlement/:id',
+  /* #swagger.tags = ['Riders']
+    #swagger.summary = '라이더의 정산 내역 상세 조회'
+    #swagger.description = '라이더의 정산 내역을 조회합니다.' */
+  authMiddleware,
+  ridersController.getSettlementDetailByRider);
+
+// --- 2. RIDER WORKFLOW FOR RIDER (라이더와 관련된 profile 불러오기 & 업데이트) ---
 // Rider PK로 내 profile 가져오기
 riderRouter.get('/:id',
   /* #swagger.tags = ['Riders']
-    #swagger.summary = '어드민이 PK로 라이더의 프로필 조회'
-    #swagger.description = '어드민이 PK로 라이더의 프로필 정보를 조회합니다.' */
+    #swagger.summary = '라이더가 PK로 자신의 프로필 조회'
+    #swagger.description = '라이더가 PK로 자신의 프로필 정보를 조회합니다.' */
   authMiddleware,
   ridersController.riderFindByPk);
 
@@ -26,8 +40,8 @@ riderRouter.get('/:id',
 // Rider table에 있는 정보 모두 가져오기
 riderRouter.get('/',
   /* #swagger.tags = ['Riders']
-    #swagger.summary = '어드민이 PK로 라이더의 프로필 조회'
-    #swagger.description = '어드민이 PK로 라이더의 프로필 정보를 조회합니다.' */
+    #swagger.summary = '라이더가 자신의 프로필 조회'
+    #swagger.description = '라이더가 자신의 프로필 정보를 조회합니다.' */
   authMiddleware,
   ridersController.riderShow);
 
@@ -35,8 +49,8 @@ riderRouter.get('/',
 // Rider table에 정보 수정하기 ※ JWT로 유저id(PK)를 받아와야 함. req.user.id
 riderRouter.post('/',
   /* #swagger.tags = ['Riders']
-    #swagger.summary = '어드민이 PK로 라이더의 프로필 조회'
-    #swagger.description = '어드민이 PK로 라이더의 프로필 정보를 조회합니다.' */
+    #swagger.summary = '라이더가 자신의 프로필 수정'
+    #swagger.description = '라이더가 자신의 프로필 정보를 수정합니다.' */
   authMiddleware,
   riderCreateValidator,
   validationHandler,
@@ -50,5 +64,7 @@ riderRouter.put('/updateWorkStatus',
     #swagger.description = '라이더 출퇴근 확인 토글' */
   authMiddleware,
   ridersController.updateWorkStatus)
+
+// ----------------------------------------------------------------------------------------------------------
 
 export default riderRouter;

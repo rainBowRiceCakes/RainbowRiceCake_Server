@@ -6,10 +6,10 @@
  * 260107 sara update - create lat,lng on DB
  */
 
-import myError from "../errors/customs/my.error.js";
 import db from "../models/index.js";
 import riderRepository from "../repositories/rider.repository.js";
 import { CONFLICT_ERROR, NOT_FOUND_ERROR, BAD_REQUEST_ERROR } from "../../configs/responseCode.config.js";
+import myError from "../errors/customs/my.error.js";
 
 // --------------------------------------------------------------------------------------------
 
@@ -79,20 +79,63 @@ async function toggleWorkStatus(userId, isWorking) {
 
   if (!rider) {
     // 에러 객체를 던지면 컨트롤러의 next(error)가 받아서 에러 미들웨어로 보냅니다.
-    const error = new Error("해당 유저와 연결된 기사 정보를 찾을 수 없습니다.");
-    error.status = 404;
-    throw error;
+    throw myError("해당 유저와 연결된 기사 정보를 찾을 수 없습니다.", NOT_FOUND_ERROR);
   }
 
   // 2. 라이더의 상태 변경 (실제 업데이트)
   const [affectedCount] = await riderRepository.updateWorkStatus(null, rider.id, isWorking);
 
   if (affectedCount === 0) {
-    throw new Error("상태 변경에 실패했거나 변경 사항이 없습니다.");
+    throw myError("상태 변경에 실패했거나 변경 사항이 없습니다.", BAD_REQUEST_ERROR);
   }
 
   // 3. 최종적으로 UI에서 필요로 하는 데이터 포맷 반환
   return { isWorking };
+}
+
+// ------------- 라이더 정산 내역 조회 관련 ----------2026.01.08 추가 (송보미)
+async function getSettlementByRider(userId, userRole) {
+  // 1. 유저 권한 체크 (보안 강화)
+  if (userRole !== 'DLV') {
+    throw myError("라이더 권한이 없는 유저입니다.", FORBIDDEN_ERROR);
+  }
+
+  // 2. 유저 ID로 기사(Rider) 정보 조회
+  const rider = await riderRepository.findByUserId(null, userId);
+
+  if (!rider) {
+    throw myError("해당 유저와 연결된 기사 정보를 찾을 수 없습니다.", NOT_FOUND_ERROR);
+  }
+
+  // 3. 기사 ID로 정산 테이블 조회
+  const settlementData = await riderRepository.getSettlementByRider(null, rider.id);
+
+  // 4. 결과 반환 (데이터가 없을 경우 빈 배열/객체 처리 등)
+  return settlementData || [];
+}
+
+// ------------- 라이더 정산 내역 상세 조회 관련 ----------2026.01.08 추가 (송보미)
+async function getSettlementDetailByRider(userId, userRole, settlementId) {
+  // 1. 유저 권한 체크
+  if (userRole !== 'DLV') {
+    throw myError("라이더 권한이 없는 유저입니다.", FORBIDDEN_ERROR);
+  }
+
+  // 2. 유저 ID로 기사(Rider) 정보 조회
+  const rider = await riderRepository.findByUserId(null, userId);
+  if (!rider) {
+    throw myError("해당 유저와 연결된 기사 정보를 찾을 수 없습니다.", NOT_FOUND_ERROR);
+  }
+
+  // 3. settlementId로 정산 기간(year, month) 조회
+  const settlement = await riderRepository.findSettlementById(null, settlementId);
+  if (!settlement) throw myError("존재하지 않는 정산 건입니다.", NOT_FOUND_ERROR);
+
+  // 4. 기사 ID와 파라미터로 받은 정산 ID로 상세 데이터 조회
+  // 보안을 위해 rider.id(본인여부)와 settlementId를 함께 조건으로 사용합니다.
+  const details = await riderRepository.getOrdersByPeriod(null, rider.id, settlement.year, settlement.month);
+
+  return details || [];
 }
 
 export default {
@@ -101,4 +144,6 @@ export default {
   create,
   riderFormCreate,
   toggleWorkStatus,
+  getSettlementByRider,
+  getSettlementDetailByRider
 }

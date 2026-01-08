@@ -6,7 +6,18 @@
 
 import { Op } from 'sequelize';
 import db from '../models/index.js';
-const { Rider, User } = db;
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc.js';
+import timezone from 'dayjs/plugin/timezone.js';
+
+// dayjs 플러그인 설정
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+const KST = "Asia/Seoul";
+
+const { Rider, User, Settlement, Order } = db;
+
 
 // --- 1. MY PROFILE WORKFLOW FOR RIDERS (기사와 관련된 profile 불러오기 & 업데이트) ---
 /**
@@ -179,6 +190,69 @@ async function updateWorkStatus(t = null, riderId, isWorking) {
   );
 }
 
+/**
+ * 라이더 정산 내역 조회
+ */
+async function getSettlementByRider(t = null, riderId) {
+  // 사용자가 보낸 이미지의 테이블 구조를 바탕으로 구현
+  return await Settlement.findAll({
+    where: {
+      riderId: riderId, // 기사 PK와 연결된 외래키
+    },
+    attributes: [
+      'id',
+      'total_amount', // 총 정산금
+      'status',       // 상태 (REQ, COM, REJ)
+      'year',         // 정산년도
+      'month'         // 정산월
+    ],
+    order: [
+      ['year', 'DESC'], // 최신 연도순
+      ['month', 'DESC'] // 최신 월순
+    ],
+    transaction: t // 전달받은 트랜잭션 적용
+  });
+}
+
+/**
+ * 정산 ID로 정산 기간 조회
+ */
+async function findSettlementById(transaction, settlementId) {
+  return await Settlement.findOne({
+    where: { id: settlementId },
+    attributes: ['year', 'month'], // 기간 정보만 필요
+    transaction
+  });
+}
+
+/**
+ * 기간별 주문 조회
+ */
+async function getOrdersByPeriod(transaction, riderId, year, month) {
+  const baseDate = dayjs().tz(KST).year(year).month(month - 1).date(1);
+
+  const startDate = baseDate.startOf('month').toDate(); // 예: 2025-12-01 00:00:00
+  const endDate = baseDate.endOf('month').toDate();     // 예: 2025-12-31 23:59:59
+
+  // ✅ 2. DB 조회 (ERD 컬럼명 반영: price, order_code, updated_at)
+  return await Order.findAll({
+    where: {
+      riderId: riderId,
+      status: 'com', // 배송 완료 상태만
+      updatedAt: {
+        [Op.between]: [startDate, endDate]
+      }
+    },
+    attributes: [
+      'id',
+      'orderCode', // ERD: order_code
+      'updatedAt', // ERD: 배송 완료 시간 기준
+      'price'      // ERD: 배송요금(기사 정산금)
+    ],
+    transaction
+  });
+}
+
 export default {
   findByUserId,
   update,
@@ -189,4 +263,7 @@ export default {
   riderDeleteUser,
   updatePickupAt,
   updateWorkStatus,
+  getSettlementByRider,
+  findSettlementById,
+  getOrdersByPeriod
 };

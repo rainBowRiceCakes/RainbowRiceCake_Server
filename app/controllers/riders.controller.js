@@ -128,11 +128,45 @@ async function updateWorkStatus(req, res, next) {
   }
 }
 
+// ------------- 라이더 정산 내역 조회 관련 ----------2026.01.08 추가 (송보미)
+async function getSettlementByRider(req, res, next) {
+  try {
+    const { id: userId, role: userRole } = req.user;
+
+    // 비즈니스 로직은 서비스에서 처리하도록 위임
+    const result = await ridersService.getSettlementByRider(userId, userRole);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+// ------------- 라이더 정산 내역 상세 조회 관련 ----------2026.01.08 추가 (송보미)
+async function getSettlementDetailByRider(req, res, next) {
+  try {
+    // 1. 토큰에서 유저 정보 추출
+    const { id: userId, role: userRole } = req.user;
+
+    // 2. URL 파라미터에서 정산 ID 추출 (/api/riders/settlement/:id)
+    const { id: settlementId } = req.params;
+
+    // 3. 서비스 호출 시 userId, userRole, settlementId 세 가지를 모두 전달
+    const result = await ridersService.getSettlementDetailByRider(userId, userRole, settlementId);
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  } catch (error) {
+    return next(error);
+  }
+}
+
 export default {
   riderFindByPk,
   riderShow,
   riderCreate,
   riderStore,
   riderFormStore,
-  updateWorkStatus
+  updateWorkStatus,
+  getSettlementByRider,
+  getSettlementDetailByRider
 }
