@@ -5,6 +5,9 @@
  */
 
 import { body, param, query } from "express-validator"
+import pathUtil from "../../../utils/path/path.util.js";
+import path from 'path';
+import fs from 'fs';
 
 // 유저 PK 필드
 const page = query('page')
@@ -35,21 +38,15 @@ const businessNum = body('businessNum')
 
 const krName = body('krName')
   .trim()
-  .notEmpty()
-  .withMessage('한글 이름은 필수 항목입니다.')
+  .notEmpty().withMessage('한글 이름은 필수 항목입니다.')
   .bail()
-  .matches(/^[가-힣0-9 ]{2,50}$/)
-  .withMessage('한글, 숫자로 2~50자 허용')
-;
+  .isLength({ min: 2, max: 100 }).withMessage('이름은 2~100자 사이여야 합니다.'); // 정규식 대신 길이 검사 권장
 
 const enName = body('enName')
   .trim()
-  .notEmpty()
-  .withMessage('영어 이름은 필수 항목입니다.')
+  .notEmpty().withMessage('영어 이름은 필수 항목입니다.')
   .bail()
-  .matches(/^[a-zA-Z0-9 ]{2,50}$/)
-  .withMessage('영어대소문자, 숫자로 2~50자 허용')
-;
+  .isLength({ min: 2, max: 100 }).withMessage('영어 이름은 2~100자 사이여야 합니다.');
 
 const manager = body('manager')
   .trim()
@@ -83,7 +80,7 @@ const logoImg = body('logoImg')
   .bail()
   .custom(val => {
     // 우리 앱의 게시글 이미지에 접근하는 도메인 + path가 맞는지 확인
-    if(!val.startsWith(`${process.env.APP_URL}${process.env.ACCESS_FILE_POST_IMAGE_PATH}`)) {
+    if(!val.startsWith(`${process.env.APP_URL}${process.env.ACCESS_FILE_PARTNER_LOGO_IMAGE_PATH}`)) {
       return false;
     }
     return true;
@@ -93,7 +90,7 @@ const logoImg = body('logoImg')
   .custom(val => {
     // 실제 이미지 파일이 있는지 검증 처리
     const splitPath = val.split('/');
-    const fullPath = path.join(pathUtil.getPostsImagePath(), splitPath[splitPath.length - 1]);
+    const fullPath = path.join(pathUtil.getLogosImagePath(), splitPath[splitPath.length - 1]);
     if(!fs.existsSync(fullPath)) {
       return false;
     }
@@ -103,25 +100,20 @@ const logoImg = body('logoImg')
 
 const address = body('address')
   .trim()
-  .notEmpty()
-  .withMessage('주소는 필수 항목입니다.')
+  .notEmpty().withMessage('주소는 필수 항목입니다.')
   .bail()
-  .matches(/^[a-zA-Z0-9가-힣 -]{2,50}$/)
-  .withMessage('한글, 영어대소문자·숫자·- 으로 2~50자 허용')
-;
+  .isLength({ min: 2, max: 200 }).withMessage('주소는 2~200자 사이여야 합니다.');
 
+// 위경도: matches 대신 isFloat(숫자 검사) 사용
 const lat = body('lat')
-  .trim()
-  .notEmpty()
-  .matches(/^(3[3-9])\.\d+$/)
-  .withMessage('위도(lat)는 33~39 사이의 소수값이어야 합니다.')
-;
+  .notEmpty().withMessage('위도는 필수 항목입니다.')
+  .bail()
+  .isFloat({ min: 33, max: 39 }).withMessage('위도(lat)는 33~39 사이의 소수값이어야 합니다.');
 
 const lng = body('lng')
-  .trim()
-  .notEmpty()
-  .matches(/^(12[4-9]|13[0-2])\.\d+$/)
-  .withMessage('경도(lng)는 124~132 사이의 소수값이어야 합니다.')
+  .notEmpty().withMessage('경도는 필수 항목입니다.')
+  .bail()
+  .isFloat({ min: 124, max: 132 }).withMessage('경도(lng)는 124~132 사이의 소수값이어야 합니다.');
 ;
 
 export default {

@@ -5,6 +5,7 @@
  */
 
 import { body } from "express-validator";
+import pathUtil from "../../../utils/path/path.util.js";
 
 // 유저 PK 필드
 const userId = body('userId')
@@ -24,7 +25,7 @@ const licenseImg = body('licenseImg')
   .bail()
   .custom(val => {
     // 우리 앱의 게시글 이미지에 접근하는 도메인 + path가 맞는지 확인
-    if(!val.startsWith(`${process.env.APP_URL}${process.env.ACCESS_FILE_POST_IMAGE_PATH}`)) {
+    if(!val.startsWith(`${process.env.APP_URL}${process.env.ACCESS_FILE_RIDER_LICENSE_IMAGE_PATH}`)) {
       return false;
     }
     return true;
@@ -34,7 +35,7 @@ const licenseImg = body('licenseImg')
   .custom(val => {
     // 실제 이미지 파일이 있는지 검증 처리
     const splitPath = val.split('/');
-    const fullPath = path.join(pathUtil.getPostsImagePath(), splitPath[splitPath.length - 1]);
+    const fullPath = path.join(pathUtil.getLicensesImagePath(), splitPath[splitPath.length - 1]);
     if(!fs.existsSync(fullPath)) {
       return false;
     }
