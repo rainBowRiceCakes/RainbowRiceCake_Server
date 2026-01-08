@@ -44,7 +44,7 @@ adminRouter.delete('/partner/:id', authMiddleware, adminsController.partnerDelet
 
 // -------------어드민 orderpage--------------------------
 adminRouter.get('/orderindex', authMiddleware, adminsController.orderIndex)
-adminRouter.get('/order/:id', adminsController.show)
+adminRouter.get('/order/:orderCode', authMiddleware, adminsController.show)
 adminRouter.post('/order', authMiddleware, orderValidator.adminStore, validationHandler, adminsController.orderCreate)
 adminRouter.put('/order', authMiddleware, orderValidator.force, validationHandler, adminsController.orderUpdate)
 adminRouter.delete('/order/:id', authMiddleware, adminsController.orderDelete)

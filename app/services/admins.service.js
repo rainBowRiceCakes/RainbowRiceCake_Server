@@ -161,9 +161,9 @@ async function hotelUpdate(data) {
  * @param {import("express").NextFunction} next - next 객체
  * @return {import("express").Response}
  */
-async function getOrderDetail(id) {
+async function getOrderDetail(orderCode) {
     // partnerPK로 레코드 하나 가져오기
-    return await orderRepository.findByPkWithDetails(null, id);
+    return await orderRepository.findByOrderCodeWithDetails(null, orderCode);
 }
 
 /**
@@ -187,7 +187,7 @@ async function createNewOrder(data) {
 async function orderUpdate(data) {
   await db.sequelize.transaction(async t => {
     // partnerPK로 레코드 하나 가져오기
-    const result = await orderRepository.findByPk(t, data.id);
+    const result = await orderRepository.findByOrderCodeWithDetails(t, data.orderCode);
     result.name = data.name
     result.email = data.email
     result.cntS = data.cntS

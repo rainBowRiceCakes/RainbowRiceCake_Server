@@ -106,6 +106,7 @@ async function orderIndex(req, res, next) {
 async function orderUpdate(req, res, next) {
   try {
     const data = req.body
+    console.log(data)
     await adminsService.orderUpdate(data);
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS))
@@ -159,9 +160,10 @@ async function partnerCreate(req, res, next) {
 */
 async function show(req, res, next) {
   try {
-    const id = req.params.id;
+    const orderCode = req.params.orderCode;
+    console.log(req.params)
     
-    const result = await adminsService.getOrderDetail(id);
+    const result = await adminsService.getOrderDetail(orderCode);
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {
     return next(error);
