@@ -34,22 +34,14 @@ async function monthTotalAmount(req, res, next) {
  */
 async function settlementShow(req, res, next) {
     try {
-        const page = parseInt(req.query.page, 10) || 1;
-        const limit = parseInt(req.query.limit, 10) || 10;
-        const { status, search } = req.query;
+        const { year, month } = req.query; // year와 month를 쿼리 파라미터로 받음
 
-        const { count, rows } = await settlementsService.settlementShow({ page, limit, status, search });
-
-        const totalPages = Math.ceil(count / limit);
+        // settlementsService.settlementShow 함수를 year, month 파라미터로 호출하여 해당 월의 모든 데이터를 조회
+        const allSettlements = await settlementsService.settlementShow({ year, month });
 
         const result = {
-            settlements: rows,
-            pagination: {
-                page,
-                limit,
-                total: count,
-                totalPages,
-            }
+            settlements: allSettlements, // 전체 정산 내역
+            // 클라이언트에서 페이지네이션을 처리할 것이므로, 서버에서는 pagination 정보를 보내지 않음
         }
 
         return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))

@@ -24,8 +24,7 @@ async function storeLicense(req, res, next) {
     }
 
     const result = {
-      // TODO : Test를 위한 dev경로 설정됨(ACCESS 없어짐)
-      path: `${process.env.APP_URL}/${process.env.FILE_RIDER_LICENSE_IMAGE_PATH}/${req.file.filename}`
+      path: `${process.env.APP_URL}/${process.env.ACCESS_FILE_RIDER_LICENSE_IMAGE_PATH}/${req.file.filename}`
     };
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch(error) {
@@ -48,8 +47,7 @@ async function storeLogo(req, res, next) {
     }
 
     const result = {
-      // TODO : Test를 위한 dev경로 설정됨(ACCESS 없어짐)
-      path: `${process.env.APP_URL}/${process.env.FILE_PARTNER_LOGO_IMAGE_PATH}/${req.file.filename}`
+      path: `${process.env.APP_URL}/${process.env.ACCESS_FILE_PARTNER_LOGO_IMAGE_PATH}/${req.file.filename}`
     };
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch(error) {

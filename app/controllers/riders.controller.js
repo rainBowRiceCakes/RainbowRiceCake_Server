@@ -83,8 +83,7 @@ async function riderCreate(req, res, next) {
 async function riderStore(req, res, next) {
   try {
     const data = req.body;
-    data.userId = req.user.id; // TODO: 로그인기능 완성되면 추가할것
-    // data.userId = 12; // TODO: 로그인기능 완성되면 제거할것
+    data.userId = req.user.id;
 
     await ridersService.create(data);
 

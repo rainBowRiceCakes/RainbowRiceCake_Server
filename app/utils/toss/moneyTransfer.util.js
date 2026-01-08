@@ -7,6 +7,7 @@ import db from "../../models/index.js";
 import { transferMoney } from "./tossClient.js"; 
 import { BANK_CODES } from "./bankCodes.js";
 import { logger } from "../../middlewares/loggers/winston.logger.js";
+import invoicesService from "../../services/invoices.service.js";
 
 const { Settlement, Rider, sequelize, User } = db;
 
@@ -16,10 +17,11 @@ const { Settlement, Rider, sequelize, User } = db;
  */
 export const executeSingleTransfer = async (settlementItem) => {
   const t = await sequelize.transaction();
+  let item; // Declare item here to make it accessible in catch
 
   try {
     // 모델 인스턴스가 아닌 순수 객체일 수 있으므로, DB에서 최신 정보 다시 로드
-    const item = await Settlement.findByPk(settlementItem.id, {
+    item = await Settlement.findByPk(settlementItem.id, { // assign to item
       include: [{
         model: Rider,
         as: 'settlement_rider',
@@ -60,22 +62,44 @@ export const executeSingleTransfer = async (settlementItem) => {
         orderId: uniqueTransferId
     });
 
-    if (result.success) {
-      await item.update({ 
-        status: 'RES',
-        memo: '지급 완료'
-      }, { transaction: t });
-      logger.info(`   -> [성공] Settlement ID ${item.id}`);
-    } else {
+    if (!result.success) {
       throw new Error(result.message || 'Toss API로부터 실패 응답을 받았습니다.');
     }
+    // --- 송금 API 성공 후, 송장 처리 및 DB 상태 업데이트 ---
 
+    // 1. 송장 처리를 먼저 실행 (아직 status가 RES가 아니므로 스킵되지 않음)
+    try {
+      // riderProcessAndSendInvoice는 { riderId, year, month, status } 객체를 기대함.
+      // settlementItem.status는 원래 상태 (예: REQ 또는 REJ)
+      await invoicesService.riderProcessAndSendInvoice({
+        riderId: item.riderId,
+        year: item.year,
+        month: item.month,
+        status: settlementItem.status // 송장 처리는 원래 상태를 기준으로 해야 함
+      });
+    } catch (invoiceError) {
+      logger.error(`[Invoice Error] Settlement ID ${item.id} 송장 처리 실패: ${invoiceError.message}\n${invoiceError.stack}`);
+      // 송장 처리 실패가 송금 자체를 롤백시키지는 않으므로 에러를 재던지지 않음.
+    }
+
+    // 2. 송장 처리 후, 정산 상태를 RES로 업데이트
+    await item.update({ 
+      status: 'RES'
+    }, { transaction: t });
+    logger.info(`   -> [성공] Settlement ID ${item.id}`);
+
+    // 3. 모든 DB 변경사항을 커밋
     await t.commit();
+    
     return { success: true, message: '송금이 성공적으로 완료되었습니다.' };
 
   } catch (error) {
-    await t.rollback();
-    // 롤백 후 상태 업데이트를 위해 ID를 사용
+    // 트랜잭션이 아직 활성화 상태라면 롤백
+    if (t && !t.finished) {
+      await t.rollback();
+    }
+    // 송금 실패 시 정산 상태를 REJ로 업데이트 (보상 트랜잭션)
+    // item이 정의되지 않은 상태일 수도 있으므로 settlementItem.id 사용
     await Settlement.update({ 
       status: 'REJ',
       memo: error.message
@@ -83,7 +107,6 @@ export const executeSingleTransfer = async (settlementItem) => {
       where: { id: settlementItem.id }
     });
     logger.error(`[Transfer Error] Settlement ID ${settlementItem.id}: ${error.message}\n${error.stack}`);
-    // 에러를 다시 던져서 호출 측에서 알 수 있도록 함
     throw error;
   }
 };

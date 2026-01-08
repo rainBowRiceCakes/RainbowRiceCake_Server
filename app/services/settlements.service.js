@@ -11,12 +11,12 @@ import db from '../models/index.js'; // 트랜잭션을 위해 db 모듈 임포�
 import { executeSingleTransfer } from '../utils/toss/moneyTransfer.util.js'; // 송금 유틸리티 추가
 
 /**
- * 정산내역 상세 조회 (목록용)
- * @param {object} { page, limit, status, search }
- * @returns {Promise<{count: number, rows: Settlement[]}>}
+ * 정산내역 상세 조회 (목록용, 클라이언트 페이지네이션용)
+ * @param {object} { year, month }
+ * @returns {Promise<Settlement[]>} - 해당 월의 모든 정산 내역
  */
-async function settlementShow({ page, limit, status, search }) {
-    return await settlementRepository.findAllSettlements({ page, limit, status, search });
+async function settlementShow({ year, month }) {
+    return await settlementRepository.findAllSettlements({ year, month });
 }
 
 /**
@@ -130,10 +130,11 @@ async function getSettlementDetail({ id }) {
  * @returns {Promise<object>}
  */
 async function retrySettlement({ id, bankAccount, bankCode, memo }) {
-    // 1. DB 상태 업데이트 (은행 정보, 정산 상태 REJ -> REQ)
     const transaction = await db.sequelize.transaction();
     let settlement;
+
     try {
+        // 1. DB 상태 업데이트 (은행 정보, 정산 상태 REJ -> REQ)
         settlement = await settlementRepository.findByIdWithRiderDetails({ id });
 
         if (!settlement) {
@@ -153,20 +154,29 @@ async function retrySettlement({ id, bankAccount, bankCode, memo }) {
 
         await settlementRepository.updateStatus({ id, status: 'REQ' }, transaction);
 
+        // 여기까지 성공하면 DB 변경사항을 커밋
         await transaction.commit();
-    } catch (error) {
-        await transaction.rollback();
-        throw error; // DB 오류는 그대로 던짐
-    }
 
-    // 2. DB 업데이트 성공 후, 즉시 송금 시도
-    try {
+        // 2. DB 커밋 성공 후, 즉시 송금 시도
         const result = await executeSingleTransfer(settlement);
         return result; // 송금 성공 결과 반환
+
     } catch (error) {
-        // executeSingleTransfer 내부에서 이미 상태를 REJ로 바꾸고 로그를 남김
-        // 컨트롤러에게 송금 실패를 알리기 위해 에러를 다시 던짐
-        throw new Error(`송금 실패: ${error.message}`);
+        // try 블록 내에서 DB 오류가 발생했는지, 송금 오류가 발생했는지에 따라 처리
+        // 트랜잭션이 아직 완료(커밋 또는 롤백)되지 않았다면 롤백 실행
+        if (transaction && !transaction.finished) {
+            await transaction.rollback();
+        }
+
+        // 트랜잭션이 이미 커밋되었다면, 이는 송금 단계에서 에러가 발생한 것을 의미
+        if (transaction.finished === 'commit') {
+            // executeSingleTransfer에서 에러 발생 시, 해당 함수가 이미 보상 트랜잭션(상태 REJ로 변경)을 처리했다고 가정
+            // 따라서 여기서는 송금 실패 에러만 전달
+            throw new Error(`송금 실패: ${error.message}`);
+        } else {
+            // DB 처리 중 발생한 에러는 그대로 던짐
+            throw error;
+        }
     }
 }
 

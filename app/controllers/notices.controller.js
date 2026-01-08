@@ -49,7 +49,6 @@ async function noticeShow(req, res, next) {
  */
 async function getNoticesByRole(req, res, next) {
   try {
-    // TODO: 테스트용 role, 배포 전 제거
     const userRole = req.user?.role || 'ALL';
     const result = await noticesService.getNoticesByRole(null, userRole);
 

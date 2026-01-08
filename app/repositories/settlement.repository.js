@@ -10,24 +10,21 @@ import db from '../models/index.js';
 const { Settlement, Rider, User } = db;
 
 /**
- * 정산내역 상세 조회
- * @param {object} { page, limit, status, search }
- * @returns {Promise<{count: number, rows: Settlement[]}>}
+ * 정산내역 상세 조회 (클라이언트 페이지네이션용)
+ * @param {object} { year, month }
+ * @returns {Promise<Settlement[]>} - 해당 월의 모든 정산 내역
  */
-async function findAllSettlements({ page, limit, status, search }) {
-    const offset = (page - 1) * limit;
-
+async function findAllSettlements({ year, month }) {
     const where = {};
-    if (status) {
-        where.status = status;
+    // year와 month를 필터링 조건으로 추가
+    if (year) {
+        where.year = year;
     }
-    if (search) {
-        where[Op.or] = [
-            { '$settlement_rider.rider_user.name$': { [Op.like]: `%${search}%` } },
-        ];
+    if (month) {
+        where.month = month;
     }
-
-    return await Settlement.findAndCountAll({
+    console.log(year, month)
+    return await Settlement.findAll({ // findAndCountAll 대신 findAll 사용
         where,
         include: [
             {
@@ -40,10 +37,7 @@ async function findAllSettlements({ page, limit, status, search }) {
                 }]
             }
         ],
-        offset,
-        limit,
         order: [['id', 'DESC']],
-        distinct: true,
     });
 }
 
@@ -118,7 +112,7 @@ async function findByIdWithRiderDetails({ id }) {
                     attributes: ['id', 'name', 'email'] // User 모델의 필요한 정보 포함
                 }]
             }
-        ]
+        ],
     });
 }
 
@@ -128,7 +122,7 @@ async function findByIdWithRiderDetails({ id }) {
  * @param {import("sequelize").Transaction} transaction
  * @returns {Promise<[number, Settlement[]]>}
  */
-async function updateStatus({ id, status }, transaction = null) {
+async function updateStatus({ id, status }, transaction) {
     return await Settlement.update(
         { status },
         {

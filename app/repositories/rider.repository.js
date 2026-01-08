@@ -61,7 +61,7 @@ async function findByPk(t = null, id) {
     {
       include: [
         {
-          attributes: ['name'],
+          attributes: ['name', 'email'],
           model: User,
           as: 'rider_user',
         }

@@ -80,27 +80,26 @@ const logoImg = body('logoImg')
   .trim()
   .notEmpty()
   .withMessage('내용은 필수 항목입니다.')
-  // TODO: test용으로 코멘트아웃 (추후 multer지정 후 수정예정)
-  // .bail()
-  // .custom(val => {
-  //   // 우리 앱의 게시글 이미지에 접근하는 도메인 + path가 맞는지 확인
-  //   if(!val.startsWith(`${process.env.APP_URL}${process.env.ACCESS_FILE_POST_IMAGE_PATH}`)) {
-  //     return false;
-  //   }
-  //   return true;
-  // })
-  // .withMessage('허용하지 않는 이미지 경로입니다.')
-  // .bail()
-  // .custom(val => {
-  //   // 실제 이미지 파일이 있는지 검증 처리
-  //   const splitPath = val.split('/');
-  //   const fullPath = path.join(pathUtil.getPostsImagePath(), splitPath[splitPath.length - 1]);
-  //   if(!fs.existsSync(fullPath)) {
-  //     return false;
-  //   }
-  //   return true;
-  // })
-  // .withMessage('존재하지 않는 이미지 경로입니다.');
+  .bail()
+  .custom(val => {
+    // 우리 앱의 게시글 이미지에 접근하는 도메인 + path가 맞는지 확인
+    if(!val.startsWith(`${process.env.APP_URL}${process.env.ACCESS_FILE_POST_IMAGE_PATH}`)) {
+      return false;
+    }
+    return true;
+  })
+  .withMessage('허용하지 않는 이미지 경로입니다.')
+  .bail()
+  .custom(val => {
+    // 실제 이미지 파일이 있는지 검증 처리
+    const splitPath = val.split('/');
+    const fullPath = path.join(pathUtil.getPostsImagePath(), splitPath[splitPath.length - 1]);
+    if(!fs.existsSync(fullPath)) {
+      return false;
+    }
+    return true;
+  })
+  .withMessage('존재하지 않는 이미지 경로입니다.');
 
 const address = body('address')
   .trim()

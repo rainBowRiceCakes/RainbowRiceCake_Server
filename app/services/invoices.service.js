@@ -7,6 +7,7 @@ import invoicesRepository from "../repositories/invoices.repository.js";
 import nodemailer from 'nodemailer';
 import partnerRepository from "../repositories/partner.repository.js";
 import db from "../models/index.js";
+import riderRepository from "../repositories/rider.repository.js";
 
 /**
  * [핵심] 단건 발송 로직
@@ -26,7 +27,7 @@ async function processAndSendInvoice({ partnerId, year, month }) {
     if (!partner.partner_user.email) throw new Error(`Partner ${partner.krName} has no email.`);
     
     // 정산 내역 조회
-    const invoiceItems = await invoicesRepository.findInvoiceItems(t, partnerId, year, month);
+    const invoiceItems = await invoicesRepository.findInvoiceItems(t, {partnerId, year, month});
     if (!invoiceItems.rows || invoiceItems.rows.length === 0) {
         // 내역이 없으면 에러보다는 '발송 안 함' 처리 (일괄 발송 시 중단을 막기 위함)
         return { status: 'skipped', message: 'No items to invoice' };
@@ -124,7 +125,7 @@ async function processAndSendInvoice({ partnerId, year, month }) {
     const mailOptions = {
         from: `"DGD" <${process.env.EMAIL_USER}>`,
         to: partner.partner_user.email, // ★ DB의 Partner 테이블에서 가져온 이메일 사용
-        subject: `[★☆정산 요청☆★] ${partner.krName} ${month}월 정산 명세서`,
+        subject: `[DGD] ${partner.krName} ${month}월 정산 명세서`,
         html: htmlContent,
     };
 
@@ -161,7 +162,7 @@ async function sendMonthlyInvoicesToAll() {
         const invoiceStatus = await invoicesRepository.findInvoiceStatus(t, {partnerId: partner.id, year, month})
         if(invoiceStatus) return { status: 'skipped', message: `이미 이달에 보낸 제휴업체입니다.`}
 
-        const invoiceItems = await invoicesRepository.findInvoiceItems(t, partner.id, year, month);
+        const invoiceItems = await invoicesRepository.findInvoiceItems(t, {partnerId: partner.id, year, month});
         if (!invoiceItems.rows || invoiceItems.rows.length === 0) {
             // 내역이 없으면 에러보다는 '발송 안 함' 처리 (일괄 발송 시 중단을 막기 위함)
             return { status: 'skipped', message: 'No items to invoice' };
@@ -187,7 +188,63 @@ async function sendMonthlyInvoicesToAll() {
   });
 }
 
+/**
+ * [핵심] 라이더 정산 메일 단건 발송 로직
+ */
+async function riderProcessAndSendInvoice({ riderId, year, month, status }) {
+  return await db.sequelize.transaction(async t => {
+    const invoiceStatus = await invoicesRepository.findInvoiceRider(t, {riderId, year, month})
+    if(invoiceStatus) {
+      return { status: 'skipped', message: `이미 이달에 보낸 라이더입니다.`}
+    }
+    
+    // 1. DB 데이터 조회
+    const rider = await riderRepository.findByPk(t, riderId);
+
+    // 유효성 검증
+    if (!rider) throw new Error(`Rider ID ${riderId} not found.`);
+    if (!rider.rider_user.email) throw new Error(`Rider ${rider.rider_user.name} has no email.`);
+    
+    // 정산 내역 조회
+    const invoiceItems = await invoicesRepository.findInvoiceItems(t, { riderId, year, month });
+
+    if (!invoiceItems.rows || invoiceItems.rows.length === 0) {
+        return { status: 'skipped', message: 'No items to invoice' };
+    }
+
+    // 3. 데이터 가공
+    const totalAmount = invoiceItems.rows.reduce((acc, cur) => acc + Number(cur.price), 0);
+
+    // 4. HTML 템플릿
+    const htmlContent = `${invoiceItems.count}건의 ${totalAmount}원 드립니다 ${rider.rider_user.name}님.`
+    
+    // 5. 이메일 발송 설정 (DB에서 가져온 rider 정보 사용)
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+        },
+    });
+
+    const mailOptions = {
+        from: `"DGD" <${process.env.EMAIL_USER}>`,
+        to: rider.rider_user.email, // ★ DB의 Rider 테이블에서 가져온 이메일 사용
+        subject: `[DGD] ${rider.rider_user.name} ${month}월 정산 명세서`,
+        html: htmlContent,
+    };
+
+    await transporter.sendMail(mailOptions);
+    
+    // 송장 발송 상태 저장
+    await invoicesRepository.storeInvoiceRider(t, {riderId, year, month, totalAmount})
+    
+    return { status: 'sent', rider: rider.rider_user.name, email: rider.rider_user.email };
+  })
+}
+
 export default {
   processAndSendInvoice,
   sendMonthlyInvoicesToAll,
+  riderProcessAndSendInvoice,
 };
