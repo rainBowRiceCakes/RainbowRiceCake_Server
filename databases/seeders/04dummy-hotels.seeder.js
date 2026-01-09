@@ -3,9 +3,10 @@
  * @description hotels dummy data create
  * 251219 v1.0.0 wook init
  */
+import { faker } from '@faker-js/faker';
 import db from '../../app/models/index.js';
 const { Hotel } = db;
-
+faker.locale = 'ko';
 // 테이블명
 // const tableName = 'hotels';
 
@@ -14,20 +15,25 @@ export default {
 
   async up (queryInterface, Sequelize) {
     //레코드 정보
-    const partnerCount = 30;
+    const getRandomInRange = (min, max) =>
+      Math.random() * (max - min) + min;
+    const randomLat = getRandomInRange(35.82405, 35.91405);
+    const randomLng = getRandomInRange(128.53933, 128.64933);
+
+    const hotelCount = 30;
 
     const records = [];
 
-    for (let i = 1; i <= partnerCount; i++) {
+    for (let i = 1; i <= hotelCount; i++) {
       records.push({
         krName: `OO호텔${i}`,
         enName: `OOHotel${i}`,
-        manager: `지배인${i}`,
+        manager: faker.person.fullName(),
         phone: '000-3333-5555',
         status: true,
         address: '여긴 어딜까요',
-        lat: `35.87033${i}`,
-        lng: `128.61552${i}`
+        lat: randomLat,
+        lng: randomLng
       });
     }
      

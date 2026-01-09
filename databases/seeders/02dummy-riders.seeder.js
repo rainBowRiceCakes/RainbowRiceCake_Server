@@ -4,6 +4,7 @@
  * 251219 v1.0.0 wook init
  */
 import db from '../../app/models/index.js';
+import { BANK_NAMES } from '../../app/utils/toss/bankCodes.js';
 const { Rider } = db;
 
 // 테이블명
@@ -15,7 +16,12 @@ export default {
   async up (queryInterface, Sequelize) {
     //레코드 정보
 
-    const riderCount = 70;
+  const getRandomBank = () => {
+    const randomIndex = Math.floor(Math.random() * BANK_NAMES.length);
+    return BANK_NAMES[randomIndex];
+  };
+
+    const riderCount = 100;
 
     const records = [
     ];
@@ -24,9 +30,9 @@ export default {
       records.push({
         userId: `${i}`,
         licenseImg: `licenseImage${i}`,
-        bank: '대구은행',
+        bank: getRandomBank(),
         bankNum: 1234567899,
-        address: '보험용 주소입니다',
+        address: faker.location.street(),
         phone: '010-1234-5678',
         status: 'RES'
       });

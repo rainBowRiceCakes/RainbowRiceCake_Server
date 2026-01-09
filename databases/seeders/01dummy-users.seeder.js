@@ -3,9 +3,10 @@
  * @description users dummy data create
  * 251217 v1.0.0 wook init
  */
+import { faker } from '@faker-js/faker';
 import db from '../../app/models/index.js';
 const { User } = db;
-
+faker.locale = 'ko';
 // 테이블명
 // const tableName = 'users';
 
@@ -17,15 +18,15 @@ export default {
     const records = [];
 
     const userCount = 50;    // 일반 유저 수
-    const riderCount = 20;   // 라이더 수
-    const partnerCount = 20; // 파트너 수
+    const riderCount = 50;   // 라이더 수
+    const partnerCount = 50; // 파트너 수
 
     // 1. 일반 유저 (User) 생성
     // 생성 예시: user1@email.com, user2@email.com ...
     for (let i = 1; i <= userCount; i++) {
       records.push({
         email: `user${i}@email.com`,
-        name: `일반유저${i}`,
+        name: faker.person.fullName(),
         // role: 'USER', // DB에 role 컬럼이 있다면 주석 해제 후 사용
       });
     }
@@ -35,7 +36,7 @@ export default {
     for (let i = 1; i <= riderCount; i++) {
       records.push({
         email: `rider${i}@email.com`,
-        name: `김기사${i}`,
+        name: faker.person.fullName(),
         role: 'DLV', // DB에 role 컬럼이 있다면 주석 해제 후 사용
       });
     }
@@ -45,7 +46,7 @@ export default {
     for (let i = 1; i <= partnerCount; i++) {
       records.push({
         email: `partner${i}@email.com`,
-        name: `제휴사장님${i}`,
+        name: faker.person.fullName(),
         role: 'PTN', // DB에 role 컬럼이 있다면 주석 해제 후 사용
       });
     }
