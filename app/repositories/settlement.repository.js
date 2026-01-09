@@ -23,7 +23,6 @@ async function findAllSettlements({ year, month }) {
     if (month) {
         where.month = month;
     }
-    console.log(year, month)
     return await Settlement.findAll({ // findAndCountAll 대신 findAll 사용
         where,
         include: [
@@ -137,6 +136,6 @@ export default {
   monthTotalAmount,
   countActiveRidersByMonth,
   countFailedOrPendingByMonth,
-  findByIdWithRiderDetails, // 새로 추가
-  updateStatus, // 새로 추가
+  findByIdWithRiderDetails,
+  updateStatus,
 }

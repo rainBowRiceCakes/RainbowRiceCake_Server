@@ -8,6 +8,7 @@ import nodemailer from 'nodemailer';
 import partnerRepository from "../repositories/partner.repository.js";
 import db from "../models/index.js";
 import riderRepository from "../repositories/rider.repository.js";
+import dayjs from "dayjs";
 
 /**
  * [핵심] 단건 발송 로직
@@ -207,23 +208,121 @@ async function riderProcessAndSendInvoice({ riderId, year, month, status }) {
     
     // 정산 내역 조회
     const invoiceItems = await invoicesRepository.findInvoiceItems(t, { riderId, year, month });
-
+    console.log(invoiceItems)
     if (!invoiceItems.rows || invoiceItems.rows.length === 0) {
         return { status: 'skipped', message: 'No items to invoice' };
     }
 
     // 3. 데이터 가공
     const totalAmount = invoiceItems.rows.reduce((acc, cur) => acc + Number(cur.price), 0);
-
+    const todayYear = dayjs().format('YYYY')
+    const todayMonth = dayjs().format('MM')
+    const day = dayjs().format('DD')
     // 4. HTML 템플릿
-    const htmlContent = `${invoiceItems.count}건의 ${totalAmount}원 드립니다 ${rider.rider_user.name}님.`
+    const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="ko">
+    <head>
+      <meta charset="UTF-8">
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #f4f6f8; font-family: 'Apple SD Gothic Neo', sans-serif;">
+      
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; margin: 40px auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+        
+        <tr>
+          <td style="background-color: #2c3e50; padding: 30px 20px; text-align: center;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 24px;">정산 지급 명세서</h1>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding: 40px 30px 20px 30px;">
+            <p style="color: #333333; font-size: 16px; margin: 0;">
+              안녕하세요, <strong>${rider.rider_user.name}</strong> 님.<br>
+              파트너님의 소중한 노고에 감사드립니다.<br>
+              금일 요청하신 정산 건에 대한 입금이 완료되었습니다.
+            </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding: 0 30px;">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px;">
+              <tr>
+                <td style="padding: 25px;">
+                  
+                  <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-bottom: 2px solid #dde2e6; padding-bottom: 15px; margin-bottom: 15px;">
+                    <tr>
+                      <td style="color: #666666; font-size: 14px;">총 정산 금액</td>
+                      <td style="text-align: right; color: #007bff; font-size: 26px; font-weight: bold;">
+                        ₩ ${totalAmount}
+                      </td>
+                    </tr>
+                  </table>
+
+                  <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                      <td style="padding: 8px 0; color: #666666; font-size: 14px;">정산 대상 건수</td>
+                      <td style="padding: 8px 0; text-align: right; color: #333333;">
+                        <strong>${invoiceItems.count}</strong> 건
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 8px 0; color: #666666; font-size: 14px;">입금 은행</td>
+                      <td style="padding: 8px 0; text-align: right; color: #333333;">
+                        ${rider.bank}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 8px 0; color: #666666; font-size: 14px;">계좌 번호</td>
+                      <td style="padding: 8px 0; text-align: right; color: #333333;">
+                        ${rider.bankNum}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="padding: 8px 0; color: #666666; font-size: 14px;">지급 일자</td>
+                      <td style="padding: 8px 0; text-align: right; color: #333333;">
+                        ${todayYear}년${todayMonth}월${day}일
+                      </td>
+                    </tr>
+                  </table>
+
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="padding: 30px;">
+            <p style="color: #888888; font-size: 13px; line-height: 1.5; margin: 0; background-color: #fff8e1; padding: 15px; border-radius: 4px; border: 1px solid #ffeeba;">
+              <strong>💡 안내사항</strong><br>
+              은행 전산망 사정에 따라 실제 입금 확인까지 최대 30분~1시간 정도 소요될 수 있습니다.<br>
+              입금 내역이 확인되지 않을 경우 고객센터로 문의 부탁드립니다.
+            </p>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="background-color: #343a40; padding: 20px; text-align: center;">
+            <p style="color: #ced4da; font-size: 12px; margin: 0;">
+              본 메일은 발신 전용입니다.<br>
+              © 2026 Rainbow Rice Cake. All rights reserved.
+            </p>
+          </td>
+        </tr>
+      </table>
+      
+    </body>
+    </html>
+  `;
     
     // 5. 이메일 발송 설정 (DB에서 가져온 rider 정보 사용)
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
         },
     });
 

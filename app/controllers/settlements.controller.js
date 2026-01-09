@@ -129,6 +129,6 @@ export default {
   settlementShow,
   getStatistics,
   getLastThreeMonthsTotalAmount,
-  getSettlementDetail, // 새로 추가
-  retrySettlement, // 새로 추가
+  getSettlementDetail,
+  retrySettlement,
 }
