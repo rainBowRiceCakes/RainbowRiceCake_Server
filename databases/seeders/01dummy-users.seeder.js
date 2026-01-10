@@ -3,10 +3,12 @@
  * @description users dummy data create
  * 251217 v1.0.0 wook init
  */
-import { faker } from '@faker-js/faker';
+
+// [수정] fakerKO를 사용하여 한글 데이터를 기본으로 설정
+import { fakerKO as faker } from '@faker-js/faker'; 
+// 임포트할 때 'fakerKO'를 'faker'라는 이름으로 가져와서 바로 사용
 import db from '../../app/models/index.js';
 const { User } = db;
-faker.locale = 'ko';
 // 테이블명
 // const tableName = 'users';
 

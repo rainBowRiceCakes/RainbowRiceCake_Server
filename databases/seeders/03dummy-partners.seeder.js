@@ -3,10 +3,12 @@
  * @description partners dummy data create
  * 251219 v1.0.0 wook init
  */
-import { faker } from '@faker-js/faker';
+
+import { fakerKO as faker } from '@faker-js/faker'; 
+// 임포트할 때 'fakerKO'를 'faker'라는 이름으로 가져와서 바로 사용
 import db from '../../app/models/index.js';
 const { Partner } = db;
-faker.locale = 'ko';
+// faker.locale = 'ko'; // // 이 방식은 최신 버전에서 경고가 뜨거나 작동하지 않을 수 있음
 // 테이블명
 // const tableName = 'partners';
 

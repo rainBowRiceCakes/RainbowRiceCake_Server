@@ -1,3 +1,9 @@
+/**
+ * @file databases/seeders/09dummy-settlement.seeder.js
+ * @description settlement data create
+ * 260107 v1.0.0 wook init
+ */
+
 import dayjs from 'dayjs';
 
 /** @type {import('sequelize-cli').Migration} */
