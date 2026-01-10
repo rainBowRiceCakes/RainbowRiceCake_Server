@@ -53,7 +53,7 @@ async function store(req, res, next) {
 async function index(req, res, next) {
   try {
     // authMiddleware를 통해 들어온 유저 정보 추출
-    const { id: userId, role: userRole } = req.user; 
+    const { id: userId, role: userRole } = req.user;
 
     // 서비스 호출 시 유저 정보 전달
     const result = await questionsService.getList({ userId, userRole });

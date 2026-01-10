@@ -39,6 +39,12 @@ async function createNewOrder({ userId, orderData }) {
       throw myError('파트너 정보를 찾을 수 없습니다.', NOT_FOUND_ERROR);
     }
 
+    // // 2. 핵심 차단 로직: 자동결제 등록 여부 확인
+    // if (!partner.isAutoPay || !partner.billingKey) {
+    //   // 이 에러는 컨트롤러에서 캐치하여 403 혹은 특정 에러 코드로 응답합니다.
+    //   throw myError('자동 결제 정보가 없습니다.', FORBIDDEN_ERROR);
+    // }
+
     const fullName = `${firstName} ${lastName}`.trim();
 
     // 2. plans 배열 가공 (CamelCase 스키마 기준)
@@ -464,84 +470,74 @@ async function getOrdersListAdmin({ from, page, limit, statusExclude, orderCode,
  * @param {number} params.page - 페이지 번호 (기본값: 1)
  * @param {number} params.limit - 페이지당 항목 수 (기본값: 20)
  */
-export const getOrdersList = async ({ userId, role, status, date, page, limit }) => {
+export const getOrdersList = async ({ userId, role, status, date, page, limit, startDate, endDate, orderCode }) => {
   const where = {};
 
-  const statusArray = status
-    ? (Array.isArray(status) ? status : [status])
-    : [];
+  // 1. [공통] 날짜 필터링 (가장 먼저 적용)
+  if (startDate && endDate) {
+    // 특정 기간 선택 시
+    where.createdAt = { [Op.between]: [dayjs(startDate).startOf('day').toDate(), dayjs(endDate).endOf('day').toDate()] };
+  } else if (date === 'today') {
+    // '오늘' 버튼 클릭 시
+    where.createdAt = { [Op.between]: [dayjs().startOf('day').toDate(), dayjs().endOf('day').toDate()] };
+  } else {
+    // 기본값: 최근 3개월 (PartnerOrderListPage 초기 진입 등)
+    where.createdAt = { [Op.gte]: dayjs().subtract(3, 'month').toDate() };
+  }
+
+  // 1. 주문 번호 검색
+  if (orderCode) {
+    where.order_code = { [Op.like]: `%${orderCode}%` };
+  }
+
+  // 3. [공통] 상태 필터링 (중복 로직을 상단으로 통합)
+  const statusArray = status ? (Array.isArray(status) ? status : [status]) : [];
+  if (statusArray.length > 0 && !statusArray.includes('all')) {
+    where.status = { [Op.in]: statusArray };
+  }
 
   // ------------------------------------------ 2026.01.02 sara 추가(관리자, 일반 유저 추가)
-  // 역할별 필터링 (관리자/라이더/파트너/일반유저 구분)
+  // ------------------------------------------ 역할별 필터링 ------------------------------------------
   if (role === ROLE.ADM) {
-    // 관리자: 모든 주문 조회 (where 필터 없음)
-  } else if (role === ROLE.DLV) {
-    // 라이더: '내가 수락한 주문' + '대기 중인 주문' 포함
+    // 관리자: 별도의 추가 필터 없음
+  }
+  else if (role === ROLE.DLV) {
+    // 라이더: '대기 중(req)'은 전체 노출, 그 외는 본인 수락 건만
     const rider = await riderRepository.findByUserId(null, userId);
-
     if (!rider) {
       console.warn(`[OrdersService] 유저 ID(${userId})에 해당하는 라이더 정보가 없습니다.`);
-      return { rows: [], count: 0 };
+      return { data: [], pagination: { totalItems: 0, totalPages: 0, currentPage: page, itemsPerPage: limit } };
     }
 
-    // 💡 핵심: statusArray에 'req'가 포함되어 있는지 체크
     const isWaitingTab = statusArray.includes('req');
-
-    if (isWaitingTab) {
-      // '대기 중' 탭: riderId 필터 없이 전체 목록 노출
-    } else {
-      // '진행 중(mat, pick)' 또는 '완료(com)' 탭: 
-      // 반드시 "내가(로그인한 라이더)" 수락한 주문만 필터링
+    if (!isWaitingTab) {
       where.riderId = rider.id;
     }
-  } else if (role === ROLE.PTN) {
-    // 💡 파트너(상점): 본인 가게에 들어온 주문만 조회
-    // 1. 유저 ID로 파트너/상점 정보를 먼저 가져옵니다.
+  }
+  else if (role === ROLE.PTN) {
+    // 파트너: 본인 상점 주문만
     const partner = await partnerRepository.findByUserId(null, userId);
-
     if (!partner) {
       console.warn(`[OrdersService] 유저 ID(${userId})에 해당하는 파트너 정보가 없습니다.`);
-      return { rows: [], count: 0 };
+      return { data: [], pagination: { totalItems: 0, totalPages: 0, currentPage: page, itemsPerPage: limit } };
     }
-
-    // 2. 해당 파트너의 ID(또는 shopId)로 주문을 필터링합니다.
     where.partnerId = partner.id;
-    // 만약 DB 구조가 shopId 기준이라면 where.shopId = partner.shopId; 로 변경하세요.
-  } else if (role === ROLE.COM) {
-    // 일반 유저: '본인이 주문한 내역'만 조회
-    // 1. 전달받은 userId(숫자 PK)를 사용하여 유저 정보를 조회합니다.
+  }
+  else if (role === ROLE.COM) {
+    // 일반 유저: 본인 이메일 기준
     const user = await db.User.findByPk(userId);
-
     if (!user) {
       console.warn(`[OrdersService] 유저 ID(${userId})에 해당하는 정보를 찾을 수 없습니다.`);
       return { data: [], pagination: { totalItems: 0, totalPages: 0, currentPage: page, itemsPerPage: limit } };
     }
-    // 2. 조회된 유저의 이메일을 사용하여 주문을 필터링합니다.
     where.email = user.email;
   }
 
-  // 2. 상태 필터 (DB 쿼리용)
-  if (statusArray.length > 0 && !statusArray.includes('all')) {
-    // 배열 안에 값이 여러 개면 [Op.in]으로 처리됩니다.
-    where.status = { [Op.in]: statusArray };
-  }
-
-  // 날짜 필터
-  if (date === 'today') {
-    where.createdAt = {
-      [Op.between]: [
-        dayjs().startOf('day').toDate(),
-        dayjs().endOf('day').toDate()
-      ]
-    };
-  }
-
-  // 페이지네이션 설정
+  // ------------------------------------------ 페이지네이션 및 조회 ------------------------------------------
   const pageNum = parseInt(page) || 1;
   const limitNum = parseInt(limit) || 9;
   const offset = (pageNum - 1) * limitNum;
 
-  // Repository 호출
   try {
     const result = await orderRepository.findOrdersList(null, {
       where,
@@ -550,21 +546,19 @@ export const getOrdersList = async ({ userId, role, status, date, page, limit })
       order: [['createdAt', 'DESC']]
     });
 
-    // 💡 프론트엔드에서 요구하는 pagination 정보를 함께 리턴합니다.
     return {
-      data: result.rows, // 실제 주문 목록 배열
+      data: result.rows,
       pagination: {
-        totalItems: result.count, // 전체 개수 (예: 5개)
-        totalPages: Math.ceil(result.count / limitNum), // 전체 페이지 수 (예: 5/5 = 1)
+        totalItems: result.count,
+        totalPages: Math.ceil(result.count / limitNum),
         currentPage: pageNum,
         itemsPerPage: limitNum
       }
-    }
+    };
   } catch (error) {
     console.error('주문 목록 조회 중 오류:', error);
     throw error;
   }
-
 };
 
 // ------------------------------------------ 2026.01.04 추가

@@ -10,6 +10,7 @@ import questionRepository from '../repositories/question.repository.js';
 import db from '../models/index.js';
 import userRepository from '../repositories/user.repository.js';
 import ROLE from '../middlewares/auth/configs/role.enum.js'; // ROLE 상수 임포트
+import myError from '../errors/customs/my.error.js';
 
 // --- 1. ISSUE REPORT WORKFLOW (riders, partners, users) ---
 /**
@@ -18,7 +19,7 @@ import ROLE from '../middlewares/auth/configs/role.enum.js'; // ROLE 상수 임�
  * @returns {Promise<import("../models/Post.js").Post>}
  */
 async function create(createData) {
-  
+
   const questionsData = {
     userId: createData.userId,   // 서비스의 authorId -> DB의 user_id
     userRole: createData.userRole, // 서비스의 userRole -> DB의 user_role
@@ -28,7 +29,7 @@ async function create(createData) {
     status: false,                     // 스키마상 NOT NULL이므로 기본값 설정
     res: createData.res || null,
   }
-  
+
   return await db.sequelize.transaction(async t => {
     return await questionRepository.create(t, questionsData);
   });
@@ -55,7 +56,7 @@ async function show({ page, limit, status, search }) {
  */
 async function getList({ userId, userRole }) {
   const where = {};
-  
+
   // 관리자(ADM)가 아닌 경우 본인의 글(userId)만 필터링합니다.
   if (userRole !== ROLE.ADM) {
     where.userId = userId; // 본인 글만 조회
@@ -73,10 +74,12 @@ async function getList({ userId, userRole }) {
 async function showDetail(id) {
   return await db.sequelize.transaction(async t => {
     const qnaInfo = await questionRepository.findByPk(t, id)
-    // userID로 name 가져오기
-    const user = await userRepository.findByPk(t, qnaInfo.userId)
-    qnaInfo.name = user.name;
-    return qnaInfo;
+    // 2. 데이터 존재 여부 체크 (변수명 통일)
+    if (!qnaInfo) {
+      throw myError("존재하지 않는 문의 내역입니다.");
+    }
+
+    return qnaInfo.get({ plain: true });
   })
 }
 
