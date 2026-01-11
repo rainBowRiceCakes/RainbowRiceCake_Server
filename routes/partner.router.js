@@ -13,6 +13,7 @@ import partnerShowValidator from '../app/middlewares/validations/validators/part
 import partnerUpdateValidator from '../app/middlewares/validations/validators/partners/partner.update.validator.js';
 import partnerIndexValidator from '../app/middlewares/validations/validators/partners/partner.index.validator.js';
 import partnersController from '../app/controllers/partners.controller.js';
+import partnerStoreBillingKeyValidator from '../app/middlewares/validations/validators/partners/partner.store.billing.key.validator.js';
 
 const partnerRouter = express.Router();
 
@@ -25,8 +26,8 @@ partnerRouter.post('/',
   authMiddleware,
   partnerStoreValidator,
   validationHandler,
-  partnersController.store);
-
+  partnersController.store
+);
 
 // --- 3. ADMIN LOOKS UP PARTNER's INFO WORKFLOW FOR ADMIN (어드민 페이지와 관련됨) ---
 // 어드민이 partner들의 모든 정보를 list up 하기. 
@@ -37,16 +38,17 @@ partnerRouter.get('/',
   authMiddleware,
   partnerIndexValidator,
   validationHandler,
-  partnersController.index);
+  partnersController.index
+);
 
-// 어드민이 Partner PK로 단일정보 가져오기
-partnerRouter.get('/:id',
+partnerRouter.post('/billing-key',
   /* #swagger.tags = ['Partners']
-  #swagger.summary = '어드민용 파트너 정보 조회'
-  #swagger.description = '어드민이 파트너의 단일 정보를 조회합니다.' */
+  #swagger.summary = '빌링키 정보 저장'
+  #swagger.description = '파트너의 빌링키 정보를 저장합니다.' */
   authMiddleware,
-  partnerShowValidator,
+  partnerStoreBillingKeyValidator,
   validationHandler,
-  partnersController.show);
+  partnersController.storeBillingKey
+);
 
 export default partnerRouter;

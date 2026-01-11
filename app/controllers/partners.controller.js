@@ -5,7 +5,8 @@
  * 251226 v1.1.0 BSONG update 유저-정보 등록 / 파트너-myinfo 가져오고 수정하기 / 어드민-개개인의 파트너들의 리스트와 정보를 가져오기 기능 추가.
  */
 
-import { SUCCESS } from "../../configs/responseCode.config.js";
+import { SUCCESS, UNAUTHORIZED_ERROR } from "../../configs/responseCode.config.js";
+import myError from "../errors/customs/my.error.js";
 import partnersService from "../services/partners.service.js";
 import { createBaseResponse } from "../utils/createBaseResponse.util.js";
 
@@ -105,10 +106,35 @@ async function partnerFormStore(req, res, next) {
   }
 }
 
+/**
+ * 파트너가 자신의 빌링키 정보 저장
+ * @param {import("express").Request} req
+ * @param {import("express").Response} res
+ * @param {import("express").NextFunction} next
+ * @return {import("express").Response}
+ */
+async function storeBillingKey(req, res, next) {
+  try {
+
+    const data = req.body;
+    const createData = {
+      ...data,
+      userId: req.user.id, // 이제 안전하게 181이 할당됩니다.
+    };
+
+    const result = await partnersService.storeBillingKey(createData);
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  } catch (error) {
+    return next(error);
+  }
+}
+
+
 export default {
   store,
   index,
   show,
-  partnerFormStore
+  partnerFormStore,
+  storeBillingKey
 }
 

@@ -33,6 +33,9 @@ async function createPartner(createData) {
       manager: createData.manager,
       phone: createData.phone,
       status: 'req',  // 👈 초기 상태 설정 (비즈니스 규칙) 혹은 pending
+      billingKey: null,
+      carName: null,
+      isAutoPay: false,
       logoImg: createData.logoImg || null,
       address: createData.address,
       lat: createData.lat,
@@ -129,10 +132,38 @@ async function getPartnerLogos() {
   return logoUrls;
 }
 
+/**
+ * 파트너의 빌링키 정보 저장
+ * @param {import("./users.service.type.js").partnerStoreData} data
+ */
+async function storeBillingKey(createData) {
+  return await db.sequelize.transaction(async (t) => {
+    const { userId, billingKey, cardName } = createData;
+
+    const partner = await partnerRepository.findByUserId(t, userId);
+
+    if (!partner) {
+      throw myError("해당 유저와 연결된 파트너 정보를 찾을 수 없습니다.", NOT_FOUND_ERROR);
+    }
+
+    // 3. 찾은 파트너의 실제 PK인 20번(partner.id)을 사용하여 업데이트
+    console.log(`User ${userId}가 Partner ${partner.id}의 빌링키를 업데이트합니다.`);
+
+    await partnerRepository.update(t, partner.id, {
+      billingKey: billingKey,
+      cardName: cardName,
+      isAutoPay: true
+    });
+
+    return { partnerId: partner.id, status: 'success' };
+  });
+}
+
 export default {
   createPartner,
   listPartners,
   getPartnerById,
   partnerFormCreate,
   getPartnerLogos,
+  storeBillingKey,
 };

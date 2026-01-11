@@ -62,6 +62,24 @@ const attributes = {
     comment: '상태(REQ, RES, REJ)',
     defaultValue: 'REQ'
   },
+  billingKey: {
+    field: 'billing_key',
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    comment: '포트원 발급 빌링키'
+  },
+  cardName: {
+    field: 'card_name',
+    type: DataTypes.STRING(50),
+    allowNull: true,
+    comment: '등록된 카드사 명 (신한, 현대 등)'
+  },
+  isAutoPay: {
+    field: 'is_auto_pay',
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    comment: '자동 결제 여부'
+  },
   logoImg: {
     field: 'logo_img',
     type: DataTypes.STRING(250),
