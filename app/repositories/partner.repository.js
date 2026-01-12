@@ -49,13 +49,16 @@ async function findByUserId(t = null, userId) {
  * @returns {Promise<[number]>} - 수정된 행의 개수
  */
 async function update(t = null, partnerId, updateData) {
-  return await Partner.update(
+  // 1. 업데이트 실행
+  await Partner.update(
     updateData,
     {
       where: { id: partnerId },
       transaction: t
     }
   );
+
+  return await Partner.findByPk(partnerId, { transaction: t });
 }
 
 // --- 3. ADMIN LOOKS UP PARTNER's INFO WORKFLOW FOR ADMIN ---
@@ -77,7 +80,7 @@ async function findAndCountAll(t = null, { limit, offset, status, search }) {
       { enName: { [Op.like]: `%${search}%` } },
     ];
   }
-  
+
   return await Partner.findAndCountAll(
     {
       where,

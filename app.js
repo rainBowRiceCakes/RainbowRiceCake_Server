@@ -28,6 +28,7 @@ import invoiceRouter from './routes/invoice.router.js';
 import { initSettlementScheduler } from './app/schedulers/settlementScheduler.js';
 import { initTransferScheduler } from './app/schedulers/transferScheduler.js';
 import pathUtil from './app/utils/path/path.util.js';
+import { initAutoPayScheduler } from './app/schedulers/autoPay.scheduler.js';
 
 const app = express();
 app.use(express.json()); // JSON 요청 파싱 처리
@@ -90,6 +91,7 @@ app.use(errorHandler);
 // ---------------------
 // 해당 Port로 express 실행
 // ---------------------
+initAutoPayScheduler();
 initInvoiceScheduler();
 initSettlementScheduler();
 initTransferScheduler();   // ★ 송금 기능 실행

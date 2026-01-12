@@ -34,4 +34,11 @@ questionRouter.get('/',
   authMiddleware,
   questionsController.index);
 
+questionRouter.get('/:id',
+  /* #swagger.tags = ['Questions']  
+  #swagger.summary = '질문 상세 조회'
+  #swagger.description = '질문 상세를 조회합니다.' */
+  authMiddleware,
+  questionsController.qnaShowDetail);
+
 export default questionRouter;

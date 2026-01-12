@@ -91,8 +91,8 @@ orderRouter.get('/',
   #swagger.summary = '라이더와 파트너용 주문 목록 조회'
   #swagger.description = '라이더와 파트너가 주문 목록을 조회합니다.' */
   authMiddleware,
-  orderValidator.index,
-  validationHandler,
+  // orderValidator.index,
+  // validationHandler,
   ordersController.index
 );
 

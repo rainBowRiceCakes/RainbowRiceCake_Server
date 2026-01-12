@@ -16,4 +16,4 @@ export default [
   partner.address,
   partner.lat,
   partner.lng,
-]
+];

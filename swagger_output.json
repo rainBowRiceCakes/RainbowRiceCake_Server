@@ -81,6 +81,20 @@
         }
       }
     },
+    "/api/auth/admreissue": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "summary": "재발급",
+        "description": "인증된 사용자가 재발급합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/auth/social/kakao": {
       "get": {
         "tags": [
@@ -138,6 +152,28 @@
         ],
         "summary": "어드민용 호텔들 LIST 조회",
         "description": "어드민이 호텔들을 조회합니다.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
         "responses": {
           "default": {
             "description": ""
@@ -150,28 +186,6 @@
         ],
         "summary": "어드민용 호텔 등록",
         "description": "어드민이 호텔을 등록합니다.",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/api/notices/{id}": {
-      "get": {
-        "tags": [
-          "Notices"
-        ],
-        "summary": "어드민용 공지사항 디테일 조회",
-        "description": "어드민이 공지사항의 디테일을 조회합니다.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
         "responses": {
           "default": {
             "description": ""
@@ -219,32 +233,6 @@
         }
       }
     },
-    "/api/riders/profile": {
-      "get": {
-        "tags": [
-          "Riders"
-        ],
-        "summary": "라이더용 내 프로필 조회",
-        "description": "인증된 라이더가 자신의 프로필 정보를 조회합니다.",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "Riders"
-        ],
-        "summary": "라이더용 내 프로필 수정",
-        "description": "인증된 라이더가 자신의 프로필 정보를 수정합니다.",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
     "/api/riders/{id}": {
       "get": {
         "tags": [
@@ -274,6 +262,28 @@
         ],
         "summary": "어드민이 PK로 라이더의 프로필 조회",
         "description": "어드민이 PK로 라이더의 프로필 정보를 조회합니다.",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
         "responses": {
           "default": {
             "description": ""
@@ -286,6 +296,34 @@
         ],
         "summary": "어드민이 PK로 라이더의 프로필 조회",
         "description": "어드민이 PK로 라이더의 프로필 정보를 조회합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/riders/updateWorkStatus": {
+      "put": {
+        "tags": [
+          "Riders"
+        ],
+        "summary": "라이더 출퇴근 확인 토글",
+        "description": "라이더 출퇴근 확인 토글",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "isWorking": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "default": {
             "description": ""
@@ -312,32 +350,28 @@
         ],
         "summary": "어드민용 파트너 정보 조회",
         "description": "어드민이 파트너들의 모든 정보를 조회합니다.",
-        "responses": {
-          "default": {
-            "description": ""
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
           }
-        }
-      }
-    },
-    "/api/partners/profile": {
-      "get": {
-        "tags": [
-          "Partners"
         ],
-        "summary": "파트너용 파트너 정보 조회",
-        "description": "파트너가 자신의 정보를 조회합니다.",
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "Partners"
-        ],
-        "summary": "파트너용 파트너 정보 수정",
-        "description": "파트너가 자신의 정보를 수정합니다.",
         "responses": {
           "default": {
             "description": ""
@@ -367,23 +401,24 @@
         }
       }
     },
-    "/api/admins/userindex": {
+    "/api/admins/dashboard/stats": {
       "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/admins/user/{id}": {
+      "delete": {
         "description": "",
         "parameters": [
           {
-            "name": "from",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "limit",
-            "in": "query",
+            "name": "id",
+            "in": "path",
+            "required": true,
             "type": "string"
           }
         ],
@@ -395,8 +430,26 @@
       }
     },
     "/api/admins/rider": {
-      "post": {
+      "put": {
         "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/admins/rider/{id}": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "default": {
             "description": ""
@@ -422,6 +475,24 @@
         }
       }
     },
+    "/api/admins/partner/{id}": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/admins/orderindex": {
       "get": {
         "description": "",
@@ -440,6 +511,36 @@
             "name": "limit",
             "in": "query",
             "type": "string"
+          },
+          {
+            "name": "statusExclude",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "orderCode",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "deliveryStatus",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "paymentStatus",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "type": "string"
           }
         ],
         "responses": {
@@ -451,6 +552,22 @@
     },
     "/api/admins/order/{id}": {
       "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
         "description": "",
         "parameters": [
           {
@@ -495,6 +612,162 @@
         }
       }
     },
+    "/api/admins/hotel/{id}": {
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/admins/notice": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/admins/notice/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/admins/qna": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/admins/qna/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "delete": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/questions/": {
       "post": {
         "tags": [
@@ -502,6 +775,18 @@
         ],
         "summary": "파트너, 유저, 라이더용 이슈나 질문 등록",
         "description": "파트너, 유저, 라이더가 이슈나 질문을 등록합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "질문 목록 조회",
+        "description": "질문 목록을 조회합니다.",
         "responses": {
           "default": {
             "description": ""
@@ -557,6 +842,26 @@
         }
       }
     },
+    "/api/users/location": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/users/orders/history": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/users/show": {
       "get": {
         "description": "",
@@ -568,6 +873,11 @@
           },
           {
             "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
             "in": "query",
             "type": "string"
           }
@@ -634,9 +944,19 @@
         "tags": [
           "Orders"
         ],
-        "summary": "라이더와 파트너와 어드민용 주문 목록 조회",
-        "description": "라이더와 파트너와 어드민이 주문 목록을 조회합니다.",
+        "summary": "라이더와 파트너용 주문 목록 조회",
+        "description": "라이더와 파트너가 주문 목록을 조회합니다.",
         "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "type": "string"
+          },
           {
             "name": "page",
             "in": "query",
@@ -648,17 +968,7 @@
             "type": "string"
           },
           {
-            "name": "status",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "from",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "to",
+            "name": "riderId",
             "in": "query",
             "type": "string"
           }
@@ -670,8 +980,8 @@
         }
       }
     },
-    "/api/orders/{orderId}/match": {
-      "post": {
+    "/api/orders/{orderCode}": {
+      "put": {
         "tags": [
           "Orders"
         ],
@@ -679,7 +989,27 @@
         "description": "라이더가 주문을 수락합니다.",
         "parameters": [
           {
-            "name": "orderId",
+            "name": "orderCode",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "로그인한 유저와 라이더와 파트너용 주문 상세 조회",
+        "description": "로그인한 유저와 라이더와 파트너가 주문 상세를 조회합니다.",
+        "parameters": [
+          {
+            "name": "orderCode",
             "in": "path",
             "required": true,
             "type": "string"
@@ -692,7 +1022,7 @@
         }
       }
     },
-    "/api/orders/{orderId}/pickup-photo": {
+    "/api/orders/{orderCode}/pickup-photo": {
       "post": {
         "tags": [
           "Orders"
@@ -701,7 +1031,7 @@
         "description": "라이더가 주문 픽업 사진을 업로드합니다.",
         "parameters": [
           {
-            "name": "orderId",
+            "name": "orderCode",
             "in": "path",
             "required": true,
             "type": "string"
@@ -714,7 +1044,7 @@
         }
       }
     },
-    "/api/orders/{orderId}/complete-photo": {
+    "/api/orders/{orderCode}/complete-photo": {
       "post": {
         "tags": [
           "Orders"
@@ -723,7 +1053,7 @@
         "description": "라이더가 주문 완료 사진을 업로드합니다.",
         "parameters": [
           {
-            "name": "orderId",
+            "name": "orderCode",
             "in": "path",
             "required": true,
             "type": "string"
@@ -736,72 +1066,22 @@
         }
       }
     },
-    "/api/orders/today": {
+    "/api/orders/stats/hourly": {
       "get": {
         "tags": [
           "Orders"
         ],
-        "summary": "라이더와 파트너용 오늘의 주문 리스트 조회",
-        "description": "라이더와 파트너가 오늘의 주문 리스트를 조회합니다.",
-        "parameters": [
-          {
-            "name": "tab",
-            "in": "query",
-            "type": "string"
+        "summary": "파트너용 주문 시간대별 통계 조회",
+        "description": "파트너가 주문 시간대별 통계를 조회합니다.",
+        "responses": {
+          "200": {
+            "description": "OK"
           },
-          {
-            "name": "page",
-            "in": "query",
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/api/orders/{orderId}": {
-      "get": {
-        "tags": [
-          "Orders"
-        ],
-        "summary": "라이더와 파트너와 어드민용 주문 내역 조회",
-        "description": "라이더와 파트너와 어드민이 주문 내역을 조회합니다.",
-        "parameters": [
-          {
-            "name": "orderId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/api/orders/deliverystatus/{dlvId}": {
-      "get": {
-        "tags": [
-          "Orders"
-        ],
-        "summary": "라이더와 파트너와 어드민용 배송 현황 조회",
-        "description": "라이더와 파트너와 어드민이 배송 현황을 조회합니다.",
-        "parameters": [
-          {
-            "name": "dlvId",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
+          "401": {
+            "description": "Unauthorized"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -841,6 +1121,216 @@
         ],
         "summary": "유저/파트너/라이더용 첨부파일 업로드",
         "description": "유저/파트너/라이더(로그인 후)가 첨부파일을 업로드합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/files/carousel": {
+      "get": {
+        "tags": [
+          "Files"
+        ],
+        "summary": "메인 페이지 파트너 로고 캐러셀 조회",
+        "description": "승인된 파트너들의 로고 이미지 URL 목록을 조회합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/profiles/": {
+      "get": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "내 프로필 조회",
+        "description": "파트너/기사가 자신의 프로필 정보를 조회합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "내 프로필 수정",
+        "description": "파트너/기사가 자신의 프로필 정보를 수정합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/settlements/": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/settlements/statistics": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "month",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/settlements/month-total": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "month",
+            "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/settlements/three-months-total": {
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/settlements/{id}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/api/settlements/{id}/retry": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "bankAccount": {
+                  "example": "any"
+                },
+                "bankCode": {
+                  "example": "any"
+                },
+                "memo": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/invoices/send": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "partnerId": {
+                  "example": "any"
+                },
+                "year": {
+                  "example": "any"
+                },
+                "month": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "default": {
             "description": ""

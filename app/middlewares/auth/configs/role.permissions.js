@@ -82,6 +82,9 @@ const ROLE_PERMISSIONS = {
     { path: /^\/api\/users\/rider\/form$/, roles: [COM] },
     { path: /^\/api\/users\/partner\/form$/, roles: [COM] },
     { path: /^\/api\/users\/store$/, roles: [ADM] },
+    { path: /^\/api\/partners\/billing-key$/, roles: [PTN, ADM] },
+    { path: /^\/api\/settlements\/[0-9]+\/autopay$/, roles: [PTN, ADM] },
+    { path: /^\/api\/settlements\/[0-9]+\/cancel$/, roles: [PTN, ADM] }
   ],
   PUT: [
     // orders

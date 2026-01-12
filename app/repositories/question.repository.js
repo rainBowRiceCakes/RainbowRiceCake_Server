@@ -8,7 +8,7 @@
 
 import { Op } from 'sequelize';
 import db from '../models/index.js';
-const { Question, User } = db;
+const { Question, User, Partner, Rider } = db;
 
 /**
  * Question 작성
@@ -21,7 +21,7 @@ async function create(t = null, data) {
 }
 
 async function qnaDelete(t = null, id) {
-  return await Question.destroy({where: {id: id}}, {transaction: t})
+  return await Question.destroy({ where: { id: id } }, { transaction: t })
 }
 
 /**
@@ -33,15 +33,19 @@ async function qnaDelete(t = null, id) {
  */
 async function findAllWithUser(t = null, where = {}) {
   return await Question.findAll({
-    where, // 서비스에서 넘겨준 필터(본인 ID 혹은 전체) 적용
+    where,
+    // 1. Question 테이블: 리스트에 필요한 핵심 정보만
+    attributes: ['id', 'title', 'status', 'createdAt'],
     include: [
       {
         model: User,
-        as: 'question_user', // 모델 정의 시 설정한 alias
-        attributes: ['name'], // 이름만 가져와서 최적화
+        as: 'question_user',
+        // 2. 작성자 이름과 역할(ADM, PARTNER, RIDER 구분용)만 가져옴
+        attributes: ['name'],
+        // Partner, Rider 조인이 리스트에서 정말 필요 없다면 여기서 중첩 include를 삭제하세요.
       }
     ],
-    order: [['createdAt', 'DESC']], // 최신순 정렬
+    order: [['createdAt', 'DESC']],
     transaction: t,
   });
 }
@@ -56,7 +60,7 @@ async function findAndCountAll(t = null, { limit, offset, status, search }) {
   const where = {};
   if (status !== undefined) {
     // status는 문자열 'true' 또는 'false'로 넘어오므로 boolean으로 변환
-    where.status = (status === 'true'); 
+    where.status = (status === 'true');
   }
 
   const include = [
@@ -90,15 +94,30 @@ async function findAndCountAll(t = null, { limit, offset, status, search }) {
 
 async function findByPk(t = null, id) {
   return await Question.findByPk(id, {
+    // 1. 상세 페이지이므로 모든 컬럼을 가져오기 위해 attributes를 생략하거나 전체 명시합니다.
     include: [
       {
-        attributes: ['name'],
         model: User,
         as: 'question_user',
+        attributes: ['id', 'name', 'role', 'email'],
+        include: [
+          {
+            model: Partner,
+            as: 'user_partner',
+            attributes: ['krName'], // 상세에 필요한 업체 정보
+            required: false,
+          },
+          {
+            model: Rider,
+            as: 'user_rider',
+            attributes: ['phone'], // 상세에 필요한 기사 정보
+            required: false,
+          }
+        ]
       }
     ],
-    transaction: t
-  })
+    transaction: t, // 트랜잭션은 null로 들어오겠지만 확장성을 위해 인자는 남겨둡니다.
+  });
 }
 
 /**
@@ -120,7 +139,7 @@ export default {
   findAndCountAll, // 페이징, 필터, 검색 지원
   findAllWithUser, // 필터 및 작성자 이름 조인
   findByPk,
-  findQuesionsById, 
+  findQuesionsById,
 };
 
 // Repository (DB 중심)	HTTP Method

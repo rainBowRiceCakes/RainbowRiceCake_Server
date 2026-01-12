@@ -11,14 +11,15 @@ import { createBaseResponse } from "../../utils/createBaseResponse.util.js";
 export default function validationHandler(req, res, next) {
   const errors = validationResult(req);
 
-  // 에러 발생 여부 확인
-  if(!errors.isEmpty()) {
-    // express validation error custom
+  if (!errors.isEmpty()) {
     const customErrors = errors.formatWith(error => `${error.path}: ${error.msg}`);
-    
-    // 에러 응답
+
+    // [수정] 안전하게 로그 남기기
+    console.log("Validation Failed for User:", req.user?.id || 'Unknown User');
+    console.log("Errors:", customErrors.array());
+    console.log("Debug - User ID:", req.user?.id);
+
     return res.status(BAD_REQUEST_ERROR.status).send(createBaseResponse(BAD_REQUEST_ERROR, customErrors.array()));
   }
-
   next();
 }

@@ -7,8 +7,11 @@
 import settlementRepository from '../repositories/settlement.repository.js';
 import orderRepository from '../repositories/order.repository.js';
 import riderRepository from '../repositories/rider.repository.js'; // riderRepository 추가
+import invoiceRepository from '../repositories/invoices.repository.js'; // invoiceRepository 추가
 import db from '../models/index.js'; // 트랜잭션을 위해 db 모듈 임포트
 import { executeSingleTransfer } from '../utils/toss/moneyTransfer.util.js'; // 송금 유틸리티 추가
+import { cancelPayment, payWithBillingKey } from '../utils/portone/portone.v2.util.js';
+import partnerRepository from '../repositories/partner.repository.js';
 
 /**
  * 정산내역 상세 조회 (목록용, 클라이언트 페이지네이션용)
@@ -25,7 +28,7 @@ async function settlementShow({ year, month }) {
  * @returns {Promise<number>}
  */
 async function monthTotalAmount(data) {
-  return await settlementRepository.monthTotalAmount(data)
+    return await settlementRepository.monthTotalAmount(data)
 }
 
 /**
@@ -69,7 +72,7 @@ async function getStatistics(data) {
         // 이전 실적이 0일 때, 현재 실적이 있으면 100% 성장으로 처리
         totalRevenueMoM = 100;
     }
-    
+
     // 소수점 1자리까지 반올림
     totalRevenueMoM = Math.round(totalRevenueMoM * 10) / 10;
 
@@ -180,11 +183,145 @@ async function retrySettlement({ id, bankAccount, bankCode, memo }) {
     }
 }
 
+/**
+ * 파트너의 특정 정산 건에 대해 자동 결제를 실행합니다. (autoPay)
+ */
+export const processSettlementAutoPay = async (id) => {
+    // 1. 데이터 조회 (Repository 사용)
+    const settlement = await invoiceRepository.findSettlementWithPartner(null, id);
+    if (!settlement) {
+        throw new Error(`ID ${id}에 해당하는 정산 내역이 없습니다.`);
+    }
+
+    if (!settlement.partnerSettlement_partner) {
+        throw new Error("정산 내역에 연결된 파트너 정보가 없습니다. (조인 실패)");
+    }
+
+    if (!settlement.partnerSettlement_partner.billingKey) {
+        throw new Error("해당 파트너에게 등록된 빌링키(billingKey)가 없습니다.");
+    }
+
+    try {
+        // 2. 포트원 결제 API 호출
+        const paymentResult = await payWithBillingKey({
+            billingKey: settlement.partnerSettlement_partner.billingKey,
+            amount: settlement.totalAmount,
+            orderName: `${settlement.merchantUid} 정기 정산`,
+            merchantUid: settlement.merchantUid,
+            customerId: `USER_${settlement.partnerSettlement_partner.partner_user?.userId}`
+        });
+
+        const portonePaymentId = paymentResult.payment?.id || paymentResult.id || settlement.merchantUid;
+
+        // 3. 결제 성공 시 DB 업데이트 (Repository 사용)
+        await invoiceRepository.updateSettlementStatus(null, id, {
+            status: 'PAID',
+            paymentMethod: 'AUTO',
+            paidAt: new Date(),
+            impUid: portonePaymentId,
+            failReason: null // ⭐ 성공했으므로 이전 실패 사유를 초기화합니다.
+        });
+
+        return { success: true, paymentId: portonePaymentId };
+
+    } catch (error) {
+        // 4. 결제 실패 시 사유 기록 (Repository 사용)
+        await invoiceRepository.updateSettlementStatus(null, id, {
+            status: 'FAILED',
+            failReason: error.message
+        });
+
+        console.error(`[AutoPay Failed] Settlement ${id}:`, error.message);
+        throw error;
+    }
+};
+
+/**
+ * 정산 결제 취소 로직
+ */
+export const cancelSettlementPayment = async (id, reason = "사용자 요청 취소") => {
+    // 1. 레파지토리의 상세 조회 함수 사용 (빌링키 정보까지 한 번에 확인 가능)
+    const settlement = await invoiceRepository.findSettlementWithPartner(null, id);
+
+    if (!settlement) {
+        throw new Error("정산 내역을 찾을 수 없습니다.");
+    }
+
+    if (settlement.status !== 'PAID') {
+        throw new Error("결제 완료(PAID) 상태인 경우에만 취소가 가능합니다.");
+    }
+
+    try {
+        // 2. 가짜 취소 API 호출 (util 함수 사용)
+        const cancelResult = await cancelPayment({
+            merchantUid: settlement.merchantUid, // DB 컬럼명 확인 필요
+            reason: reason
+        });
+
+        // 3. 레파지토리의 업데이트 함수 사용
+        await invoiceRepository.updateSettlementStatus(null, id, {
+            status: 'CANCEL',
+            failReason: `취소 완료: ${reason}` // 성공 시에는 사유를 성공 메시지로 교체
+        });
+
+        return {
+            success: true,
+            cancellationId: cancelResult.cancellation.id,
+            msg: "결제 취소가 정상적으로 완료되었습니다."
+        };
+
+    } catch (error) {
+        console.error(`[Cancel Failed] Settlement ${id}:`, error.message);
+
+        // 취소 시도 중 에러가 발생하면 상태를 유지하거나 기록
+        throw new Error(`취소 처리 중 오류가 발생했습니다: ${error.message}`);
+    }
+};
+
+/**
+ * [Batch] 미결제 정산 내역 일괄 자동 결제 로직
+ * 스케줄러나 관리자 페이지에서 호출할 수 있도록 독립적으로 구성합니다.
+ */
+export const processBatchAutoPay = async () => {
+    console.log('--- [Batch Service] 자동결제 배치 시작 ---');
+
+    try {
+        // 1. 레파지토리 함수를 통해 대상 조회
+        const targetSettlements = await invoiceRepository.findSettlementsForAutoPay();
+
+        if (targetSettlements.length === 0) {
+            console.log('[Batch] 자동결제 대상이 없습니다.');
+            return { successCount: 0, totalCount: 0 };
+        }
+
+        let successCount = 0;
+
+        // 2. 루프 실행
+        for (const settlement of targetSettlements) {
+            try {
+                // 개별 결제 로직 호출
+                await processSettlementAutoPay(settlement.id);
+                successCount++;
+            } catch (err) {
+                console.error(`[Batch Fail] 정산ID ${settlement.id}: ${err.message}`);
+            }
+        }
+
+        return { successCount, totalCount: targetSettlements.length };
+    } catch (error) {
+        console.error('[Batch Error] 배치 프로세스 에러:', error);
+        throw error;
+    }
+};
+
 export default {
-  monthTotalAmount,
-  settlementShow,
-  getStatistics,
-  lastThreeMonthsTotalAmount,
-  getSettlementDetail, // 새로 추가
-  retrySettlement, // 새로 추가
+    monthTotalAmount,
+    settlementShow,
+    getStatistics,
+    lastThreeMonthsTotalAmount,
+    getSettlementDetail, // 새로 추가
+    retrySettlement, // 새로 추가
+    processSettlementAutoPay, // 파트너 자동결제 관련 새로 추가 (26.01.11 송보미)
+    cancelSettlementPayment, // 정산 결제 취소 관련 새로 추가 (26.01.11 송보미)
+    processBatchAutoPay, // 자동 결제 배치 함수 완성 (26.01.11 송보미)
 }

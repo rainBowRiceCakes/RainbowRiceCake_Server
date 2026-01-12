@@ -33,21 +33,21 @@ async function monthTotalAmount(req, res, next) {
  * @return {import("express").Response}
  */
 async function settlementShow(req, res, next) {
-    try {
-        const { year, month } = req.query; // year와 month를 쿼리 파라미터로 받음
+  try {
+    const { year, month } = req.query; // year와 month를 쿼리 파라미터로 받음
 
-        // settlementsService.settlementShow 함수를 year, month 파라미터로 호출하여 해당 월의 모든 데이터를 조회
-        const allSettlements = await settlementsService.settlementShow({ year, month });
+    // settlementsService.settlementShow 함수를 year, month 파라미터로 호출하여 해당 월의 모든 데이터를 조회
+    const allSettlements = await settlementsService.settlementShow({ year, month });
 
-        const result = {
-            settlements: allSettlements, // 전체 정산 내역
-            // 클라이언트에서 페이지네이션을 처리할 것이므로, 서버에서는 pagination 정보를 보내지 않음
-        }
-
-        return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
-    } catch (error) {
-        return next(error)
+    const result = {
+      settlements: allSettlements, // 전체 정산 내역
+      // 클라이언트에서 페이지네이션을 처리할 것이므로, 서버에서는 pagination 정보를 보내지 않음
     }
+
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result))
+  } catch (error) {
+    return next(error)
+  }
 }
 
 /**
@@ -58,13 +58,13 @@ async function settlementShow(req, res, next) {
  * @return {import("express").Response}
  */
 async function getStatistics(req, res, next) {
-    try {
-        const { year, month } = req.query;
-        const result = await settlementsService.getStatistics({ year, month });
-        return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
-    } catch (error) {
-        return next(error);
-    }
+  try {
+    const { year, month } = req.query;
+    const result = await settlementsService.getStatistics({ year, month });
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  } catch (error) {
+    return next(error);
+  }
 }
 
 /**
@@ -75,12 +75,12 @@ async function getStatistics(req, res, next) {
  * @return {import("express").Response}
  */
 async function getLastThreeMonthsTotalAmount(req, res, next) {
-    try {
-        const result = await settlementsService.lastThreeMonthsTotalAmount();
-        return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
-    } catch (error) {
-        return next(error);
-    }
+  try {
+    const result = await settlementsService.lastThreeMonthsTotalAmount();
+    return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
+  } catch (error) {
+    return next(error);
+  }
 }
 
 /**
@@ -114,13 +114,49 @@ async function retrySettlement(req, res, next) {
   try {
     const { id } = req.params;
     const { bankAccount, bankCode, memo } = req.body; // 모달에서 전달받을 수정된 정보 및 메모
-    
+
     // 서비스 계층으로 재시도 로직 위임
     const result = await settlementsService.retrySettlement({ id, bankAccount, bankCode, memo });
-    
+
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
   } catch (error) {
     return next(error);
+  }
+}
+
+// **특정 ID 하나만 결제시켜보는 "테스트 API"**
+async function testAutoPay(req, res, next) {
+  try {
+    const { id } = req.params;
+    const result = await settlementsService.processSettlementAutoPay(id);
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function testCancelPay(req, res, next) {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body; // 취소 사유를 바디로 받을 수 있음
+    const result = await settlementsService.cancelSettlementPayment(id, reason);
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
+}
+
+/**
+ * [TEST] 자동 결제 배치 강제 실행
+ */
+async function runBatchTest(req, res, next) {
+  try {
+    console.log('[Controller] 일괄 자동 결제 테스트 요청 수신');
+    const result = await settlementsService.processBatchAutoPay();
+    res.status(200).json(result);
+  } catch (err) {
+    console.error('[Controller Error] 배치 테스트 중 에러:', err.message);
+    next(err);
   }
 }
 
@@ -131,4 +167,7 @@ export default {
   getLastThreeMonthsTotalAmount,
   getSettlementDetail,
   retrySettlement,
+  testAutoPay,
+  testCancelPay,
+  runBatchTest
 }

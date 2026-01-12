@@ -142,17 +142,30 @@ async function index(req, res, next) {
   try {
     const { id: userId, role } = req.user;
 
-    const { status, date, page, limit, riderId } = req.query;
+    // 1. 프론트엔드(Thunk)에서 보낸 쿼리 파라미터들을 구조 분해 할당으로 가져옵니다.
+    const {
+      status,
+      date,
+      page,
+      limit,
+      riderId,
+      startDate,  // 추가됨
+      endDate,    // 추가됨
+      orderCode   // 추가됨
+    } = req.query;
 
+    // 2. 서비스 함수 호출 시 파라미터를 그대로 전달합니다.
     const result = await ordersService.getOrdersList({
       userId,
       role,
-      email: req.user.email,
       date,
       status,
       page,
       limit,
       riderId,
+      startDate,  // 전달
+      endDate,    // 전달
+      orderCode   // 전달
     });
 
     return res

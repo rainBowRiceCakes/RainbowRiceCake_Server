@@ -8,4 +8,4 @@ import partner from "../../fields/partner.field.js";
 
 export default [
     partner.page
-]
+];
