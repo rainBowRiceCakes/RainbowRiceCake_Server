@@ -233,13 +233,49 @@
         }
       }
     },
+    "/api/riders/settlement": {
+      "get": {
+        "tags": [
+          "Riders"
+        ],
+        "summary": "라이더의 정산 내역 조회",
+        "description": "라이더의 정산 내역을 조회합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/riders/settlement/{id}": {
+      "get": {
+        "tags": [
+          "Riders"
+        ],
+        "summary": "라이더의 정산 내역 상세 조회",
+        "description": "라이더의 정산 내역을 조회합니다.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
     "/api/riders/{id}": {
       "get": {
         "tags": [
           "Riders"
         ],
-        "summary": "어드민이 PK로 라이더의 프로필 조회",
-        "description": "어드민이 PK로 라이더의 프로필 정보를 조회합니다.",
+        "summary": "라이더가 PK로 자신의 프로필 조회",
+        "description": "라이더가 PK로 자신의 프로필 정보를 조회합니다.",
         "parameters": [
           {
             "name": "id",
@@ -260,8 +296,8 @@
         "tags": [
           "Riders"
         ],
-        "summary": "어드민이 PK로 라이더의 프로필 조회",
-        "description": "어드민이 PK로 라이더의 프로필 정보를 조회합니다.",
+        "summary": "라이더가 자신의 프로필 조회",
+        "description": "라이더가 자신의 프로필 정보를 조회합니다.",
         "parameters": [
           {
             "name": "page",
@@ -294,8 +330,8 @@
         "tags": [
           "Riders"
         ],
-        "summary": "어드민이 PK로 라이더의 프로필 조회",
-        "description": "어드민이 PK로 라이더의 프로필 정보를 조회합니다.",
+        "summary": "라이더가 자신의 프로필 수정",
+        "description": "라이더가 자신의 프로필 정보를 수정합니다.",
         "responses": {
           "default": {
             "description": ""
@@ -379,21 +415,13 @@
         }
       }
     },
-    "/api/partners/{id}": {
-      "get": {
+    "/api/partners/billing-key": {
+      "post": {
         "tags": [
           "Partners"
         ],
-        "summary": "어드민용 파트너 정보 조회",
-        "description": "어드민이 파트너의 단일 정보를 조회합니다.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
+        "summary": "빌링키 정보 저장",
+        "description": "파트너의 빌링키 정보를 저장합니다.",
         "responses": {
           "default": {
             "description": ""
@@ -403,7 +431,11 @@
     },
     "/api/admins/dashboard/stats": {
       "get": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "summary": "어드민 대시보드 통계 차트",
+        "description": "어드민 대시보드 통계 차트를 조회합니다.",
         "responses": {
           "default": {
             "description": ""
@@ -413,7 +445,11 @@
     },
     "/api/admins/user/{id}": {
       "delete": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "summary": "유저 삭제",
+        "description": "유저를 삭제합니다.",
         "parameters": [
           {
             "name": "id",
@@ -431,7 +467,11 @@
     },
     "/api/admins/rider": {
       "put": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "summary": "어드민 라이더 수정",
+        "description": "어드민 라이더를 수정합니다.",
         "responses": {
           "default": {
             "description": ""
@@ -459,7 +499,11 @@
     },
     "/api/admins/partner": {
       "put": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "summary": "어드민 파트너 수정",
+        "description": "어드민 파트너를 수정합니다.",
         "responses": {
           "default": {
             "description": ""
@@ -467,7 +511,11 @@
         }
       },
       "post": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "summary": "어드민 파트너 생성",
+        "description": "어드민 파트너를 생성합니다.",
         "responses": {
           "default": {
             "description": ""
@@ -477,7 +525,11 @@
     },
     "/api/admins/partner/{id}": {
       "delete": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "summary": "어드민 파트너 삭제",
+        "description": "어드민 파트너를 삭제합니다.",
         "parameters": [
           {
             "name": "id",
@@ -495,7 +547,11 @@
     },
     "/api/admins/orderindex": {
       "get": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "summary": "어드민 주문 리스트 조회",
+        "description": "어드민 주문 리스트를 조회합니다.",
         "parameters": [
           {
             "name": "from",
@@ -550,28 +606,16 @@
         }
       }
     },
-    "/api/admins/order/{id}": {
+    "/api/admins/order/{orderCode}": {
       "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
+        "tags": [
+          "Admin"
         ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      },
-      "delete": {
-        "description": "",
+        "summary": "어드민 주문 조회",
+        "description": "어드민 주문을 조회합니다.",
         "parameters": [
           {
-            "name": "id",
+            "name": "orderCode",
             "in": "path",
             "required": true,
             "type": "string"
@@ -586,7 +630,11 @@
     },
     "/api/admins/order": {
       "post": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "summary": "어드민 주문 생성",
+        "description": "어드민 주문을 생성합니다.",
         "responses": {
           "default": {
             "description": ""
@@ -594,7 +642,33 @@
         }
       },
       "put": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "summary": "어드민 주문 수정",
+        "description": "어드민 주문을 수정합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/admins/order/{id}": {
+      "delete": {
+        "tags": [
+          "Admin"
+        ],
+        "summary": "어드민 주문 삭제",
+        "description": "어드민 주문을 삭제합니다.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "default": {
             "description": ""
@@ -604,7 +678,11 @@
     },
     "/api/admins/hotel": {
       "post": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "summary": "어드민 호텔 생성",
+        "description": "어드민 호텔을 생성합니다.",
         "responses": {
           "default": {
             "description": ""
@@ -614,7 +692,11 @@
     },
     "/api/admins/hotel/{id}": {
       "delete": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "summary": "어드민 호텔 삭제",
+        "description": "어드민 호텔을 삭제합니다.",
         "parameters": [
           {
             "name": "id",
@@ -632,7 +714,11 @@
     },
     "/api/admins/notice": {
       "get": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "summary": "어드민 공지사항 리스트 조회",
+        "description": "어드민 공지사항 리스트를 조회합니다.",
         "parameters": [
           {
             "name": "page",
@@ -652,7 +738,11 @@
         }
       },
       "put": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "summary": "어드민 공지사항 수정",
+        "description": "어드민 공지사항을 수정합니다.",
         "responses": {
           "default": {
             "description": ""
@@ -662,7 +752,11 @@
     },
     "/api/admins/notice/{id}": {
       "get": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "summary": "어드민 공지사항 조회",
+        "description": "어드민 공지사항을 조회합니다.",
         "parameters": [
           {
             "name": "id",
@@ -678,7 +772,11 @@
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "summary": "어드민 공지사항 삭제",
+        "description": "어드민 공지사항을 삭제합니다.",
         "parameters": [
           {
             "name": "id",
@@ -696,7 +794,11 @@
     },
     "/api/admins/qna": {
       "get": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "summary": "어드민 QnA 리스트 조회",
+        "description": "어드민 QnA 리스트를 조회합니다.",
         "parameters": [
           {
             "name": "page",
@@ -726,7 +828,11 @@
         }
       },
       "put": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "summary": "어드민 QnA 수정",
+        "description": "어드민 QnA를 수정합니다.",
         "responses": {
           "default": {
             "description": ""
@@ -736,7 +842,11 @@
     },
     "/api/admins/qna/{id}": {
       "get": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "summary": "어드민 QnA 조회",
+        "description": "어드민 QnA를 조회합니다.",
         "parameters": [
           {
             "name": "id",
@@ -752,7 +862,11 @@
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Admin"
+        ],
+        "summary": "어드민 QnA 삭제",
+        "description": "어드민 QnA를 삭제합니다.",
         "parameters": [
           {
             "name": "id",
@@ -787,6 +901,28 @@
         ],
         "summary": "질문 목록 조회",
         "description": "질문 목록을 조회합니다.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/api/questions/{id}": {
+      "get": {
+        "tags": [
+          "Questions"
+        ],
+        "summary": "질문 상세 조회",
+        "description": "질문 상세를 조회합니다.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "default": {
             "description": ""
@@ -969,6 +1105,21 @@
           },
           {
             "name": "riderId",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "startDate",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "type": "string"
+          },
+          {
+            "name": "orderCode",
             "in": "query",
             "type": "string"
           }
@@ -1168,27 +1319,27 @@
         }
       }
     },
+    "/api/settlements/test/batch-run": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/settlements/": {
       "get": {
         "description": "",
         "parameters": [
           {
-            "name": "page",
+            "name": "year",
             "in": "query",
             "type": "string"
           },
           {
-            "name": "limit",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "status",
-            "in": "query",
-            "type": "string"
-          },
-          {
-            "name": "search",
+            "name": "month",
             "in": "query",
             "type": "string"
           }
@@ -1304,6 +1455,54 @@
         "responses": {
           "default": {
             "description": ""
+          }
+        }
+      }
+    },
+    "/api/settlements/{id}/autopay": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/settlements/{id}/cancel": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "reason": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }

@@ -115,8 +115,8 @@ async function matchOrder({ orderCode, userId }) {
       throw myError('주문을 찾을 수 없습니다.', NOT_FOUND_ERROR);
     }
 
-    // 2. 주문 상태가 대기 중(reg)인지 확인 (다른 기사가 이미 잡았는지 방지)
-    if (order.status !== 'reg') {
+    // 2. 주문 상태가 대기 중(req)인지 확인 (다른 기사가 이미 잡았는지 방지)
+    if (order.status !== 'req') {
       throw myError('이미 매칭되었거나 취소된 주문입니다.', BAD_REQUEST_ERROR);
     }
 
