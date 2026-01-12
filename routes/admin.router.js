@@ -36,6 +36,7 @@ adminRouter.put('/rider', authMiddleware,
 adminRouter.delete('/rider/:id', authMiddleware, adminsController.riderDelete)
 
   // -------------어드민 partnerpage--------------------------
+adminRouter.get('/partner/:id', authMiddleware, adminsController.parnterDetail)
 adminRouter.put('/partner', authMiddleware, 
   // partnerStoreValidator, validationHandler , 
   adminsController.partnerUpdate)
