@@ -31,7 +31,8 @@ export default {
 
     const start = new Date('2025-12-01T00:00:00');
     const end = new Date('2025-12-31T23:59:59');
-
+    const testS = new Date('2026-01-06T00:00:00');
+    const testE = new Date('2026-01-12T23:59:59');
     //레코드 정보
     const records = []
     
@@ -88,7 +89,7 @@ export default {
 
       records.push({
         riderId: randomNum, partnerId: randomNum, hotelId: randomNum,
-        orderCode: `20260104${serial++}`,
+        orderCode: `20260112${serial++}`,
         email: 'email@email.com', name: '정XX',
         price: 22000, cntS: 1, cntM: 1, cntL: 1,
         status: 'pick',
@@ -102,6 +103,25 @@ export default {
     for (let i = 1; i <= comCount; i++) {
       const randomNum = getRandomInRange(1, 50);
       const randomDate = faker.date.between({ from: start, to: end });
+      const pickupTime = dayjs(randomDate).add(1, 'hour').toDate();
+      const completeTime = dayjs(pickupTime).add(1, 'hour').toDate();
+
+      records.push({
+        riderId: randomNum, partnerId: randomNum, hotelId: randomNum,
+        orderCode: `20260104${serial++}`,
+        email: 'email@email.com', name: '정XX',
+        price: 22000, cntS: 1, cntM: 1, cntL: 1,
+        status: 'com',
+        createdAt: dayjs(randomDate).toDate(),
+        updatedAt: completeTime,
+        pickupAt: pickupTime
+      });
+    }
+    
+    // 5. 이번달 완료 데이터 (com)
+    for (let i = 1; i <= comCount; i++) {
+      const randomNum = getRandomInRange(1, 50);
+      const randomDate = faker.date.between({ from: testS, to: testE });
       const pickupTime = dayjs(randomDate).add(1, 'hour').toDate();
       const completeTime = dayjs(pickupTime).add(1, 'hour').toDate();
 

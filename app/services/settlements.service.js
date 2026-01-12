@@ -91,7 +91,7 @@ async function lastThreeMonthsTotalAmount() {
     const months = [];
 
     // 현재 달부터 이전 3개월간의 데이터를 준비
-    for (let i = 2; i >= 0; i--) {
+    for (let i = 3; i >= 1; i--) {
         const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
         months.push({
             year: d.getFullYear(),
