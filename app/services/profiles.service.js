@@ -61,7 +61,7 @@ async function updateMyProfile(user, updateData) {
     }
 
     await config.repository.update(t, profile.id, allowedData);
-    return await config.repository.findByUserId(t, profile.id);
+    return await config.repository.findByUserId(t, user.id);
   });
 }
 
