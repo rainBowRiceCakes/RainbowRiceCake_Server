@@ -1,0 +1,106 @@
+/**
+ * @file databases/migrations/20251216-05-create-hotels.js
+ * @description hotel migration file
+ * 251216 v1.0.0 jun 초기 생성
+ */
+
+import { DataTypes } from 'sequelize';
+
+// 테이블명
+const tableName = 'hotels';
+
+// 컬럼 정의
+const attributes = {
+  id: {
+    field: 'id',
+    type: DataTypes.BIGINT.UNSIGNED,
+    primaryKey: true,
+    allowNull: false,
+    autoIncrement: true,
+    comment: '호텔 PK',
+  },
+  krName: {
+    field: 'kr_name',
+    type: DataTypes.STRING(50),
+    allowNull: false,
+    comment: '호텔 한글이름'
+  },
+  enName: {
+    field: 'en_name',
+    type: DataTypes.STRING(50),
+    allowNull: false,
+    comment: '호텔 영어이름'
+  },
+  manager: {
+    field: 'manager',
+    type: DataTypes.STRING(50),
+    allowNull: false,
+    comment: '담당자명'
+  },
+  phone: {
+    field: 'phone',
+    type: DataTypes.STRING(13),
+    allowNull: true,
+    comment: '휴대폰번호'
+  },
+  status: {
+    field: 'status',
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    comment: '상태',
+    defaultValue: true
+  },
+  address: {
+    field: 'address',
+    type: DataTypes.STRING(50),
+    allowNull: false,
+    comment: '호텔 주소'
+  },
+  lat: {
+    field: 'lat',
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+    comment: '위도'
+  },
+  lng: {
+    field: 'lng',
+    type: DataTypes.DOUBLE,
+    allowNull: false,
+    comment: '경도'
+  },
+  createdAt: {
+    field: 'created_at',
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  updatedAt: {
+    field: 'updated_at',
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  deletedAt: {
+    field: 'deleted_at',
+    type: DataTypes.DATE,
+    allowNull: true
+  }
+};
+
+// 옵션 설정
+const options = {
+  charset: 'utf8mb4', // 테이블 문자셋 설정(이모지 지원)
+  collate: 'utf8mb4_bin', // 정렬 방식 설정(영어 대소문자 구분 정렬)
+  engine: 'InnoDB', // 사용 엔진 설정
+};
+
+/** @type {import('sequelize-cli').Migration} */
+export default {
+  // 마이그레이션 실행 시 호출되는 메소드(스키마 생성, 수정)
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable(tableName, attributes, options);
+  },
+
+  // 마이그레이션을 롤백 시 호출되는 메소드(스키마 제거, 수정)
+  async down(queryInterface, Sequelize) {
+    await queryInterface.dropTable(tableName);
+  }
+};
