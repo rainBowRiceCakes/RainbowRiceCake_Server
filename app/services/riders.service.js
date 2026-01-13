@@ -115,8 +115,12 @@ async function getSettlementByRider(userId, userRole) {
 }
 
 // ------------- 라이더 정산 내역 상세 조회 관련 ----------2026.01.08 추가 (송보미)
-async function getSettlementDetailByRider(userId, userRole, settlementId) {
+async function getSettlementDetailByRider(userId, userRole, id) {
   // 1. 유저 권한 체크
+
+  console.log('userRole', userRole);
+  console.log('userId', userId);
+  console.log('id', id);
   if (userRole !== 'DLV') {
     throw myError("라이더 권한이 없는 유저입니다.", FORBIDDEN_ERROR);
   }
@@ -128,12 +132,13 @@ async function getSettlementDetailByRider(userId, userRole, settlementId) {
   }
 
   // 3. settlementId로 정산 기간(year, month) 조회
-  const settlement = await riderRepository.findSettlementById(null, settlementId);
+  const settlement = await riderRepository.findSettlementById(null, id);
   if (!settlement) throw myError("존재하지 않는 정산 건입니다.", NOT_FOUND_ERROR);
 
   // 4. 기사 ID와 파라미터로 받은 정산 ID로 상세 데이터 조회
   // 보안을 위해 rider.id(본인여부)와 settlementId를 함께 조건으로 사용합니다.
   const details = await riderRepository.getOrdersByPeriod(null, rider.id, settlement.year, settlement.month);
+  console.log('details', details);
 
   return details || [];
 }
