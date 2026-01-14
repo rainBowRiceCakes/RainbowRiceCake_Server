@@ -69,6 +69,7 @@ app.use(process.env.ACCESS_FILE_RIDER_LICENSE_IMAGE_PATH, express.static(pathUti
 
 // "/files/logos" 로 들어오는 요청은 실제 "storage/images/logos" 폴더의 파일을 보여준다.
 app.use(process.env.ACCESS_FILE_PARTNER_LOGO_IMAGE_PATH, express.static(process.env.FILE_PARTNER_LOGO_IMAGE_PATH));
+app.use(process.env.ACCESS_FILE_ORDER_DLV_IMAGE_PATH, express.static(process.env.FILE_ORDER_DLV_IMAGE_PATH));
 
 // ---------------------
 // 404 처리
