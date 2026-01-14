@@ -29,14 +29,15 @@ import { initSettlementScheduler } from './app/schedulers/settlementScheduler.js
 import { initTransferScheduler } from './app/schedulers/transferScheduler.js';
 import pathUtil from './app/utils/path/path.util.js';
 import { initAutoPayScheduler } from './app/schedulers/autoPay.scheduler.js';
-import './configs/env.config.js';
+import corsMiddleware from './app/middlewares/cors/cors.middleware.js';
 
 const app = express();
+app.use(corsMiddleware);
 app.use(express.json()); // JSON 요청 파싱 처리
 app.use(cookieParser()); // 쿠키파서
 
 const swaggerFile = JSON.parse(
-    fs.readFileSync('./swagger_output.json', 'utf-8')
+  fs.readFileSync('./swagger_output.json', 'utf-8')
 );
 
 // ---------------------
