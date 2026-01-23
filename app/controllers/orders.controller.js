@@ -75,7 +75,7 @@ async function uploadPickupPhoto(req, res, next) {
 
     const result = await ordersService.uploadPickupPhoto({
       orderCode,
-      photoPath
+      photoPath: `${process.env.APP_URL}${process.env.ACCESS_FILE_ORDER_DLV_IMAGE_PATH}/${photoPath}`
     });
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
@@ -102,7 +102,7 @@ async function uploadCompletePhoto(req, res, next) {
 
     const result = await ordersService.uploadCompletePhoto({
       orderCode,
-      photoPath
+      photoPath: `${process.env.APP_URL}${process.env.ACCESS_FILE_ORDER_DLV_IMAGE_PATH}/${photoPath}`
     });
 
     return res.status(SUCCESS.status).send(createBaseResponse(SUCCESS, result));
