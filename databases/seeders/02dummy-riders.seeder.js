@@ -31,7 +31,21 @@ export default {
     const records = [
     ];
 
-    for (let i = 51; i <= riderCount; i++) {
+    for (let i = 51; i <= 90; i++) {
+      records.push({
+        /** @type {number} users 테이블의 PK와 매칭되는 외래키 (51~100) */
+        userId: i, // [참고] 숫자 타입이므로 `${i}` 대신 i 권장
+        licenseImg: `licenseImage${i}`,
+        bank: getRandomBank(),
+        bankNum: 1234567899,
+        isWorking: true,
+        address: faker.location.street(),
+        phone: '010-1234-5678',
+        status: 'RES'
+      });
+    }
+
+    for (let i = 91; i <= riderCount; i++) {
       records.push({
         /** @type {number} users 테이블의 PK와 매칭되는 외래키 (51~100) */
         userId: i, // [참고] 숫자 타입이므로 `${i}` 대신 i 권장
@@ -40,7 +54,7 @@ export default {
         bankNum: 1234567899,
         address: faker.location.street(),
         phone: '010-1234-5678',
-        status: 'RES'
+        status: 'REQ'
       });
     }
 

@@ -6,6 +6,7 @@
  * - [Fix] Math.floor 추가: DB 정수 타입(BIGINT)에 소수점 값이 들어가지 않도록 수정
  * - [Fix] orderCode 중복 오류 해결: serial 변수를 사용해 모든 레코드에 고유 코드 부여
  * - [Fix] 필드명 매핑 수정: DB 컬럼명과 일치하도록 createAt -> createdAt 변경
+ * 260111 v2.0.0 sara update - seeder add for sara 주문 체크할 때 내 카카오 로그인으로 처리하니 확인해볼 데이터 더미(sara 전용 추가)  
  */
 
 import { fakerKO as faker } from '@faker-js/faker'; 
@@ -30,7 +31,8 @@ export default {
 
     const start = new Date('2025-12-01T00:00:00');
     const end = new Date('2025-12-31T23:59:59');
-
+    const testS = new Date('2026-01-06T00:00:00');
+    const testE = new Date('2026-01-12T23:59:59');
     //레코드 정보
     const records = []
     
@@ -87,7 +89,7 @@ export default {
 
       records.push({
         riderId: randomNum, partnerId: randomNum, hotelId: randomNum,
-        orderCode: `20260104${serial++}`,
+        orderCode: `20260112${serial++}`,
         email: 'email@email.com', name: '정XX',
         price: 22000, cntS: 1, cntM: 1, cntL: 1,
         status: 'pick',
@@ -115,7 +117,81 @@ export default {
         pickupAt: pickupTime
       });
     }
+    
+    // 5. 이번달 완료 데이터 (com)
+    for (let i = 1; i <= comCount; i++) {
+      const randomNum = getRandomInRange(1, 50);
+      const randomDate = faker.date.between({ from: testS, to: testE });
+      const pickupTime = dayjs(randomDate).add(1, 'hour').toDate();
+      const completeTime = dayjs(pickupTime).add(1, 'hour').toDate();
 
+      records.push({
+        riderId: randomNum, partnerId: randomNum, hotelId: randomNum,
+        orderCode: `20260104${serial++}`,
+        email: 'email@email.com', name: '정XX',
+        price: 22000, cntS: 1, cntM: 1, cntL: 1,
+        status: 'com',
+        createdAt: dayjs(randomDate).toDate(),
+        updatedAt: completeTime,
+        pickupAt: pickupTime
+      });
+    }
+
+    /**
+     *  [추가] 특정 계정(dlsdn0118@naver.com) 주문 더미 추가
+     * - 사진처럼 테스트/확인 가능한 고정 데이터
+     * - 나머지 값(파트너/호텔/라이더 등)은 랜덤
+     * - cnt는 사진 스타일로 cntS=1, cntM=0, cntL=0
+     */
+    const SARA_EMAIL = 'dlsdn0118@naver.com';
+    const SARA_NAME = '설아(Sara)';
+    const baseTime = dayjs('2025-12-14T20:14:24');
+
+    const addSaraOrder = (status) => {
+      const partnerId = getRandomInRange(1, 50);
+      const hotelId = getRandomInRange(1, 50);
+      const riderId = status === 'req' ? null : getRandomInRange(1, 50);
+
+      const createdAt = baseTime.toDate();
+      const pickupAt =
+        status === 'pick' || status === 'com'
+          ? baseTime.add(1, 'hour').toDate()
+          : null;
+
+      const updatedAt =
+        status === 'com'
+          ? baseTime.add(2, 'hour').toDate()
+          : status === 'pick'
+          ? baseTime.add(1, 'hour').toDate()
+          : createdAt;
+
+      records.push({
+        riderId,
+        partnerId,
+        hotelId,
+        orderCode: `20260104${serial++}`, // UNIQUE 유지
+        email: SARA_EMAIL,
+        name: SARA_NAME,
+        price: 22000,
+        cntS: 1,
+        cntM: 0,
+        cntL: 0,
+        status,
+        createdAt,
+        updatedAt,
+        pickupAt,
+      });
+    };
+
+    // 배송 요청
+    addSaraOrder("pick");
+    addSaraOrder("pick");
+    addSaraOrder("pick");
+    addSaraOrder("com");
+    addSaraOrder("mat");
+    addSaraOrder("com");
+    
+    
     // 데이터 생성 : queryInterface.bulkInsert(tableName, records, options)
     // await queryInterface.bulkInsert(tableName, records, {});
     await Order.bulkCreate(records);

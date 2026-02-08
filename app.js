@@ -29,13 +29,15 @@ import { initSettlementScheduler } from './app/schedulers/settlementScheduler.js
 import { initTransferScheduler } from './app/schedulers/transferScheduler.js';
 import pathUtil from './app/utils/path/path.util.js';
 import { initAutoPayScheduler } from './app/schedulers/autoPay.scheduler.js';
+import corsMiddleware from './app/middlewares/cors/cors.middleware.js';
 
 const app = express();
+app.use(corsMiddleware);
 app.use(express.json()); // JSON 요청 파싱 처리
 app.use(cookieParser()); // 쿠키파서
 
 const swaggerFile = JSON.parse(
-    fs.readFileSync('./swagger_output.json', 'utf-8')
+  fs.readFileSync('./swagger_output.json', 'utf-8')
 );
 
 // ---------------------
@@ -67,6 +69,7 @@ app.use(process.env.ACCESS_FILE_RIDER_LICENSE_IMAGE_PATH, express.static(pathUti
 
 // "/files/logos" 로 들어오는 요청은 실제 "storage/images/logos" 폴더의 파일을 보여준다.
 app.use(process.env.ACCESS_FILE_PARTNER_LOGO_IMAGE_PATH, express.static(process.env.FILE_PARTNER_LOGO_IMAGE_PATH));
+app.use(process.env.ACCESS_FILE_ORDER_DLV_IMAGE_PATH, express.static(process.env.FILE_ORDER_DLV_IMAGE_PATH));
 
 // ---------------------
 // 404 처리

@@ -9,9 +9,9 @@ import settlementsService from "../services/settlements.service.js";
  * 자동 결제 스케줄러 초기화
  */
 export const initAutoPayScheduler = () => {
-  // 매월 1일 새벽 3시
-  // const rule = '0 3 1 * *';
-  const rule = '40 22 * * *';
+  // 매월 10일 새벽 3시
+  const rule = '0 3 10 * *';
+  // const rule = '40 22 * * *';
 
   scheduleJob(rule, async function () {
     console.log('[Scheduler] 정기 자동 결제 스케줄 작업 시작...');

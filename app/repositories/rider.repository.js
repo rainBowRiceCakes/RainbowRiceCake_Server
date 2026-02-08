@@ -217,9 +217,9 @@ async function getSettlementByRider(t = null, riderId) {
 /**
  * 정산 ID로 정산 기간 조회
  */
-async function findSettlementById(transaction, settlementId) {
+async function findSettlementById(transaction, id) {
   return await Settlement.findOne({
-    where: { id: settlementId },
+    where: { id: id },
     attributes: ['year', 'month'], // 기간 정보만 필요
     transaction
   });

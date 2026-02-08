@@ -80,6 +80,7 @@ async function getMyPageSummary(userId) {
 
   return {
     userName: user.name,
+    email: user.email, 
     deliveryStatus: orderSummaryRaw,
     inquiryStatus: questionSummaryRaw,
   };

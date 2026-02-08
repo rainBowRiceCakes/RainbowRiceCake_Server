@@ -102,7 +102,7 @@ export const name = body('name')
   .notEmpty()
   .withMessage('이름은 필수입니다. Name is required')
   .bail()
-  .matches(/^[가-힣A-Za-z\s]{2,50}$/)
+  .matches(/^[가-힣A-Za-z\s() ]{2,50}$/)
   .withMessage('이름은 2~50자의 한글,영문자만 허용됩니다.');
 
 export const hotelId = body('hotelId')

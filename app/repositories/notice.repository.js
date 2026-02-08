@@ -19,6 +19,7 @@ async function show(t = null, { limit, offset }) {
     {
       limit,
       offset,
+      order: [['createdAt', 'DESC']],
       transaction: t,
     })
 }

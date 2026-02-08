@@ -151,6 +151,17 @@ async function findSettlementsForAutoPay(t = null) {
   });
 }
 
+/**
+ * 해당 기간의 정산(주문) 내역 조회
+ */
+async function storeInvoiceRider(t = null, { riderId, year, month, totalAmount }) {
+  return await Settlement.create(
+    { riderId, year, month, totalAmount },
+    {
+      transaction: t,
+    });
+}
+
 export default {
   findPartnerById,
   findAllPartners, // export 추가
@@ -158,6 +169,7 @@ export default {
   findInvoiceStatus,
   findInvoiceRider,
   storeInvoiceStatus,
+  storeInvoiceRider,
   findSettlementWithPartner,
   updateSettlementStatus,
   findSettlementsForAutoPay,
