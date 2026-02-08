@@ -125,7 +125,7 @@ async function countInProgressByRider(t = null, riderId) {
   return await Order.count({
     where: {
       riderId,
-      status: { [Op.in]: ['match', 'pick'] }
+      status: { [Op.in]: ['mat', 'pick'] }
     },
     transaction: t
   });

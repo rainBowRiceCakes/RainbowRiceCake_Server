@@ -115,8 +115,8 @@ async function matchOrder({ orderCode, userId }) {
       throw myError('주문을 찾을 수 없습니다.', NOT_FOUND_ERROR);
     }
 
-    // 2. 주문 상태가 대기 중(reg)인지 확인 (다른 기사가 이미 잡았는지 방지)
-    if (order.status !== 'reg') {
+    // 2. 주문 상태가 대기 중(req)인지 확인 (다른 라이더가 이미 잡았는지 방지)
+    if (order.status !== 'req') {
       throw myError('이미 매칭되었거나 취소된 주문입니다.', BAD_REQUEST_ERROR);
     }
 
@@ -131,6 +131,11 @@ async function matchOrder({ orderCode, userId }) {
       throw myError('현재 퇴근 상태입니다. 출근 처리 후 배달을 수락해주세요.', FORBIDDEN_ERROR);
     }
 
+    const inProgressCount = await orderRepository.countInProgressByRider(t, rider.id);
+    if (inProgressCount >= 3) {
+      throw myError('진행 중인 주문이 너무 많습니다. (최대 3개)', BAD_REQUEST_ERROR);
+    }
+
     // 모든 검증 통과 후 상태 변경
     await orderRepository.updateToMatched(t, order.id, rider.id);
   });
@@ -138,12 +143,6 @@ async function matchOrder({ orderCode, userId }) {
   // 2단계: COMMIT 후 "상세 정보" 포함해서 새로 조회
   return await orderRepository.findByOrderCodeWithDetails(null, orderCode);
 }
-
-// // 6. 라이더의 진행중인 주문 개수 확인 (예: 최대 3개)
-// const inProgressCount = await orderRepository.getInProgressCountByRider(t, riderId);
-// if (inProgressCount >= 3) {
-//   throw myError('진행 중인 주문이 너무 많습니다. (최대 3개)', BAD_REQUEST_ERROR);
-// }
 
 /**
  * Upload pickup photo
@@ -491,7 +490,15 @@ export const getOrdersList = async ({ userId, role, status, date, page, limit, s
   }
 
   // 3. [공통] 상태 필터링 (중복 로직을 상단으로 통합)
-  const statusArray = status ? (Array.isArray(status) ? status : [status]) : [];
+  let statusArray = [];
+  if (status) {
+    if (Array.isArray(status)) {
+      statusArray = status;
+    } else if (typeof status === 'string') {
+      statusArray = status.split(',').map(s => s.trim()).filter(Boolean);
+    }
+  }
+
   if (statusArray.length > 0 && !statusArray.includes('all')) {
     where.status = { [Op.in]: statusArray };
   }
