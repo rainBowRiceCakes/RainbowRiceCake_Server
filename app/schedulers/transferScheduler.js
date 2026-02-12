@@ -9,20 +9,21 @@ import { logger } from "../middlewares/loggers/winston.logger.js";
 
 export const initTransferScheduler = () => {
   // 매월 10일 오전 10시에 실행
-  const rule = '0 10 10 * *'; 
+  const rule = '0 10 10 * *';
 
   // (테스트용 1분마다 실행)
-  // const rule = '*/1 * * * *'; 
+  // const rule = '*/1 * * * *';
 
-  scheduleJob(rule, async () => {
-    logger.info('[Scheduler] Starting scheduled settlement transfer job.');
-    try {
-      await processSettlementTransfers();
-      logger.info('[Scheduler] Finished scheduled settlement transfer job successfully.');
-    } catch (error) {
-      logger.error(`[Scheduler] An error occurred during the scheduled settlement transfer job: ${error.message}\n${error.stack}`);
-    }
-  });
+  // TODO : 프로젝트 종료로 인한 스케쥴러 중지
+  // scheduleJob(rule, async () => {
+  //   logger.info('[Scheduler] Starting scheduled settlement transfer job.');
+  //   try {
+  //     await processSettlementTransfers();
+  //     logger.info('[Scheduler] Finished scheduled settlement transfer job successfully.');
+  //   } catch (error) {
+  //     logger.error(`[Scheduler] An error occurred during the scheduled settlement transfer job: ${error.message}\n${error.stack}`);
+  //   }
+  // });
 
   logger.info(`[Scheduler] Transfer job registered with rule: ${rule}`);
 };
