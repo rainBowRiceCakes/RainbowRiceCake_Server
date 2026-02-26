@@ -20,6 +20,7 @@ import dayjs from 'dayjs';
 import { Op } from 'sequelize';
 import ROLE from '../middlewares/auth/configs/role.enum.js';
 import partnerRepository from '../repositories/partner.repository.js';
+import socketUtil from '../utils/socket/socket.util.js';
 
 // --- 1. ORDER WORKFLOW FOR PARNERS (파트너와 관련된 당일 내 이뤄지는 주문) ---
 /**
@@ -91,8 +92,12 @@ async function createNewOrder({ userId, orderData }) {
 
     if (!result) {
       // 간혹 생성 직후 조회가 안되는 경우를 대비해 생성된 데이터라도 반환
+      socketUtil.emitToAll('order_created', order);
       return order;
     }
+
+    // 전 고객(또는 라이더)에게 새로운 주문 알림
+    socketUtil.emitToAll('order_created', result);
 
     return result;
   });
@@ -141,7 +146,12 @@ async function matchOrder({ orderCode, userId }) {
   });
 
   // 2단계: COMMIT 후 "상세 정보" 포함해서 새로 조회
-  return await orderRepository.findByOrderCodeWithDetails(null, orderCode);
+  const updatedOrder = await orderRepository.findByOrderCodeWithDetails(null, orderCode);
+
+  // 실시간 알림: 모든 라이더에게 알림 (목록에서 사라지거나 상태 변경 반영)
+  socketUtil.emitToAll('order_updated', updatedOrder);
+
+  return updatedOrder;
 }
 
 /**
@@ -179,6 +189,9 @@ async function uploadPickupPhoto({ orderCode, photoPath }) {
 
     // 8. 업데이트된 주문 조회 (최신 pickupAt 정보를 포함하기 위해 다시 조회)
     const updatedOrder = await orderRepository.findByOrderCodeWithDetails(t, orderCode);
+
+    // 실시간 알림: 해당 기사님 및 관계자에게 알림
+    socketUtil.emitToAll('order_updated', updatedOrder);
 
     return {
       order: updatedOrder,
@@ -222,6 +235,9 @@ async function uploadCompletePhoto({ orderCode, photoPath }) {
 
     // 7. 업데이트된 주문 조회
     const updatedOrder = await orderRepository.findByOrderCodeWithDetails(t, orderCode);
+
+    // 실시간 알림: 해당 기사님 및 관계자에게 알림
+    socketUtil.emitToAll('order_updated', updatedOrder);
 
     // 8. 정산 처리 (선택)
     // await settlementService.processOrderSettlement(updatedOrder);

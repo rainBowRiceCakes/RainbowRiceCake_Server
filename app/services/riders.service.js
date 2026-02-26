@@ -8,6 +8,7 @@
 
 import db from "../models/index.js";
 import riderRepository from "../repositories/rider.repository.js";
+import orderRepository from "../repositories/order.repository.js";
 import { CONFLICT_ERROR, NOT_FOUND_ERROR, BAD_REQUEST_ERROR } from "../../configs/responseCode.config.js";
 import myError from "../errors/customs/my.error.js";
 
@@ -82,7 +83,15 @@ async function toggleWorkStatus(userId, isWorking) {
     throw myError("해당 유저와 연결된 기사 정보를 찾을 수 없습니다.", NOT_FOUND_ERROR);
   }
 
-  // 2. 라이더의 상태 변경 (실제 업데이트)
+  // 2. 퇴근(isWorking = false) 시도 시 진행 중인 주문 확인
+  if (isWorking === false) {
+    const ongoingCount = await orderRepository.countInProgressByRider(null, rider.id);
+    if (ongoingCount > 0) {
+      throw myError("진행 중인 배차 건이 있어 퇴근 처리가 불가능합니다.", BAD_REQUEST_ERROR);
+    }
+  }
+
+  // 3. 라이더의 상태 변경 (실제 업데이트)
   const [affectedCount] = await riderRepository.updateWorkStatus(null, rider.id, isWorking);
 
   if (affectedCount === 0) {

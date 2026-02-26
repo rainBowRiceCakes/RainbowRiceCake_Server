@@ -5,6 +5,8 @@
  */
 
 import express from 'express';
+import http from 'http';
+import { initSocket } from './app/utils/socket/socket.util.js';
 import './configs/env.config.js';
 import cookieParser from 'cookie-parser';
 import errorHandler from './app/errors/errorHandler.js';
@@ -31,7 +33,10 @@ import pathUtil from './app/utils/path/path.util.js';
 import { initAutoPayScheduler } from './app/schedulers/autoPay.scheduler.js';
 import corsMiddleware from './app/middlewares/cors/cors.middleware.js';
 
+
 const app = express();
+const server = http.createServer(app);
+
 app.use(corsMiddleware);
 app.use(express.json()); // JSON 요청 파싱 처리
 app.use(cookieParser()); // 쿠키파서
@@ -100,6 +105,11 @@ initSettlementScheduler();
 initTransferScheduler();   // ★ 송금 기능 실행
 const PORT = Number(process.env.APP_PORT) || 3000;
 
-app.listen(PORT, () => {
-    console.log(`Server running on ${PORT}`);
+// ---------------------
+// Socket.IO 설정
+// ---------------------
+initSocket(server);
+
+server.listen(PORT, () => {
+  console.log(`Server running on ${PORT}`);
 });
